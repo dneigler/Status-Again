@@ -118,7 +118,7 @@ namespace Status.Persistence.Tests
                 var employee = new Employee {
                     FirstName = "Dave",
                     LastName = "Neigler",
-                    EmailAddress = "david.neigler@sac.com"
+                    EmailAddress = "test@test.com"
                 };
                 var team = new Team {
                     Lead = employee,
