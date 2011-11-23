@@ -27,7 +27,7 @@ namespace Status.BLL
             rolledReport.PeriodStart = this.RollStatusProcessor.GetPeriodStart(report);
             rolledReport.PeriodEnd = this.RollStatusProcessor.GetPeriodEnd(report);
             rolledReport.Items = new List<StatusItem>();
-            report.Items.ToList().ForEach(si => rolledReport.Items.Add(this.RollStatusProcessor.MapStatusItem(si)));
+            report.Items.ToList().ForEach(si => rolledReport.Items.Add(this.RollStatusProcessor.MapStatusItem(si, rolledReport.PeriodStart)));
             return rolledReport;
         }
 

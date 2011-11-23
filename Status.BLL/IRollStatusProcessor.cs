@@ -10,7 +10,7 @@ namespace Status.BLL
     {
         //IRollStatusProcessor DayMethodology(RollStatusDayMethodology dayMethodology);
         //IRollStatusProcessor Span(TimeSpan rollSpan);
-        StatusItem MapStatusItem(StatusItem sourceStatusItem);
+        StatusItem MapStatusItem(StatusItem sourceStatusItem, DateTime statusReportDate);
         //IRollStatusProcessor Create();
         DateTime GetPeriodStart(StatusReport sourceReport);
         DateTime GetPeriodEnd(StatusReport sourceReport);
