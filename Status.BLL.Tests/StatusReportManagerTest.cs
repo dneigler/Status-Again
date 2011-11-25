@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AutoMapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Status.Model;
 using Status.BLL;
@@ -58,7 +59,7 @@ namespace Status.BLL.Tests
         public void RollStatusProcessorDefaultTest()
         {
             var target = new StatusReportManager();
-            Type expected = typeof (DefaultRollStatusProcessor);
+            Type expected = typeof(DefaultRollStatusProcessor);
             Type actual = target.RollStatusProcessor.GetType();
             Assert.AreEqual(expected, actual);
         }
@@ -69,17 +70,42 @@ namespace Status.BLL.Tests
         [TestMethod]
         public void RollStatusReportTest()
         {
+            Mapper.CreateMap<StatusItem, StatusItem>();
             var target = new StatusReportManager();
+            List<StatusItem> items = new List<StatusItem>();
+            StatusItem si1 = new StatusItem()
+                                 {
+                                     Caption = "Test1",
+                                     Milestone = new Milestone()
+                                                     {
+                                                         ConfidenceLevel = MilestoneConfidenceLevels.High,
+                                                         Date = new DateTime(2011, 1, 1),
+                                                         Type = MilestoneTypes.Milestone
+                                                     },
+                                     Notes = new List<Note>(),
+                                     Topic = new Topic() { Caption = "test Topic 1" }
+                                 };
+            StatusItem si2 = Mapper.Map<StatusItem, StatusItem>(si1);
+            si2.Milestone.Date = new DateTime(2011, 1, 10);
+
+            StatusItem si3 = Mapper.Map<StatusItem, StatusItem>(si1);
+            si3.Milestone.Date = new DateTime(2011, 2, 1);
+            items.Add(si1);
+            items.Add(si2);
+            items.Add(si3);
             var report = new StatusReport
                              {
                                  Caption = "Test 1",
-                                 Items = new List<StatusItem>(),
+                                 Items = items,
                                  PeriodStart = new DateTime(2011, 01, 01)
                              };
             IRollStatusDateProcessor dateProcessor = new DefaultRollStatusDateProcessor();
             StatusReport actual = target.RollStatusReport(report, dateProcessor);
             Assert.AreEqual(report.Caption, actual.Caption);
             Assert.AreEqual(report.Items.Count, actual.Items.Count);
+            Assert.AreEqual(report.Items[0], si1);
+            Assert.AreEqual(report.Items[1], si2);
+            Assert.AreEqual(report.Items[2], si3);
             Assert.AreEqual(new DateTime(2011, 01, 03), actual.PeriodStart);
         }
 
@@ -93,31 +119,7 @@ namespace Status.BLL.Tests
             Assert.IsTrue(true);
         }
 
-        /// <summary>
-        ///A test for StatusReportManager Constructor
-        ///</summary>
-        [TestMethod()]
-        public void StatusReportManagerConstructorTest1()
-        {
-            StatusReportManager target = new StatusReportManager();
-            Assert.Inconclusive("TODO: Implement code to verify target");
-        }
 
-        /// <summary>
-        ///A test for RollStatusReport
-        ///</summary>
-        [TestMethod()]
-        public void RollStatusReportTest1()
-        {
-            StatusReportManager target = new StatusReportManager(); // TODO: Initialize to an appropriate value
-            StatusReport report = null; // TODO: Initialize to an appropriate value
-            IRollStatusDateProcessor dateProcessor = null; // TODO: Initialize to an appropriate value
-            StatusReport expected = null; // TODO: Initialize to an appropriate value
-            StatusReport actual;
-            actual = target.RollStatusReport(report, dateProcessor);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
 
         /// <summary>
         ///A test for RollStatusProcessor
@@ -125,13 +127,11 @@ namespace Status.BLL.Tests
         [TestMethod()]
         public void RollStatusProcessorTest()
         {
-            StatusReportManager target = new StatusReportManager(); // TODO: Initialize to an appropriate value
-            IRollStatusProcessor expected = null; // TODO: Initialize to an appropriate value
-            IRollStatusProcessor actual;
+            StatusReportManager target = new StatusReportManager();
+            IRollStatusProcessor expected = new DefaultRollStatusProcessor();
             target.RollStatusProcessor = expected;
-            actual = target.RollStatusProcessor;
+            IRollStatusProcessor actual = target.RollStatusProcessor;
             Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
         }
     }
 }

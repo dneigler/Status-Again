@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Status.Model;
 
@@ -7,7 +6,7 @@ namespace Status.BLL
 {
     public class StatusReportManager : IStatusReportManager
     {
-        private IRollStatusProcessor _rollStatusProcessor = null;
+        private IRollStatusProcessor _rollStatusProcessor;
 
         public IRollStatusProcessor RollStatusProcessor
         {
@@ -34,7 +33,11 @@ namespace Status.BLL
                                        Items = new List<StatusItem>()
                                    };
             report.Items.ToList().ForEach(
-                si => rolledReport.Items.Add(RollStatusProcessor.MapStatusItem(si, rolledReport.PeriodStart)));
+                si =>
+                    {
+                        StatusItem mappedItem = RollStatusProcessor.MapStatusItem(si, rolledReport.PeriodStart);
+                        if (mappedItem != null) rolledReport.Items.Add(mappedItem);
+                    });
             return rolledReport;
         }
     }
