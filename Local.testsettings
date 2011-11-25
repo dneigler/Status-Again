@@ -15,9 +15,9 @@
           <Configuration>
             <CodeCoverage xmlns="">
               <Regular>
-                <CodeCoverageItem binaryFile="Status.BLL\bin\Debug\Status.BLL.dll" pdbFile="Status.BLL\bin\Debug\Status.BLL.pdb" instrumentInPlace="true" />
                 <CodeCoverageItem binaryFile="Status.Model\bin\Debug\Status.Model.dll" pdbFile="Status.Model\bin\Debug\Status.Model.pdb" instrumentInPlace="true" />
                 <CodeCoverageItem binaryFile="Status.Persistence\bin\Debug\Status.Persistence.dll" pdbFile="Status.Persistence\bin\Debug\Status.Persistence.pdb" instrumentInPlace="true" />
+                <CodeCoverageItem binaryFile="Status.BLL\bin\Debug\Status.BLL.dll" pdbFile="Status.BLL\bin\Debug\Status.BLL.pdb" instrumentInPlace="true" />
               </Regular>
               <AspNet>
                 <AspNetCodeCoverageItem id="0bca5ff3-ca40-435e-8da3-326870f4918d" name="StatusMvc" applicationRoot="/" url="http://localhost:0/" />

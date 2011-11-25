@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DefaultRollStatusDateProcessorTest.cs" />
+    <Compile Include="DefaultRollStatusProcessorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StatusReportManagerTest.cs" />
   </ItemGroup>

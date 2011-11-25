@@ -1,4 +1,5 @@
 ﻿using System;
+using AutoMapper;
 using Status.Model;
 
 namespace Status.BLL
@@ -9,11 +10,15 @@ namespace Status.BLL
 
         public StatusItem MapStatusItem(StatusItem sourceStatusItem, DateTime statusReportDate)
         {
-            var si = new StatusItem {Caption = sourceStatusItem.Caption};
+            Mapper.CreateMap<StatusItem, StatusItem>();
+            
+            var si = new StatusItem();
+            Mapper.Map<StatusItem, StatusItem>(sourceStatusItem, si);
             // this is a good place for windows workflow to simplify management of transfering milestone types
             if (sourceStatusItem.Milestone.Date < statusReportDate.AddDays(-7))
                 return null;
             if (sourceStatusItem.Milestone.Date < statusReportDate)
+                //si.Milestone.Type = MilestoneTypes.LastWeek;
                 si.Milestone = new Milestone
                                    {
                                        ConfidenceLevel = sourceStatusItem.Milestone.ConfidenceLevel,
