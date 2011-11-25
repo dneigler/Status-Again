@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Status.Model;
+using Status.BLL;
 
 namespace Status.BLL.Tests
 {
@@ -90,6 +91,47 @@ namespace Status.BLL.Tests
         {
             var target = new StatusReportManager();
             Assert.IsTrue(true);
+        }
+
+        /// <summary>
+        ///A test for StatusReportManager Constructor
+        ///</summary>
+        [TestMethod()]
+        public void StatusReportManagerConstructorTest1()
+        {
+            StatusReportManager target = new StatusReportManager();
+            Assert.Inconclusive("TODO: Implement code to verify target");
+        }
+
+        /// <summary>
+        ///A test for RollStatusReport
+        ///</summary>
+        [TestMethod()]
+        public void RollStatusReportTest1()
+        {
+            StatusReportManager target = new StatusReportManager(); // TODO: Initialize to an appropriate value
+            StatusReport report = null; // TODO: Initialize to an appropriate value
+            IRollStatusDateProcessor dateProcessor = null; // TODO: Initialize to an appropriate value
+            StatusReport expected = null; // TODO: Initialize to an appropriate value
+            StatusReport actual;
+            actual = target.RollStatusReport(report, dateProcessor);
+            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Verify the correctness of this test method.");
+        }
+
+        /// <summary>
+        ///A test for RollStatusProcessor
+        ///</summary>
+        [TestMethod()]
+        public void RollStatusProcessorTest()
+        {
+            StatusReportManager target = new StatusReportManager(); // TODO: Initialize to an appropriate value
+            IRollStatusProcessor expected = null; // TODO: Initialize to an appropriate value
+            IRollStatusProcessor actual;
+            target.RollStatusProcessor = expected;
+            actual = target.RollStatusProcessor;
+            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Verify the correctness of this test method.");
         }
     }
 }

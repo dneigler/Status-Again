@@ -18,36 +18,13 @@ namespace Status.BLL
             if (sourceStatusItem.Milestone.Date < statusReportDate.AddDays(-7))
                 return null;
             if (sourceStatusItem.Milestone.Date < statusReportDate)
-                //si.Milestone.Type = MilestoneTypes.LastWeek;
-                si.Milestone = new Milestone
-                                   {
-                                       ConfidenceLevel = sourceStatusItem.Milestone.ConfidenceLevel,
-                                       Type = MilestoneTypes.LastWeek,
-                                       Date = sourceStatusItem.Milestone.Date
-                                   };
+                si.Milestone.Type = MilestoneTypes.LastWeek;
             else if (sourceStatusItem.Milestone.Date >= statusReportDate &&
                      sourceStatusItem.Milestone.Date < statusReportDate.AddDays(7))
-                si.Milestone = new Milestone
-                                   {
-                                       ConfidenceLevel = sourceStatusItem.Milestone.ConfidenceLevel,
-                                       Type = MilestoneTypes.ThisWeek,
-                                       Date = sourceStatusItem.Milestone.Date
-                                   };
-            else if (sourceStatusItem.Milestone.Type == MilestoneTypes.Milestone ||
-                     sourceStatusItem.Milestone.Type == MilestoneTypes.OpenItem)
-                si.Milestone = new Milestone
-                                   {
-                                       ConfidenceLevel = sourceStatusItem.Milestone.ConfidenceLevel,
-                                       Type = sourceStatusItem.Milestone.Type,
-                                       Date = sourceStatusItem.Milestone.Date
-                                   };
-            else
-                si.Milestone = new Milestone
-                                   {
-                                       ConfidenceLevel = sourceStatusItem.Milestone.ConfidenceLevel,
-                                       Type = MilestoneTypes.Milestone,
-                                       Date = sourceStatusItem.Milestone.Date
-                                   };
+                si.Milestone.Type = MilestoneTypes.ThisWeek;
+            //else if (sourceStatusItem.Milestone.Type != MilestoneTypes.Milestone &&
+            //         sourceStatusItem.Milestone.Type != MilestoneTypes.OpenItem)
+            //    si.Milestone.Type = MilestoneTypes.Milestone;
             return si;
         }
         #endregion

@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Status.BLL;
 
 namespace Status.BLL.Tests
 {
@@ -72,6 +73,31 @@ namespace Status.BLL.Tests
             var expected = new DateTime(2011, 1, 10);
             DateTime actual = target.GetStatusReportDate(sourceDate);
             Assert.AreEqual(expected, actual);
+        }
+
+        /// <summary>
+        ///A test for DefaultRollStatusDateProcessor Constructor
+        ///</summary>
+        [TestMethod()]
+        public void DefaultRollStatusDateProcessorConstructorTest()
+        {
+            DefaultRollStatusDateProcessor target = new DefaultRollStatusDateProcessor();
+            Assert.Inconclusive("TODO: Implement code to verify target");
+        }
+
+        /// <summary>
+        ///A test for GetStatusReportDate
+        ///</summary>
+        [TestMethod()]
+        public void GetStatusReportDateTest()
+        {
+            DefaultRollStatusDateProcessor target = new DefaultRollStatusDateProcessor(); // TODO: Initialize to an appropriate value
+            DateTime sourceDate = new DateTime(); // TODO: Initialize to an appropriate value
+            DateTime expected = new DateTime(); // TODO: Initialize to an appropriate value
+            DateTime actual;
+            actual = target.GetStatusReportDate(sourceDate);
+            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Verify the correctness of this test method.");
         }
     }
 }
