@@ -96,9 +96,9 @@ namespace Status.BLL.Tests
             var report = new StatusReport
                              {
                                  Caption = "Test 1",
-                                 Items = items,
                                  PeriodStart = new DateTime(2011, 01, 01)
                              };
+            items.ForEach(report.AddStatusItem);
             IRollStatusDateProcessor dateProcessor = new DefaultRollStatusDateProcessor();
             StatusReport actual = target.RollStatusReport(report, dateProcessor);
             Assert.AreEqual(report.Caption, actual.Caption);

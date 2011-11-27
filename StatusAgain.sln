@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Status.BLL", "Status.BLL\St
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Status.BLL.Tests", "Status.BLL.Tests\Status.BLL.Tests.csproj", "{CAD75803-8636-433A-B2F9-B610E66B8F80}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Status.Model.Tests", "Status.Model.Tests\Status.Model.Tests.csproj", "{7BBABAB9-4D0E-4B0F-A87B-F30A704E3579}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = StatusAgain.vsmdi
@@ -60,6 +62,10 @@ Global
 		{CAD75803-8636-433A-B2F9-B610E66B8F80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAD75803-8636-433A-B2F9-B610E66B8F80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAD75803-8636-433A-B2F9-B610E66B8F80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BBABAB9-4D0E-4B0F-A87B-F30A704E3579}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BBABAB9-4D0E-4B0F-A87B-F30A704E3579}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BBABAB9-4D0E-4B0F-A87B-F30A704E3579}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BBABAB9-4D0E-4B0F-A87B-F30A704E3579}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

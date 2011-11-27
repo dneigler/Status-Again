@@ -51,7 +51,7 @@ namespace Status.BLL.Tests
         /// <summary>
         ///Tests the next Monday logic for default roll status date processor.
         ///</summary>
-        [TestMethod]
+        [Description("Status reports always pick the next Monday, this test starts on Saturday."), TestMethod]
         public void GetStatusReportDateTestOnSaturday()
         {
             var target = new DefaultRollStatusDateProcessor();
@@ -64,7 +64,7 @@ namespace Status.BLL.Tests
         /// <summary>
         ///Tests the next Monday logic for default roll status date processor.
         ///</summary>
-        [TestMethod]
+        [Description("Status report will always pick the next Monday, even if starting on a Monday."), TestMethod]
         public void GetStatusReportDateTestOnMonday()
         {
             var target = new DefaultRollStatusDateProcessor();

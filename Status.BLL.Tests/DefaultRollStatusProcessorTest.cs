@@ -212,5 +212,29 @@ namespace Status.BLL.Tests
             var actual = target.MapStatusItem(sourceStatusItem, statusReportDate);
             Assert.AreEqual(sourceStatusItem.Milestone.Type, actual.Milestone.Type);
         }
+
+        /// <summary>
+        ///A test for MapStatusItem
+        ///</summary>
+        [TestMethod()]
+        public void MapStatusItemTestFutureMilestone()
+        {
+            var target = new DefaultRollStatusProcessor();
+            var sourceStatusItem = new StatusItem
+            {
+                Caption = "Test",
+                Milestone = new Milestone()
+                {
+                    ConfidenceLevel = MilestoneConfidenceLevels.High,
+                    Date = new DateTime(2011, 1, 25),
+                    Type = MilestoneTypes.Milestone
+                },
+                Notes = new List<Note>(),
+                Topic = new Topic() { Caption = "Test Topic" }
+            };
+            var statusReportDate = sourceStatusItem.Milestone.Date.AddDays(-24);
+            var actual = target.MapStatusItem(sourceStatusItem, statusReportDate);
+            Assert.AreEqual(sourceStatusItem.Milestone.Type, actual.Milestone.Type);
+        }
     }
 }

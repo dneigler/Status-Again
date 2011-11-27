@@ -29,8 +29,7 @@ namespace Status.BLL
             var rolledReport = new StatusReport
                                    {
                                        Caption = report.Caption,
-                                       PeriodStart = dateProcessor.GetStatusReportDate(report.PeriodStart),
-                                       Items = new List<StatusItem>()
+                                       PeriodStart = dateProcessor.GetStatusReportDate(report.PeriodStart)
                                    };
             report.Items.ToList().ForEach(
                 si =>

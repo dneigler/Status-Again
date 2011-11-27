@@ -8,6 +8,18 @@ namespace Status.Model
     public class StatusItem
     {
         private string _caption = null;
+
+        public StatusItem()
+        {
+            this.Milestone = new Milestone() {ConfidenceLevel = MilestoneConfidenceLevels.High, Date = DateTime.Today.AddDays(14), Type = MilestoneTypes.Milestone};
+            this.Notes = new List<Note>();
+        }
+
+        public StatusItem(Topic statusTopic) : this()
+        {
+            this.Topic = statusTopic;
+        }
+
         public virtual int Id { get; set; }
         public virtual Topic Topic { get; set; }
         public virtual Milestone Milestone { get; set; }

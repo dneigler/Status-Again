@@ -43,6 +43,7 @@
     <Compile Include="AuditInfo.cs" />
     <Compile Include="Company.cs" />
     <Compile Include="Employee.cs" />
+    <Compile Include="IStatusReport.cs" />
     <Compile Include="JiraIssueTopic.cs" />
     <Compile Include="JiraProjectTopic.cs" />
     <Compile Include="Milestone.cs" />

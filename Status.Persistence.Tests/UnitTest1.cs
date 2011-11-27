@@ -105,7 +105,7 @@ namespace Status.Persistence.Tests
         //
         #endregion
 
-        [TestMethod]
+        [Description("Basic persistence test creates database."), TestMethod]
         public void TestMethod1()
         {
             //
