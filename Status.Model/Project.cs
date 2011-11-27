@@ -23,6 +23,11 @@ namespace Status.Model
         public virtual Uri WikiLocation { get; set; }
         public virtual Uri JiraLocation { get; set; }
         public virtual string JiraProject { get; set; }
-        
+        public virtual AuditInfo AuditInfo { get; set; }
+
+        public Project()
+        {
+            this.AuditInfo = AuditInfo.GetAudit();
+        }
     }
 }

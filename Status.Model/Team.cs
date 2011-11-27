@@ -10,5 +10,11 @@ namespace Status.Model
         public virtual int Id { get; set; }
         public virtual string Name { get; set; }
         public virtual Employee Lead { get; set; }
+        public virtual AuditInfo AuditInfo { get; set; }
+
+        public Team()
+        {
+            this.AuditInfo = AuditInfo.GetAudit();
+        }
     }
 }

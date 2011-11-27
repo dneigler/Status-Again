@@ -17,7 +17,7 @@ namespace Status.Persistence
                 .Not.Nullable();
             Component(x => x.Milestone);
             HasMany(x => x.Notes);
-            
+            Component(x => x.AuditInfo);
         }
     }
 }

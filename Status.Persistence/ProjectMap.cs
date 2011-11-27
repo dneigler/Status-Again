@@ -41,6 +41,7 @@ namespace Status.Persistence
             HasMany(x => x.StatusItems)
                 .Inverse()
                 .Cascade.DeleteOrphan();
+            Component(x => x.AuditInfo);
         }
     }
 }

@@ -13,6 +13,7 @@ namespace Status.Persistence
         {
             Id(x => x.Id);
             Map(x => x.Name);
+            Component(x => x.AuditInfo);
         }
     }
 }

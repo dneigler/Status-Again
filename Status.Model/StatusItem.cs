@@ -13,6 +13,7 @@ namespace Status.Model
         {
             this.Milestone = new Milestone() {ConfidenceLevel = MilestoneConfidenceLevels.High, Date = DateTime.Today.AddDays(14), Type = MilestoneTypes.Milestone};
             this.Notes = new List<Note>();
+            this.AuditInfo = AuditInfo.GetAudit();
         }
 
         public StatusItem(Topic statusTopic) : this()
@@ -36,5 +37,6 @@ namespace Status.Model
             }
         }
         public virtual List<Note> Notes { get; set; }
+        public virtual AuditInfo AuditInfo { get; set; }
     }
 }

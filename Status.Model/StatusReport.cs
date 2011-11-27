@@ -19,7 +19,12 @@ namespace Status.Model
             protected internal set { _items = value; }
         }
 
-        public void AddStatusItem(Topic statusTopic)
+        public StatusReport()
+        {
+            this.AuditInfo = AuditInfo.GetAudit();
+        }
+
+        public virtual void AddStatusItem(Topic statusTopic)
         {
             // validate that the status topic isn't already assigned to the report?
             // otherwise we have more than one status item being assigned which may cause confusion - but also may be limiting
@@ -27,9 +32,10 @@ namespace Status.Model
             this.Items.Add(si);
         }
 
-        public void AddStatusItem(StatusItem statusItem)
+        public virtual void AddStatusItem(StatusItem statusItem)
         {
             this.Items.Add(statusItem);
         }
+        public virtual AuditInfo AuditInfo { get; set; }
     }
 }

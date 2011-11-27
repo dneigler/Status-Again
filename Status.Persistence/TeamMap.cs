@@ -14,6 +14,7 @@ namespace Status.Persistence
             Id(x => x.Id);
             Map(x => x.Name);
             References(x => x.Lead);
+            Component(x => x.AuditInfo);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 
 namespace Status.Model
@@ -26,7 +27,8 @@ namespace Status.Model
             this.MachineName = machineName;
         }
 
-        public AuditInfo(Resource author) : this(author, DateTime.Now, Environment.MachineName)
+        public AuditInfo(Resource author)
+            : this(author, DateTime.Now, Environment.MachineName)
         {
         }
 
@@ -49,6 +51,18 @@ namespace Status.Model
             return Equals(obj.AuditTime, AuditTime) &&
                 Equals(obj.Author, Author) &&
                 Equals(obj.MachineName, MachineName);
+        }
+
+        public static AuditInfo GetAudit()
+        {
+            // TODO: Implement the Resource construction logic to pull from repository
+            var windowsIdentity = WindowsIdentity.GetCurrent();
+            return new AuditInfo
+                       {
+                           AuditTime = DateTime.Now,
+                           Author = new Resource { EmailAddress = (windowsIdentity == null ? windowsIdentity.Name : "unknown@unknown.com") },
+                           MachineName = Environment.MachineName
+                       };
         }
     }
 }
