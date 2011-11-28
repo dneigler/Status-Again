@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FileHelpers;
 using Status.Model;
 
 namespace Status.BLL
@@ -10,12 +11,7 @@ namespace Status.BLL
 
         public IRollStatusProcessor RollStatusProcessor
         {
-            get
-            {
-                if (_rollStatusProcessor == null)
-                    _rollStatusProcessor = new DefaultRollStatusProcessor();
-                return _rollStatusProcessor;
-            }
+            get { return _rollStatusProcessor ?? (_rollStatusProcessor = new DefaultRollStatusProcessor()); }
             set { _rollStatusProcessor = value; }
         }
 
@@ -38,6 +34,26 @@ namespace Status.BLL
                         if (mappedItem != null) rolledReport.Items.Add(mappedItem);
                     });
             return rolledReport;
+        }
+
+        public void ImportStatusFromCsv(string fileName)
+        {
+            var engine = new FileHelperEngine<StatusCsvItem>();
+            List<StatusCsvItem> items = engine.ReadFileAsList(fileName);
+        }
+
+        public void ExportStatusToCsv(string fileName, IList<StatusReport> reports)
+        {
+            var engine = new FileHelperEngine<StatusCsvItem>();
+            IList<StatusCsvItem> items = new List<StatusCsvItem>();
+            // convert reports to items
+            engine.WriteFile(fileName, items);
+        }
+
+        public void ExportStatusToCsv(string fileName, IList<StatusCsvItem> items)
+        {
+            var engine = new FileHelperEngine<StatusCsvItem>();
+            engine.WriteFile(fileName, items);
         }
     }
 }

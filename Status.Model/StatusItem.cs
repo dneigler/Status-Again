@@ -35,6 +35,6 @@ namespace Status.Model
                 _caption = value;
             }
         }
-        public virtual List<Note> Notes { get; set; }
+        public virtual IList<Note> Notes { get; set; }
     }
 }

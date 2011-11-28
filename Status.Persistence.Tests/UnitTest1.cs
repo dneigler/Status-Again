@@ -20,18 +20,15 @@ namespace Status.Persistence.Tests
     [TestClass]
     public class UnitTest1
     {
-        const string connString = "server=.\\SQLExpress;" +
+        const string ConnString = "server=.\\SQLExpress;" +
             "database=StatusAgain;" +
             "Integrated Security=SSPI;";
 
         public UnitTest1()
         {
-            //
-            // TODO: Add constructor logic here
-            //
         }
 
-        private TestContext testContextInstance;
+        private TestContext _testContextInstance;
 
         /// <summary>
         ///Gets or sets the test context which provides
@@ -41,11 +38,11 @@ namespace Status.Persistence.Tests
         {
             get
             {
-                return testContextInstance;
+                return _testContextInstance;
             }
             set
             {
-                testContextInstance = value;
+                _testContextInstance = value;
             }
         }
 
@@ -55,8 +52,9 @@ namespace Status.Persistence.Tests
         //
         // Use ClassInitialize to run code before running the first test in the class
         [ClassInitialize()]
-        public static void MyClassInitialize(TestContext testContext) {
-                              // FluentMappings.AddFromAssemblyOf<ProjectMap>()
+        public static void MyClassInitialize(TestContext testContext)
+        {
+            // FluentMappings.AddFromAssemblyOf<ProjectMap>()
             //var cfg = new StoreConfiguration();
             //Fluently.Configure()
             //  .Database(MsSqlConfiguration
@@ -73,7 +71,7 @@ namespace Status.Persistence.Tests
             Fluently.Configure()
               .Database(MsSqlConfiguration
                 .MsSql2008
-                .ConnectionString(connString))
+                .ConnectionString(ConnString))
               .Mappings(m => m.FluentMappings.AddFromAssemblyOf<ProjectMap>()
               .Conventions.AddFromAssemblyOf<NoUnderscoreForeignKeyConvention>())
               .ExposeConfiguration(CreateSchema)
@@ -90,8 +88,9 @@ namespace Status.Persistence.Tests
         //
         // Use ClassCleanup to run code after all tests in a class have run
         [ClassCleanup()]
-        public static void MyClassCleanup() { 
-            
+        public static void MyClassCleanup()
+        {
+
         }
 
         //
@@ -108,23 +107,24 @@ namespace Status.Persistence.Tests
         [Description("Basic persistence test creates database."), TestMethod]
         public void TestMethod1()
         {
-            //
-            // TODO: Add test logic here
-            //
             Assert.IsTrue(true, "RanTestMethod1");
             var factory = CreateSessionFactory();
             using (var session = factory.OpenSession())
             {
-                var employee = new Employee {
+                var employee = new Employee
+                {
                     FirstName = "Dave",
                     LastName = "Neigler",
                     EmailAddress = "test@test.com"
                 };
-                var team = new Team {
+                var team = new Team
+                {
                     Lead = employee,
-                    Name = "Test Team"};
-                
-                var department = new Department {
+                    Name = "Test Team"
+                };
+
+                var department = new Department
+                {
                     Name = "Operations IT"
                 };
 
@@ -170,7 +170,8 @@ namespace Status.Persistence.Tests
                     Caption = "Status",
                     Topic = topic1
                 };
-                var status2 = new StatusItem {
+                var status2 = new StatusItem
+                {
                     Topic = topic2
                 };
                 var status3 = new StatusItem
@@ -207,7 +208,7 @@ namespace Status.Persistence.Tests
                     .OrderBy(c => c.Name)
                     .ToList();
                 Assert.AreEqual(2, projects.Count);
-                
+
             }
         }
 
@@ -216,7 +217,7 @@ namespace Status.Persistence.Tests
             return Fluently.Configure()
               .Database(MsSqlConfiguration
                 .MsSql2008
-                .ConnectionString(connString))
+                .ConnectionString(ConnString))
               .Mappings(m => m.FluentMappings
                 .AddFromAssemblyOf<ProjectMap>()
                 .Conventions.AddFromAssemblyOf<NoUnderscoreForeignKeyConvention>())
