@@ -15,7 +15,6 @@ namespace Status.Persistence
             Map(x => x.EdsId);
             Map(x => x.Title).CustomType<Title>();
             References(x => x.Team);
-            Component(x => x.AuditInfo);
         }
     }
 }

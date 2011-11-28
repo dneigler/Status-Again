@@ -9,11 +9,6 @@ namespace Status.Model
     {
         public virtual int Id { get; set; }
         public virtual string Name { get; set; }
-        public virtual AuditInfo AuditInfo { get; set; }
 
-        public Company()
-        {
-            this.AuditInfo = AuditInfo.GetAudit();
-        }
     }
 }

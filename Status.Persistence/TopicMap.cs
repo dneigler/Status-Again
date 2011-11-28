@@ -13,7 +13,7 @@ namespace Status.Persistence
         {
             Id(x => x.Id);
             Map(x => x.Caption);
-            Component(x => x.AuditInfo);
+            
             DiscriminateSubClassesOnColumn("Type");
         }
     }
