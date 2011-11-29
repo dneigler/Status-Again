@@ -1,6 +1,6 @@
 using FileHelpers;
 
-namespace Status.BLL
+namespace Status.Etl.Csv
 {
     [DelimitedRecord(";")]
     public class StatusCsvItem

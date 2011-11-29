@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using FileHelpers;
+using Ninject;
+using Status.Etl;
 using Status.Model;
 
 namespace Status.BLL
@@ -36,24 +37,10 @@ namespace Status.BLL
             return rolledReport;
         }
 
-        public void ImportStatusFromCsv(string fileName)
+        public IStatusEtl GetEtlParser()
         {
-            var engine = new FileHelperEngine<StatusCsvItem>();
-            List<StatusCsvItem> items = engine.ReadFileAsList(fileName);
-        }
-
-        public void ExportStatusToCsv(string fileName, IList<StatusReport> reports)
-        {
-            var engine = new FileHelperEngine<StatusCsvItem>();
-            IList<StatusCsvItem> items = new List<StatusCsvItem>();
-            // convert reports to items
-            engine.WriteFile(fileName, items);
-        }
-
-        public void ExportStatusToCsv(string fileName, IList<StatusCsvItem> items)
-        {
-            var engine = new FileHelperEngine<StatusCsvItem>();
-            engine.WriteFile(fileName, items);
+            IKernel kernel = new StandardKernel();
+            return kernel.Get<IStatusEtl>();
         }
     }
 }

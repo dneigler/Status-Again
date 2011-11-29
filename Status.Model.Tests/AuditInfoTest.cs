@@ -155,24 +155,24 @@ namespace Status.Model.Tests
         ///A test for AuditInfo Constructor
         ///</summary>
         [TestMethod()]
+        [ExpectedException(typeof(ArgumentException))]
         public void AuditInfoConstructorTest1()
         {
             Resource author = null; // TODO: Initialize to an appropriate value
             DateTime auditTime = new DateTime(); // TODO: Initialize to an appropriate value
             string machineName = string.Empty; // TODO: Initialize to an appropriate value
             AuditInfo target = new AuditInfo(author, auditTime, machineName);
-            Assert.Inconclusive("TODO: Implement code to verify target");
         }
 
         /// <summary>
         ///A test for AuditInfo Constructor
         ///</summary>
         [TestMethod()]
+        [ExpectedException(typeof(ArgumentException))]
         public void AuditInfoConstructorTest2()
         {
             Resource author = null; // TODO: Initialize to an appropriate value
             AuditInfo target = new AuditInfo(author);
-            Assert.Inconclusive("TODO: Implement code to verify target");
         }
 
         /// <summary>

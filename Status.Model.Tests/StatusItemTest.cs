@@ -138,12 +138,7 @@ namespace Status.Model.Tests
         public void NotesTest()
         {
             StatusItem target = new StatusItem(); // TODO: Initialize to an appropriate value
-            List<Note> expected = null; // TODO: Initialize to an appropriate value
-            List<Note> actual;
-            target.Notes = expected;
-            actual = target.Notes;
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            Assert.IsNotNull(target.Notes);
         }
 
         /// <summary>
