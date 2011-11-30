@@ -102,12 +102,11 @@ namespace Status.Model.Tests
         [TestMethod()]
         public void GetHashCodeTest()
         {
-            AuditInfo target = new AuditInfo(new Resource() {EmailAddress="test@test.com", FirstName = "Test", LastName = "User"});
-            int expected = 0; // TODO: Initialize to an appropriate value
-            int actual;
-            actual = target.GetHashCode();
+            var target = new AuditInfo(new Resource() {EmailAddress="test@test.com", FirstName = "Test", LastName = "User"});
+            var target2 = new AuditInfo(new Resource() { EmailAddress = "test@test.com", FirstName = "Test", LastName = "User" });
+            int expected = target2.GetHashCode();
+            int actual = target.GetHashCode();
             Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
         }
 
         /// <summary>
@@ -116,13 +115,9 @@ namespace Status.Model.Tests
         [TestMethod()]
         public void EqualsTest()
         {
-            AuditInfo target = new AuditInfo(new Resource() { EmailAddress = "test@test.com", FirstName = "Test", LastName = "User" });
-            AuditInfo obj = null; // TODO: Initialize to an appropriate value
-            bool expected = false; // TODO: Initialize to an appropriate value
-            bool actual;
-            actual = target.Equals(obj);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            var target = new AuditInfo(new Resource() { EmailAddress = "test@test.com", FirstName = "Test", LastName = "User" });
+            var target2 = new AuditInfo(new Resource() { EmailAddress = "test@test.com", FirstName = "Test", LastName = "User" });
+            Assert.IsTrue(target.Equals(target2));
         }
 
         /// <summary>

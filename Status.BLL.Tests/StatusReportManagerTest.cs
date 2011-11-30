@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AutoMapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Ninject;
 using Status.Model;
 using Status.BLL;
 
@@ -14,6 +15,7 @@ namespace Status.BLL.Tests
     [TestClass]
     public class StatusReportManagerTest
     {
+        private static IKernel _kernel = null;
         /// <summary>
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
@@ -26,17 +28,18 @@ namespace Status.BLL.Tests
         //You can use the following additional attributes as you write your tests:
         //
         //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
+        [ClassInitialize()]
+        public static void MyClassInitialize(TestContext testContext)
+        {
+            _kernel = new StandardKernel(new DefaultStatusNinjectModule());
+        }
+        
+        ///Use ClassCleanup to run code after all tests in a class have run
+        [ClassCleanup()]
+        public static void MyClassCleanup()
+        {
+        }
+        
         //Use TestInitialize to run code before running each test
         //[TestInitialize()]
         //public void MyTestInitialize()
@@ -58,7 +61,7 @@ namespace Status.BLL.Tests
         [TestMethod]
         public void RollStatusProcessorDefaultTest()
         {
-            var target = new StatusReportManager();
+            var target = _kernel.Get<StatusReportManager>();
             Type expected = typeof(DefaultRollStatusProcessor);
             Type actual = target.RollStatusProcessor.GetType();
             Assert.AreEqual(expected, actual);
@@ -71,7 +74,7 @@ namespace Status.BLL.Tests
         public void RollStatusReportTest()
         {
             Mapper.CreateMap<StatusItem, StatusItem>();
-            var target = new StatusReportManager();
+            var target = _kernel.Get<StatusReportManager>();
             List<StatusItem> items = new List<StatusItem>();
             StatusItem si1 = new StatusItem()
                                  {
@@ -99,8 +102,7 @@ namespace Status.BLL.Tests
                                  PeriodStart = new DateTime(2011, 01, 01)
                              };
             items.ForEach(report.AddStatusItem);
-            IRollStatusDateProcessor dateProcessor = new DefaultRollStatusDateProcessor();
-            StatusReport actual = target.RollStatusReport(report, dateProcessor);
+            StatusReport actual = target.RollStatusReport(report);
             Assert.AreEqual(report.Caption, actual.Caption);
             Assert.AreEqual(report.Items.Count, actual.Items.Count);
             Assert.AreEqual(report.Items[0], si1);
@@ -115,7 +117,7 @@ namespace Status.BLL.Tests
         [TestMethod]
         public void StatusReportManagerConstructorTest()
         {
-            var target = new StatusReportManager();
+            var target = _kernel.Get<StatusReportManager>();
             Assert.IsTrue(true);
         }
 
@@ -127,7 +129,7 @@ namespace Status.BLL.Tests
         [TestMethod()]
         public void RollStatusProcessorTest()
         {
-            StatusReportManager target = new StatusReportManager();
+            var target = _kernel.Get<StatusReportManager>();
             IRollStatusProcessor expected = new DefaultRollStatusProcessor();
             target.RollStatusProcessor = expected;
             IRollStatusProcessor actual = target.RollStatusProcessor;

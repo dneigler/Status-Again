@@ -32,7 +32,7 @@ namespace Status.Model
 
         public override int GetHashCode()
         {
-            var result = Author.GetHashCode();
+            var result = Author.Id.GetHashCode();
             result = (result * 397) ^ (MachineName != null ? MachineName.GetHashCode() : 0);
             result = (result * 397) ^ AuditTime.GetHashCode();
             return result;
