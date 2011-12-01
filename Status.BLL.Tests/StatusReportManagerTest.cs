@@ -75,7 +75,7 @@ namespace Status.BLL.Tests
         {
             Mapper.CreateMap<StatusItem, StatusItem>();
             var target = _kernel.Get<StatusReportManager>();
-            List<StatusItem> items = new List<StatusItem>();
+            var items = new List<StatusItem>();
             StatusItem si1 = new StatusItem()
                                  {
                                      Caption = "Test1",

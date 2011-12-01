@@ -39,7 +39,7 @@ namespace Status.BLL
             report.Items.ToList().ForEach(
                 si =>
                     {
-                        StatusItem mappedItem = RollStatusProcessor.MapStatusItem(si, rolledReport.PeriodStart);
+                        var mappedItem = RollStatusProcessor.MapStatusItem(si, rolledReport.PeriodStart);
                         if (mappedItem != null) rolledReport.Items.Add(mappedItem);
                     });
             _logger.Info("Rolled status report from {0:yyyy-mm-dd} to {1:yyyy-mm-dd}", report.PeriodStart, rolledReport.PeriodStart);

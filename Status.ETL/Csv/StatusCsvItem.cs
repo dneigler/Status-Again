@@ -1,10 +1,76 @@
+using System;
 using FileHelpers;
+using Status.ETL.Csv;
+using Status.Model;
 
 namespace Status.Etl.Csv
 {
-    [DelimitedRecord(";")]
+    [DelimitedRecord(",")]
     public class StatusCsvItem
     {
+        // StatusDate,ProjectID,Project,StatusType,MilestoneDate,Note,JIRA ID,TeamID,BusinessAlignmentOverride,
+        // ProjectTeamID,TeamName,TeamLead,JIRA Status,MilestoneConfidence,MilestoneDateType,ProjectSummary,
+        // CurrentMonthAllocation,BudgetType,ParentProjectType,BudgetCaption,BudgetCaptionNumbered,StatusTypeOrdered,
+        // Caption,OneLineCaption,BusinessAlignment,ProjectCaptionBudgeted
+        [FieldConverter(ConverterKind.Date, "MM/d/yyyy")] 
+        public DateTime StatusDate;
 
+        public int ProjectID;
+
+        public string Project;
+
+        /// <summary>
+        /// Should be an enumeration
+        /// </summary>
+        [FieldConverter(typeof(MilestoneTypeConverter))] 
+        public MilestoneTypes StatusType;
+
+        [FieldConverter(ConverterKind.Date, "MM/d/yyyy")]
+        public DateTime? MilestoneDate;
+
+        [FieldQuoted()]
+        public string Note;
+
+        private string JiraID;
+
+        public string TeamID;
+
+        public string BusinessAlignmentOverride;
+
+        public int ProjectTeamID;
+
+        public string TeamName;
+
+        public string TeamLead;
+
+        public string JiraStatus;
+
+        [FieldConverter(typeof(MilestoneConfidenceConverter))]
+        [FieldNullValue(MilestoneConfidenceLevels.High)]
+        public MilestoneConfidenceLevels? MilestoneConfidence;
+
+        public string MilestoneDateType;
+
+        public string ProjectSummary;
+
+        public double CurrentMonthAllocation;
+
+        public string BudgetType;
+
+        public string ParentProjectType;
+
+        public string BudgetCaption;
+
+        public string BudgetCaptionNumbered;
+
+        public string StatusTypeOrdered;
+
+        public string Caption;
+
+        public string OneLineCaption;
+
+        public string BusinessAlignment;
+
+        public string ProjectCaptionBudgeted;
     }
 }

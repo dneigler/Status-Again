@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Status.Model.Tests", "Statu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Status.Etl", "Status.ETL\Status.Etl.csproj", "{50BE225F-5293-4D70-AB9A-DF46FA4F7445}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Status.Etl.Tests", "Status.Etl.Tests\Status.Etl.Tests.csproj", "{08088D8F-A438-4A6D-9999-C7709D2C7280}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = StatusAgain.vsmdi
@@ -72,6 +74,10 @@ Global
 		{50BE225F-5293-4D70-AB9A-DF46FA4F7445}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50BE225F-5293-4D70-AB9A-DF46FA4F7445}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50BE225F-5293-4D70-AB9A-DF46FA4F7445}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08088D8F-A438-4A6D-9999-C7709D2C7280}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08088D8F-A438-4A6D-9999-C7709D2C7280}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08088D8F-A438-4A6D-9999-C7709D2C7280}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08088D8F-A438-4A6D-9999-C7709D2C7280}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

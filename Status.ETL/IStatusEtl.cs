@@ -7,7 +7,7 @@ namespace Status.Etl
 {
     public interface IStatusEtl
     {
-        void ImportStatus(TextReader file);
+        IList<StatusCsvItem> ImportStatus(TextReader file);
 
         void ExportStatus(TextWriter file, IList<StatusReport> reports);
 
