@@ -76,8 +76,14 @@ namespace Status.Etl.Tests
             var target = new CsvStatusEtl();
             using (TextReader file = new StreamReader(@"..\..\..\..\StatusSample.csv"))
             {
-                IList<StatusCsvItem> actual = target.ImportStatus(file);
-                Assert.AreEqual(376, actual.Count);
+                var actual = target.ImportStatus(file);
+
+                // check values in first item
+                Assert.AreEqual(new DateTime(2011, 11, 2), actual[0].MilestoneDate);
+                Assert.AreEqual("Software Licensing", actual[0].Project);
+
+                Assert.AreEqual(87, actual[actual.Count - 1].ProjectID);
+                Assert.AreEqual(new DateTime(2011, 11, 28), actual[actual.Count - 1].StatusDate);
             }
         }
 

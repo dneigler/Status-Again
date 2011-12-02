@@ -12,7 +12,7 @@ namespace Status.Etl.Csv
         // ProjectTeamID,TeamName,TeamLead,JIRA Status,MilestoneConfidence,MilestoneDateType,ProjectSummary,
         // CurrentMonthAllocation,BudgetType,ParentProjectType,BudgetCaption,BudgetCaptionNumbered,StatusTypeOrdered,
         // Caption,OneLineCaption,BusinessAlignment,ProjectCaptionBudgeted
-        [FieldConverter(ConverterKind.Date, "MM/d/yyyy")] 
+        [FieldConverter(ConverterKind.Date, "M/d/yyyy")] 
         public DateTime StatusDate;
 
         public int ProjectID;
@@ -25,7 +25,7 @@ namespace Status.Etl.Csv
         [FieldConverter(typeof(MilestoneTypeConverter))] 
         public MilestoneTypes StatusType;
 
-        [FieldConverter(ConverterKind.Date, "MM/d/yyyy")]
+        [FieldConverter(ConverterKind.Date, "M/d/yyyy")]
         public DateTime? MilestoneDate;
 
         [FieldQuoted()]
@@ -50,7 +50,7 @@ namespace Status.Etl.Csv
         public MilestoneConfidenceLevels? MilestoneConfidence;
 
         public string MilestoneDateType;
-
+        [FieldQuoted()]
         public string ProjectSummary;
 
         public double CurrentMonthAllocation;
@@ -65,12 +65,15 @@ namespace Status.Etl.Csv
 
         public string StatusTypeOrdered;
 
+        [FieldQuoted()]
         public string Caption;
 
+        [FieldQuoted()]
         public string OneLineCaption;
-
+        
         public string BusinessAlignment;
-
+        
+        [FieldQuoted()]
         public string ProjectCaptionBudgeted;
     }
 }
