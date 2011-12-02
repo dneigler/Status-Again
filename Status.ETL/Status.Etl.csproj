@@ -48,6 +48,9 @@
       <HintPath>..\packages\FileHelpers-Stable.2.9.9\lib\4.0\Interop.Office.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -58,6 +61,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Csv\CsvStatusEtl.cs" />
+    <Compile Include="Csv\CsvStatusEtlBridge.cs" />
+    <Compile Include="Csv\ICsvStatusEtlBridge.cs" />
     <Compile Include="Csv\MilestoneConfidenceConverter.cs" />
     <Compile Include="Csv\MilestoneTypeConverter.cs" />
     <Compile Include="Csv\StatusCsvItem.cs" />
