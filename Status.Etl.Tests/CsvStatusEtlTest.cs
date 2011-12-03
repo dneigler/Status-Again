@@ -1,4 +1,7 @@
-﻿using Status.Etl.Csv;
+﻿using NLog;
+using NLog.Config;
+using NLog.Targets;
+using Status.Etl.Csv;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
@@ -14,6 +17,7 @@ namespace Status.Etl.Tests
     ///to contain all CsvStatusEtlTest Unit Tests
     ///</summary>
     [TestClass()]
+    [DeploymentItem("NLog.config")]
     public class CsvStatusEtlTest
     {
 
@@ -41,16 +45,25 @@ namespace Status.Etl.Tests
         //You can use the following additional attributes as you write your tests:
         //
         //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
+        [ClassInitialize()]
+        public static void MyClassInitialize(TestContext testContext)
+        {
+            LogManager.Configuration = new XmlLoggingConfiguration(@"NLog.config");
+            //LoggingConfiguration();// XmlLoggingConfiguration(@"NLog.config");
+            //var ft = new FileTarget {FileName = typeof (CsvStatusEtlTest).Name + "_log.txt"};
+            //var ct = new ConsoleTarget();
+            //LogManager.Configuration.AddTarget("console", ct);
+            //LogManager.Configuration.AddTarget("file", ft);
+            //LogManager.Configuration.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, ft));
+            //LogManager.Configuration.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, ct));
+            
+        }
+        
         //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
+        [ClassCleanup()]
+        public static void MyClassCleanup()
+        {
+        }
         //
         //Use TestInitialize to run code before running each test
         //[TestInitialize()]
@@ -70,7 +83,7 @@ namespace Status.Etl.Tests
         /// <summary>
         ///A test for ImportStatus
         ///</summary>
-        [TestMethod()]
+        [TestMethod]
         public void ImportStatusTest()
         {
             var target = new CsvStatusEtl();

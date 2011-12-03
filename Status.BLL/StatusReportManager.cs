@@ -3,6 +3,7 @@ using System.Linq;
 using Status.Etl;
 using Status.Model;
 using NLog;
+using Status.Repository;
 
 
 namespace Status.BLL
@@ -17,11 +18,14 @@ namespace Status.BLL
 
         public IStatusEtl StatusEtl { get; set; }
 
-        public StatusReportManager(IRollStatusProcessor rollStatusProcessor, IRollStatusDateProcessor rollStatusDateProcessor, IStatusEtl statusEtl)
+        public IStatusReportRepository StatusReportRepository { get; set; }
+
+        public StatusReportManager(IRollStatusProcessor rollStatusProcessor, IRollStatusDateProcessor rollStatusDateProcessor, IStatusEtl statusEtl, IStatusReportRepository statusReportRepository)
         {
             RollStatusProcessor = rollStatusProcessor;
             RollStatusDateProcessor = rollStatusDateProcessor;
             StatusEtl = statusEtl;
+            StatusReportRepository = statusReportRepository;
         }
 
         /// <summary>

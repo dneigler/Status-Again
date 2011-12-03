@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{D7744E4E-4A50-4D9A-B500-EDBA64095698}</ProjectGuid>
+    <ProjectGuid>{C556F5FA-F524-4B6D-AE87-0C7C62F4FB0C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Status.Persistence</RootNamespace>
-    <AssemblyName>Status.Persistence</AssemblyName>
+    <RootNamespace>Status.Repository</RootNamespace>
+    <AssemblyName>Status.Repository</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,15 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentNHibernate">
-      <HintPath>..\packages\FluentNHibernate.1.3.0.717\lib\FluentNHibernate.dll</HintPath>
-    </Reference>
-    <Reference Include="Iesi.Collections">
-      <HintPath>..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
-    </Reference>
-    <Reference Include="NHibernate">
-      <HintPath>..\packages\NHibernate.3.2.0.4000\lib\Net35\NHibernate.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,41 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuditInfoMap.cs" />
-    <Compile Include="CompanyMap.cs" />
-    <Compile Include="DepartmentMap.cs" />
-    <Compile Include="EmployeeMap.cs" />
-    <Compile Include="JiraIssueTopicMap.cs" />
-    <Compile Include="JiraProjectTopicMap.cs" />
-    <Compile Include="MilestoneMap.cs" />
-    <Compile Include="NoteMap.cs" />
-    <Compile Include="NoUnderscoreForeignKeyConvention.cs" />
-    <Compile Include="PkNamePrefixConvention.cs" />
-    <Compile Include="ProjectMap.cs" />
-    <Compile Include="ProjectRepository.cs" />
+    <Compile Include="IProjectRepository.cs" />
+    <Compile Include="IStatusReportRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RecruiterMap.cs" />
-    <Compile Include="RepositoryBase.cs" />
-    <Compile Include="ResourceMap.cs" />
-    <Compile Include="StatusItemMap.cs" />
-    <Compile Include="StatusReportMap.cs" />
-    <Compile Include="StatusReportRepository.cs" />
-    <Compile Include="StoreConfiguration.cs" />
-    <Compile Include="TeamMap.cs" />
-    <Compile Include="TopicMap.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Status.Model\Status.Model.csproj">
       <Project>{25EF6D75-7E30-4FC8-B50C-7F9F967DFCC0}</Project>
       <Name>Status.Model</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Status.Repository\Status.Repository.csproj">
-      <Project>{C556F5FA-F524-4B6D-AE87-0C7C62F4FB0C}</Project>
-      <Name>Status.Repository</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
