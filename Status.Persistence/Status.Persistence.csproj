@@ -71,6 +71,7 @@
     <Compile Include="StoreConfiguration.cs" />
     <Compile Include="TeamMap.cs" />
     <Compile Include="TopicMap.cs" />
+    <Compile Include="TopicRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Status.Model\Status.Model.csproj">

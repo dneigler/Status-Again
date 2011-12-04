@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using NHibernate.Exceptions;
 using NHibernate.Linq;
 using Status.Model;
 using Status.Repository;
@@ -52,6 +54,18 @@ namespace Status.Persistence
                 var projects = (from p in session.Query<Project>()
                                 select p).ToList();
                 return projects;
+            }
+        }
+
+        public void AddProject(Project project)
+        {
+            // double check that project doesn't exist
+            Project existingProject = this.GetProject(project.Name);
+            if (existingProject != null) throw new Exception(string.Format("Project name {0} already exists with id {1}", existingProject.Name, existingProject.Id));
+
+            using (var session = CreateSession())
+            {
+                session.Save(project);
             }
         }
     }

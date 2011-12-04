@@ -12,5 +12,7 @@ namespace Status.Repository
         IList<Project> GetProjectsByTeam(int teamId);
 
         IList<Project> GetAllProjects();
+
+        void AddProject(Project project);
     }
 }

@@ -31,7 +31,7 @@ namespace Status.Etl.Csv
         [FieldQuoted()]
         public string Note;
 
-        private string JiraID;
+        public string JiraID;
 
         public string TeamID;
 

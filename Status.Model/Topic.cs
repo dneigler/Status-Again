@@ -9,5 +9,6 @@ namespace Status.Model
     {
         public virtual int Id { get; set; }
         public virtual string Caption { get; set; }
+        public virtual string ExternalId { get; set; }
     }
 }
