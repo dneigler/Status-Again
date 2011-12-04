@@ -17,8 +17,8 @@ namespace Status.Model
         public virtual string Caption { get; set; }
         public virtual string Description { get; set; }
         public virtual int Year { get; set; }
-        public virtual DateTime StartDate { get; set; }
-        public virtual DateTime EndDate { get; set; }
+        public virtual DateTime? StartDate { get; set; }
+        public virtual DateTime? EndDate { get; set; }
         public virtual decimal Budget { get; set; }
         public virtual Uri WikiLocation { get; set; }
         public virtual Uri JiraLocation { get; set; }

@@ -4,7 +4,7 @@ using Status.Model;
 
 namespace Status.Repository
 {
-    public interface IStatusReportRepository
+    public interface IStatusReportRepository : IRepository
     {
         StatusReport GetActiveStatusReport();
 

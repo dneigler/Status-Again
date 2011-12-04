@@ -50,6 +50,7 @@ namespace Status.Etl.Csv
         public MilestoneConfidenceLevels? MilestoneConfidence;
 
         public string MilestoneDateType;
+
         [FieldQuoted()]
         public string ProjectSummary;
 

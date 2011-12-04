@@ -114,7 +114,7 @@ namespace Status.BLL.Tests
                 Notes = new List<Note>(),
                 Topic = new Topic() { Caption = "Test Topic" }
             };
-            var statusReportDate = sourceStatusItem.Milestone.Date.AddDays(8);
+            var statusReportDate = sourceStatusItem.Milestone.Date.Value.AddDays(8);
             var actual = target.MapStatusItem(sourceStatusItem, statusReportDate);
             Assert.IsNull(actual);
         }
@@ -138,7 +138,7 @@ namespace Status.BLL.Tests
                 Notes = new List<Note>(),
                 Topic = new Topic() { Caption = "Test Topic" }
             };
-            var statusReportDate = sourceStatusItem.Milestone.Date.AddDays(-3);
+            var statusReportDate = sourceStatusItem.Milestone.Date.Value.AddDays(-3);
             var actual = target.MapStatusItem(sourceStatusItem, statusReportDate);
             Assert.AreEqual(MilestoneTypes.ThisWeek, actual.Milestone.Type);
         }
@@ -162,7 +162,7 @@ namespace Status.BLL.Tests
                 Notes = new List<Note>(),
                 Topic = new Topic() { Caption = "Test Topic" }
             };
-            var statusReportDate = sourceStatusItem.Milestone.Date.AddDays(-10);
+            var statusReportDate = sourceStatusItem.Milestone.Date.Value.AddDays(-10);
             var actual = target.MapStatusItem(sourceStatusItem, statusReportDate);
             Assert.AreEqual(sourceStatusItem.Milestone.Type, actual.Milestone.Type);
         }
@@ -184,7 +184,7 @@ namespace Status.BLL.Tests
                 Notes = new List<Note>(),
                 Topic = new Topic() { Caption = "Test Topic" }
             };
-            var statusReportDate = sourceStatusItem.Milestone.Date.AddDays(-10);
+            var statusReportDate = sourceStatusItem.Milestone.Date.Value.AddDays(-10);
             var actual = target.MapStatusItem(sourceStatusItem, statusReportDate);
             Assert.AreEqual(sourceStatusItem.Milestone.Type, actual.Milestone.Type);
         }
@@ -208,7 +208,7 @@ namespace Status.BLL.Tests
                 Notes = new List<Note>(),
                 Topic = new Topic() { Caption = "Test Topic" }
             };
-            var statusReportDate = sourceStatusItem.Milestone.Date.AddDays(1);
+            var statusReportDate = sourceStatusItem.Milestone.Date.Value.AddDays(1);
             var actual = target.MapStatusItem(sourceStatusItem, statusReportDate);
             Assert.AreEqual(sourceStatusItem.Milestone.Type, actual.Milestone.Type);
         }
@@ -232,7 +232,7 @@ namespace Status.BLL.Tests
                 Notes = new List<Note>(),
                 Topic = new Topic() { Caption = "Test Topic" }
             };
-            var statusReportDate = sourceStatusItem.Milestone.Date.AddDays(-24);
+            var statusReportDate = sourceStatusItem.Milestone.Date.Value.AddDays(-24);
             var actual = target.MapStatusItem(sourceStatusItem, statusReportDate);
             Assert.AreEqual(sourceStatusItem.Milestone.Type, actual.Milestone.Type);
         }

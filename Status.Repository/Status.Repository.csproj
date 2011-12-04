@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NHibernate">
+      <HintPath>..\packages\NHibernate.3.2.0.4000\lib\Net35\NHibernate.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -41,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IProjectRepository.cs" />
+    <Compile Include="IRepository.cs" />
     <Compile Include="IStatusReportRepository.cs" />
     <Compile Include="ITopicRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

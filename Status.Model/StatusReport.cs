@@ -10,7 +10,7 @@ namespace Status.Model
         private IList<StatusItem> _items = null;
         public virtual int Id { get; set; }
         public virtual DateTime PeriodStart { get; set; }
-        public virtual DateTime PeriodEnd { get; set; }
+        public virtual DateTime? PeriodEnd { get; set; }
         public virtual string Caption { get; set; }
 
         public virtual IList<StatusItem> Items
@@ -30,6 +30,18 @@ namespace Status.Model
         public virtual void AddStatusItem(StatusItem statusItem)
         {
             this.Items.Add(statusItem);
+        }
+
+        /// <summary>
+        /// Creates an instance of the StatusReport.
+        /// </summary>
+        /// <param name="statusReportDate"></param>
+        /// <param name="caption"></param>
+        /// <returns></returns>
+        public static StatusReport Create(DateTime statusReportDate, string caption)
+        {
+            var sr = new StatusReport {PeriodStart = statusReportDate, Caption = caption};
+            return sr;
         }
     }
 }

@@ -99,7 +99,7 @@ namespace Status.Model.Tests
             DateTime expected = new DateTime(); // TODO: Initialize to an appropriate value
             DateTime actual;
             target.Date = expected;
-            actual = target.Date;
+            actual = target.Date.Value;
             Assert.AreEqual(expected, actual);
             Assert.Inconclusive("Verify the correctness of this test method.");
         }

@@ -8,7 +8,7 @@ namespace Status.Model
     public class Milestone
     {
         public virtual MilestoneTypes Type { get; set; }
-        public virtual DateTime Date { get; set; }
+        public virtual DateTime? Date { get; set; }
         public virtual MilestoneConfidenceLevels ConfidenceLevel { get; set; }
 
         /// <summary>

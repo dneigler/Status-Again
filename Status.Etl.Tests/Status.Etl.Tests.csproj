@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper">
+      <HintPath>..\packages\AutoMapper.2.0.0\lib\net40-client\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="FileHelpers">
       <HintPath>..\packages\FileHelpers-Stable.2.9.9\lib\4.0\FileHelpers.dll</HintPath>
     </Reference>
@@ -52,6 +55,10 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="NHibernate, Version=3.2.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL" />
+    <Reference Include="Ninject">
+      <HintPath>..\packages\Ninject.2.2.1.4\lib\net40-Full\Ninject.dll</HintPath>
+    </Reference>
     <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -68,12 +75,18 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CsvStatusEtlBridgeTest.cs" />
     <Compile Include="CsvStatusEtlTest.cs" />
+    <Compile Include="DefaultEtlNinjectModule.cs" />
     <Compile Include="MilestoneConfidenceConverterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StatusCsvItemTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Status.BLL\Status.Bll.csproj">
+      <Project>{97C2732B-463D-41A7-895C-219B7EDA05CB}</Project>
+      <Name>Status.Bll</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Status.ETL\Status.Etl.csproj">
       <Project>{50BE225F-5293-4D70-AB9A-DF46FA4F7445}</Project>
       <Name>Status.Etl</Name>
@@ -81,6 +94,14 @@
     <ProjectReference Include="..\Status.Model\Status.Model.csproj">
       <Project>{25EF6D75-7E30-4FC8-B50C-7F9F967DFCC0}</Project>
       <Name>Status.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Status.Persistence\Status.Persistence.csproj">
+      <Project>{D7744E4E-4A50-4D9A-B500-EDBA64095698}</Project>
+      <Name>Status.Persistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Status.Repository\Status.Repository.csproj">
+      <Project>{C556F5FA-F524-4B6D-AE87-0C7C62F4FB0C}</Project>
+      <Name>Status.Repository</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
