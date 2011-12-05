@@ -34,7 +34,7 @@ namespace Status.Persistence
 
         public Project GetProject(string projectName)
         {
-            var session = GetSession();
+            var session = Session;
             {
                 var project = (from p in session.Query<Project>()
                                where p.Name.Equals(projectName)
@@ -45,7 +45,7 @@ namespace Status.Persistence
 
         public IList<Project> GetProjectsByNames(IList<string> projectNames)
         {
-            var session = GetSession();
+            var session = Session;
             {
                 var project = (from p in session.Query<Project>()
                                where projectNames.Contains(p.Name)
@@ -56,7 +56,7 @@ namespace Status.Persistence
 
         public IList<Project> GetProjectsByTeam(int teamId)
         {
-            var session = GetSession();
+            var session = Session;
             {
                 var projects = (from p in session.Query<Project>()
                                where p.Team.Id.Equals(teamId)
@@ -67,7 +67,7 @@ namespace Status.Persistence
 
         public IList<Project> GetAllProjects()
         {
-            var session = GetSession();
+            var session = Session;
             {
                 var projects = (from p in session.Query<Project>()
                                 select p).ToList();
@@ -81,7 +81,7 @@ namespace Status.Persistence
             Project existingProject = this.GetProject(project.Name);
             if (existingProject != null) throw new Exception(string.Format("Project name {0} already exists with id {1}", existingProject.Name, existingProject.Id));
 
-            var session = GetSession();
+            var session = Session;
             {
                 session.Save(project);
             }

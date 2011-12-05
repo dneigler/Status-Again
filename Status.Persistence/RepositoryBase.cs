@@ -139,14 +139,18 @@ namespace Status.Persistence
             return _sessionFactory;
         }
 
-        public ISession GetSession()
+        public ISession Session
         {
-            if (_session == null)
+            get
             {
-                var sessionFactory = GetSessionFactory();
-                _session = sessionFactory.OpenSession();
+                if (_session == null)
+                {
+                    var sessionFactory = GetSessionFactory();
+                    _session = sessionFactory.OpenSession();
+                }
+                return _session;
             }
-            return _session;
+            set { _session = value; }
         }
 
         #region IDisposable Members

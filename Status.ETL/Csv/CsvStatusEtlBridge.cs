@@ -36,6 +36,9 @@ namespace Status.ETL.Csv
 
             // we'll be sharing a single unitofwork for this operation
             ITransaction transaction = this.StatusReportRepository.BeginTransaction();
+            
+            // share the session - ugly
+            this.ProjectRepository.Session = this.TopicRepository.Session = this.StatusReportRepository.Session;
             try
             {
                 
@@ -58,16 +61,26 @@ namespace Status.ETL.Csv
 
                 // map JIRA ID's to topics in the new system
                 var grpTopics = items.GroupBy(item => item.JiraID);
-                IList<string> jiraIds = grpTopics.Select(g => g.Key).ToList();
 
-                jiraIds.ToList().ForEach(j =>
-                                             {
-                                                 var t = this.TopicRepository.GetTopicByExternalId(j);
-                                                 if (t == null)
-                                                 {
-                                                     this.TopicRepository.AddTopic(new JiraIssueTopic() {JiraId = j});
-                                                 }
-                                             });
+                grpTopics.ToList().ForEach(
+                    gt =>
+                    {
+                        var jiraId = gt.Key;
+                        // empty strings are inevitable, create new topics for them
+                        Topic t = null;
+                        if (jiraId != string.Empty)
+                            t = this.TopicRepository.GetTopicByExternalId(jiraId);
+                        if (t == null)
+                        {
+                            // steal the topic from the first item in list
+                            var firstItem = gt.First();
+                            t = (jiraId == string.Empty ? 
+                                new Topic() { Caption = firstItem.Note } : 
+                                new JiraIssueTopic() {JiraId = jiraId, Caption = firstItem.Note});
+                            // TODO: add logic for fix version lookup later
+                            this.TopicRepository.AddTopic(t);
+                        }
+                    });
 
                 // get all status dates to see if we are overwriting an existing report, if so, delete the old one
                 var grpStatusDates = items.GroupBy(item => item.StatusDate);
@@ -86,6 +99,10 @@ namespace Status.ETL.Csv
                                                          var statusItem = new StatusItem();
                                                          // we could use AutoMapper here - but doing manually for now as custom logic abound
                                                          statusItem.Topic = this.TopicRepository.GetTopicByExternalId(statusReportItem.JiraID);
+                                                         if (statusItem.Topic == null)
+                                                             statusItem.Topic =
+                                                                 this.TopicRepository.GetTopicByCaption(
+                                                                     statusReportItem.Note);
                                                          statusItem.Milestone = new Milestone() {
                                                              ConfidenceLevel = statusReportItem.MilestoneConfidence ?? MilestoneConfidenceLevels.High,
                                                          Date=statusReportItem.MilestoneDate,
@@ -93,11 +110,15 @@ namespace Status.ETL.Csv
                                                          statusItem.Caption = statusReportItem.Caption;
                                                          statusItem.Notes.Add(new Note()
                                                                                   {
-                                                                                      AuditInfo = new AuditInfo(new Resource()),
+                                                                                      AuditInfo = new AuditInfo(new Resource(){EmailAddress = "t@t.com", FirstName = "FN", LastName = "LN"}),
                                                                                       Text = statusReportItem.Note
                                                                                   });
-                                                         statusReport.AddStatusItem(statusItem);
+                                                         if (statusItem.Topic != null)
+                                                            statusReport.AddStatusItem(statusItem);
+                                                         else 
+                                                             _logger.Warn("Skilling statusitem {0} as no topic assigned", statusItem.Caption);
                                                      });
+                            this.StatusReportRepository.AddStatusReport(statusReport);
                         });
                 // import the new status report items
 

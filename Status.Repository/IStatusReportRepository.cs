@@ -13,5 +13,7 @@ namespace Status.Repository
         IList<StatusReport> GetStatusReports(DateTime from, DateTime to);
 
         void DeleteStatusReport(DateTime statusDate);
+
+        void AddStatusReport(StatusReport statusReport);
     }
 }

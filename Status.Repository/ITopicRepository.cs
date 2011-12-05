@@ -5,6 +5,9 @@ namespace Status.Repository
     public interface ITopicRepository : IRepository
     {
         Topic GetTopicByExternalId(string topicId);
-        void AddTopic(JiraIssueTopic jiraIssueTopic);
+
+        Topic GetTopicByCaption(string caption);
+
+        void AddTopic(Topic topic);
     }
 }

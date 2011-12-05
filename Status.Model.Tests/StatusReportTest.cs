@@ -153,7 +153,7 @@ namespace Status.Model.Tests
             DateTime expected = new DateTime(); // TODO: Initialize to an appropriate value
             DateTime actual;
             target.PeriodEnd = expected;
-            actual = target.PeriodEnd;
+            actual = target.PeriodEnd.Value;
             Assert.AreEqual(expected, actual);
         }
 

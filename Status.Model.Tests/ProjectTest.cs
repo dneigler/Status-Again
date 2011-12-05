@@ -145,7 +145,7 @@ namespace Status.Model.Tests
             DateTime expected = new DateTime(); // TODO: Initialize to an appropriate value
             DateTime actual;
             target.EndDate = expected;
-            actual = target.EndDate;
+            actual = target.EndDate.Value;
             Assert.AreEqual(expected, actual);
             Assert.Inconclusive("Verify the correctness of this test method.");
         }
@@ -231,11 +231,11 @@ namespace Status.Model.Tests
         [TestMethod()]
         public void StartDateTest()
         {
-            Project target = new Project(); // TODO: Initialize to an appropriate value
-            DateTime expected = new DateTime(); // TODO: Initialize to an appropriate value
+            Project target = new Project();
+            DateTime expected = new DateTime();
             DateTime actual;
             target.StartDate = expected;
-            actual = target.StartDate;
+            actual = target.StartDate.Value;
             Assert.AreEqual(expected, actual);
             Assert.Inconclusive("Verify the correctness of this test method.");
         }
@@ -246,8 +246,8 @@ namespace Status.Model.Tests
         [TestMethod()]
         public void StatusItemsTest()
         {
-            Project target = new Project(); // TODO: Initialize to an appropriate value
-            IList<StatusItem> expected = null; // TODO: Initialize to an appropriate value
+            Project target = new Project();
+            IList<StatusItem> expected = null;
             IList<StatusItem> actual;
             target.StatusItems = expected;
             actual = target.StatusItems;

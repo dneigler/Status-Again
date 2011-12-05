@@ -46,7 +46,7 @@ namespace Status.Persistence
 
         public StatusReport GetStatusReport(DateTime statusDate)
         {
-            var session = GetSession();
+            var session = Session;
             {
                 StatusReport query = (from s in session.Query<StatusReport>()
                                       where s.PeriodStart.Equals(statusDate)
@@ -57,7 +57,7 @@ namespace Status.Persistence
 
         public IList<StatusReport> GetStatusReports(DateTime @from, DateTime to)
         {
-            var session = GetSession();
+            var session = Session;
             {
                 var query = (from s in session.Query<StatusReport>()
                              where s.PeriodStart >= @from && s.PeriodStart <= to
@@ -68,7 +68,7 @@ namespace Status.Persistence
 
         public void DeleteStatusReport(DateTime statusDate)
         {
-            var session = GetSession();
+            var session = Session;
             {
                 StatusReport query = (from s in session.Query<StatusReport>()
                                       where s.PeriodStart == statusDate
@@ -77,6 +77,12 @@ namespace Status.Persistence
                     throw new NullReferenceException(String.Format("Status Report for {0} not found", statusDate));
                 session.Delete(query);
             }
+        }
+
+        public void AddStatusReport(StatusReport statusReport)
+        {
+            var session = Session;
+            session.Save(statusReport);
         }
 
         #endregion

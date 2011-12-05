@@ -16,7 +16,9 @@ namespace Status.Persistence
             References(x => x.Topic)
                 .Not.Nullable();
             Component(x => x.Milestone);
-            HasMany(x => x.Notes);
+            HasMany(x => x.Notes)
+                .Cascade
+                .AllDeleteOrphan();
             
         }
     }

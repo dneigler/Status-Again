@@ -23,6 +23,7 @@ namespace Status.Etl.Tests
             Bind<IRollStatusDateProcessor>().To<DefaultRollStatusDateProcessor>();
             Bind<IStatusEtl>().To<Csv.CsvStatusEtl>();
             Bind<ICsvStatusEtlBridge>().To<CsvStatusEtlBridge>();
+
             Bind<IStatusReportRepository>().To<StatusReportRepository>()
                 .WithConstructorArgument("connectionString", ConnString);
             Bind<IProjectRepository>().To<ProjectRepository>()

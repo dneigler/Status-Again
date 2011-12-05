@@ -13,6 +13,6 @@ namespace Status.Repository
         void CloseTransaction(ITransaction transaction);
         void CloseSession();
         void CloseSession(ISession session);
-        ISession GetSession();
+        ISession Session { get; set; }
     }
 }

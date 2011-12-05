@@ -26,7 +26,7 @@ namespace Status.Persistence
 
         public Topic GetTopicByExternalId(string topicId)
         {
-            var session = GetSession();
+            var session = Session;
             {
                 var topic = (from t in session.Query<Topic>()
                                where t.ExternalId.Equals(topicId)
@@ -35,11 +35,20 @@ namespace Status.Persistence
             }
         }
 
-        public void AddTopic(JiraIssueTopic jiraIssueTopic)
+        public Topic GetTopicByCaption(string caption)
         {
-            var session = GetSession();
+            var session = Session;
+            var topic = (from t in session.Query<Topic>()
+                         where t.Caption.Equals(caption)
+                         select t).FirstOrDefault();
+            return topic;
+        }
+
+        public void AddTopic(Topic topic)
+        {
+            var session = Session;
             {
-                session.Save(jiraIssueTopic);
+                session.Save(topic);
             }
         }
     }
