@@ -13,9 +13,19 @@ namespace Status.Etl.Tests
 {
     public class DefaultEtlNinjectModule : NinjectModule
     {
-        const string ConnString = "server=.\\SQLExpress;" +
-    "database=StatusAgain;" +
-    "Integrated Security=SSPI;";
+        private string _connString = null;
+
+        public string ConnString
+        {
+            get { return _connString; }
+            set { _connString = value; }
+        }
+
+        public DefaultEtlNinjectModule(string connString)
+        {
+            _connString = connString;
+        }
+
         public override void Load()
         {
             Bind<IStatusReportManager>().To<StatusReportManager>();
@@ -30,7 +40,11 @@ namespace Status.Etl.Tests
                 .WithConstructorArgument("connectionString", ConnString);
             Bind<ITopicRepository>().To<TopicRepository>()
                 .WithConstructorArgument("connectionString", ConnString);
-            
+            Bind<IResourceRepository>().To<ResourceRepository>()
+                .WithConstructorArgument("connectionString", ConnString);
+            Bind<ITeamRepository>().To<TeamRepository>()
+                .WithConstructorArgument("connectionString", ConnString);
+
         }
     }
 }

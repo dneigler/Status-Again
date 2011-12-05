@@ -23,6 +23,7 @@ namespace Status.Persistence.Tests
         const string ConnString = "server=.\\SQLExpress;" +
             "database=StatusAgain;" +
             "Integrated Security=SSPI;";
+        private static NHibernateUnitTestConfiguration _config = new NHibernateUnitTestConfiguration(ConnString);
 
         public UnitTest1()
         {
@@ -54,35 +55,7 @@ namespace Status.Persistence.Tests
         [ClassInitialize()]
         public static void MyClassInitialize(TestContext testContext)
         {
-            // FluentMappings.AddFromAssemblyOf<ProjectMap>()
-            //var cfg = new StoreConfiguration();
-            //Fluently.Configure()
-            //  .Database(MsSqlConfiguration
-            //    .MsSql2008
-            //    .ConnectionString(connString))
-            //  .Mappings(m => 
-            //      m.FluentMappings.Conventions.AddFromAssemblyOf<NoUnderscoreForeignKeyConvention>())
-            //      .Mappings(m => m.AutoMappings.Add(AutoMap.AssemblyOf<Project>(cfg)
-            //          .UseOverridesFromAssemblyOf<ProjectAutoMap>())
-            //  )
-            //  .ExposeConfiguration(CreateSchema)
-            //  .BuildConfiguration();
-
-            Fluently.Configure()
-              .Database(MsSqlConfiguration
-                .MsSql2008
-                .ConnectionString(ConnString))
-              .Mappings(m => m.FluentMappings.AddFromAssemblyOf<ProjectMap>()
-              .Conventions.AddFromAssemblyOf<NoUnderscoreForeignKeyConvention>())
-              .ExposeConfiguration(CreateSchema)
-              .BuildConfiguration();
-        }
-
-        private static void CreateSchema(Configuration cfg)
-        {
-            var schemaExport = new SchemaExport(cfg);
-            schemaExport.Drop(false, true);
-            schemaExport.Create(false, true);
+            _config.Configure();
         }
 
         //
@@ -108,7 +81,7 @@ namespace Status.Persistence.Tests
         public void TestMethod1()
         {
             Assert.IsTrue(true, "RanTestMethod1");
-            var factory = CreateSessionFactory();
+            var factory = _config.CreateSessionFactory();
             using (var session = factory.OpenSession())
             {
                 var employee = new Employee
@@ -210,18 +183,6 @@ namespace Status.Persistence.Tests
                 Assert.AreEqual(2, projects.Count);
 
             }
-        }
-
-        private ISessionFactory CreateSessionFactory()
-        {
-            return Fluently.Configure()
-              .Database(MsSqlConfiguration
-                .MsSql2008
-                .ConnectionString(ConnString))
-              .Mappings(m => m.FluentMappings
-                .AddFromAssemblyOf<ProjectMap>()
-                .Conventions.AddFromAssemblyOf<NoUnderscoreForeignKeyConvention>())
-              .BuildSessionFactory();
         }
     }
 }

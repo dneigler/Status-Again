@@ -3,9 +3,12 @@ using Ninject;
 using Status.ETL.Csv;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Linq;
 using Status.Repository;
 using Status.Etl.Csv;
 using System.Collections.Generic;
+using Status.Persistence.Tests;
+using Status.Model;
 
 namespace Status.Etl.Tests
 {
@@ -18,10 +21,12 @@ namespace Status.Etl.Tests
     [TestClass()]
     public class CsvStatusEtlBridgeTest
     {
-
-
         private TestContext testContextInstance;
         private static StandardKernel _kernel;
+        private readonly static string _connString = "server=.\\SQLExpress;" +
+            "database=StatusAgain;" +
+            "Integrated Security=SSPI;";
+        private readonly static NHibernateUnitTestConfiguration _config = new NHibernateUnitTestConfiguration(_connString);
 
         /// <summary>
         ///Gets or sets the test context which provides
@@ -47,7 +52,8 @@ namespace Status.Etl.Tests
         [ClassInitialize()]
         public static void MyClassInitialize(TestContext testContext)
         {
-            _kernel = new StandardKernel(new DefaultEtlNinjectModule());
+            _kernel = new StandardKernel(new DefaultEtlNinjectModule(_connString));
+            _config.Configure();
         }
         //
         //Use ClassCleanup to run code after all tests in a class have run
@@ -93,6 +99,21 @@ namespace Status.Etl.Tests
             {
                 var items = etl.ImportStatus(file);
                 target.UpsertStatus(items);
+                // ensure proper status items come back
+                var srRepo = _kernel.Get<IStatusReportRepository>();
+                IList<StatusReport> reports = srRepo.GetStatusReports(new DateTime(2011, 11, 1), new DateTime(2011, 12, 1));
+
+                var sr = (from r in reports.ToList() where r.PeriodStart == new DateTime(2011, 11, 7) select r).Single();
+                Assert.AreEqual(95, sr.Items.Count);
+
+                sr = (from r in reports.ToList() where r.PeriodStart == new DateTime(2011, 11, 14) select r).Single();
+                Assert.AreEqual(96, sr.Items.Count);
+
+                sr = (from r in reports.ToList() where r.PeriodStart == new DateTime(2011, 11, 21) select r).Single();
+                Assert.AreEqual(93, sr.Items.Count);
+
+                sr = (from r in reports.ToList() where r.PeriodStart == new DateTime(2011, 11, 28) select r).Single();
+                Assert.AreEqual(93, sr.Items.Count);
             }
         }
 
@@ -102,10 +123,7 @@ namespace Status.Etl.Tests
         [TestMethod()]
         public void ProjectRepositoryTest()
         {
-            IStatusReportRepository statusReportRepository = null; // TODO: Initialize to an appropriate value
-            IProjectRepository projectRepository = null; // TODO: Initialize to an appropriate value
-            ITopicRepository topicRepository = null; // TODO: Initialize to an appropriate value
-            CsvStatusEtlBridge target = new CsvStatusEtlBridge(statusReportRepository, projectRepository, topicRepository); // TODO: Initialize to an appropriate value
+            var target = _kernel.Get<CsvStatusEtlBridge>();
             IProjectRepository expected = null; // TODO: Initialize to an appropriate value
             IProjectRepository actual;
             target.ProjectRepository = expected;
@@ -120,10 +138,7 @@ namespace Status.Etl.Tests
         [TestMethod()]
         public void StatusReportRepositoryTest()
         {
-            IStatusReportRepository statusReportRepository = null; // TODO: Initialize to an appropriate value
-            IProjectRepository projectRepository = null; // TODO: Initialize to an appropriate value
-            ITopicRepository topicRepository = null; // TODO: Initialize to an appropriate value
-            CsvStatusEtlBridge target = new CsvStatusEtlBridge(statusReportRepository, projectRepository, topicRepository); // TODO: Initialize to an appropriate value
+            var target = _kernel.Get<CsvStatusEtlBridge>();
             IStatusReportRepository expected = null; // TODO: Initialize to an appropriate value
             IStatusReportRepository actual;
             target.StatusReportRepository = expected;
@@ -138,10 +153,7 @@ namespace Status.Etl.Tests
         [TestMethod()]
         public void TopicRepositoryTest()
         {
-            IStatusReportRepository statusReportRepository = null; // TODO: Initialize to an appropriate value
-            IProjectRepository projectRepository = null; // TODO: Initialize to an appropriate value
-            ITopicRepository topicRepository = null; // TODO: Initialize to an appropriate value
-            CsvStatusEtlBridge target = new CsvStatusEtlBridge(statusReportRepository, projectRepository, topicRepository); // TODO: Initialize to an appropriate value
+            var target = _kernel.Get<CsvStatusEtlBridge>();
             ITopicRepository expected = null; // TODO: Initialize to an appropriate value
             ITopicRepository actual;
             target.TopicRepository = expected;

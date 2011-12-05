@@ -45,7 +45,9 @@
   <ItemGroup>
     <Compile Include="IProjectRepository.cs" />
     <Compile Include="IRepository.cs" />
+    <Compile Include="IResourceRepository.cs" />
     <Compile Include="IStatusReportRepository.cs" />
+    <Compile Include="ITeamRepository.cs" />
     <Compile Include="ITopicRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

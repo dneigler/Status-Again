@@ -19,7 +19,9 @@ namespace Status.Persistence
             Map(x => x.LastName)
                 .Not.Nullable()
                 .Length(50);
-            
+            Map(x => x.FullName)
+                .Not.Nullable()
+                .Length(100);
             DiscriminateSubClassesOnColumn("Type");
         }
     }

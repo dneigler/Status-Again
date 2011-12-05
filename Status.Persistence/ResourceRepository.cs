@@ -1,0 +1,85 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Status.Repository;
+using NHibernate;
+using NHibernate.Linq;
+using Status.Model;
+
+namespace Status.Persistence
+{
+    public class ResourceRepository : RepositoryBase, IResourceRepository
+    {
+        #region Constructors
+
+        public ResourceRepository(ISession session)
+            : base(session)
+        {
+        }
+
+        public ResourceRepository(string connectionString)
+            : base(connectionString)
+        {
+        }
+
+        public ResourceRepository(ITransaction transaction)
+            : base(transaction)
+        {
+        }
+
+        public ResourceRepository(string connectionString, ISession session)
+            : base(connectionString, session)
+        {
+        }
+
+        #endregion
+        
+        public IList<Model.Resource> GetAllResources()
+        {
+            var session = this.Session;
+            return (from r in session.Query<Resource>()
+                    select r).ToList();
+        }
+
+        public IList<Model.Resource> GetResourcesByName(string fullName)
+        {
+            var session = this.Session;
+            return (from r in session.Query<Resource>()
+                    where r.FullName.Equals(fullName)
+                    select r).ToList();
+        }
+
+        public IList<Model.Resource> GetResourcesByTeam(int teamId)
+        {
+            var session = this.Session;
+            return (from r in session.Query<Employee>()
+                    where r.Team.Id == teamId
+                    select r).ToList<Resource>();
+        }
+
+        public Model.Resource GetResourceByExternalId(string externalId)
+        {
+            // TODO: create external id column for derived types so this can be 
+            // run against employees, recruiters, etc - current implementation only 
+            // against employees.
+            var session = this.Session;
+            return (from r in session.Query<Employee>()
+                    where r.EdsId.Equals(externalId)
+                    select r).SingleOrDefault();
+        }
+
+        public Model.Resource GetResourceByEmail(string emailAddress)
+        {
+            var session = this.Session;
+            return (from r in session.Query<Resource>()
+                    where r.EmailAddress.Equals(emailAddress)
+                    select r).SingleOrDefault();
+        }
+
+        public void AddResource(Resource resource)
+        {
+            this.Session.Save(resource);
+        }
+    }
+}

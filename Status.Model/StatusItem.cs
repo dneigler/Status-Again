@@ -36,5 +36,7 @@ namespace Status.Model
             }
         }
         public virtual IList<Note> Notes { get; set; }
+
+        public virtual Project Project { get; set; }
     }
 }

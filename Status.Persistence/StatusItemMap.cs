@@ -19,7 +19,8 @@ namespace Status.Persistence
             HasMany(x => x.Notes)
                 .Cascade
                 .AllDeleteOrphan();
-            
+            References(x => x.Project)
+                .Not.Nullable();
         }
     }
 }

@@ -65,11 +65,13 @@
     <Compile Include="RecruiterMap.cs" />
     <Compile Include="RepositoryBase.cs" />
     <Compile Include="ResourceMap.cs" />
+    <Compile Include="ResourceRepository.cs" />
     <Compile Include="StatusItemMap.cs" />
     <Compile Include="StatusReportMap.cs" />
     <Compile Include="StatusReportRepository.cs" />
     <Compile Include="StoreConfiguration.cs" />
     <Compile Include="TeamMap.cs" />
+    <Compile Include="TeamRepository.cs" />
     <Compile Include="TopicMap.cs" />
     <Compile Include="TopicRepository.cs" />
   </ItemGroup>
