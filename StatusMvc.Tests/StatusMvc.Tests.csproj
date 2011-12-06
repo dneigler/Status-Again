@@ -33,8 +33,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentNHibernate">
+      <HintPath>..\packages\FluentNHibernate.1.3.0.717\lib\FluentNHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="Iesi.Collections">
+      <HintPath>..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="NHibernate">
+      <HintPath>..\packages\NHibernate.3.2.0.4000\lib\Net35\NHibernate.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -57,10 +66,21 @@
     <Content Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Status.Persistence\Status.Persistence.csproj">
+      <Project>{D7744E4E-4A50-4D9A-B500-EDBA64095698}</Project>
+      <Name>Status.Persistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Status.Repository\Status.Repository.csproj">
+      <Project>{C556F5FA-F524-4B6D-AE87-0C7C62F4FB0C}</Project>
+      <Name>Status.Repository</Name>
+    </ProjectReference>
     <ProjectReference Include="..\StatusMvc\StatusMvc.csproj">
       <Project>{0BCA5FF3-CA40-435E-8DA3-326870F4918D}</Project>
       <Name>StatusMvc</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

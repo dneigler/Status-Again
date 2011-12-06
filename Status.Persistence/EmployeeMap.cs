@@ -13,6 +13,7 @@ namespace Status.Persistence
         {
             // Id(x => x.Id, "EmployeeID");
             Map(x => x.EdsId);
+            Map(x => x.WindowsLogin);
             Map(x => x.Title).CustomType<Title>();
             References(x => x.Team);
         }

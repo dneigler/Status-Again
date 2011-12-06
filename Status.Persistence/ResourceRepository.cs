@@ -58,7 +58,15 @@ namespace Status.Persistence
                     select r).ToList<Resource>();
         }
 
-        public Model.Resource GetResourceByExternalId(string externalId)
+        public Resource GetResourceByLogin(string login)
+        {
+            // Logins are currently only available for employees
+            return (from r in this.Session.Query<Employee>()
+                    where r.WindowsLogin.Equals(login)
+                    select r).SingleOrDefault();
+        }
+
+        public Resource GetResourceByExternalId(string externalId)
         {
             // TODO: create external id column for derived types so this can be 
             // run against employees, recruiters, etc - current implementation only 

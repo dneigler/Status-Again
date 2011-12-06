@@ -44,8 +44,18 @@
       <HintPath>..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
     <Reference Include="NHibernate">
       <HintPath>..\packages\NHibernate.3.2.0.4000\lib\Net35\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject">
+      <HintPath>..\packages\Ninject.2.2.1.4\lib\net40-Full\Ninject.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject.Web.Mvc">
+      <HintPath>..\packages\Ninject.MVC3.2.2.2.0\lib\net40-Full\Ninject.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.WebPages" />
@@ -68,6 +78,9 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="WebActivator">
+      <HintPath>..\packages\WebActivator.1.4.4\lib\net40\WebActivator.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\AccountController.cs" />
@@ -76,6 +89,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Models\StatusReportViewModel.cs" />
+    <Compile Include="Modules\DefaultStatusAgainWebModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -134,9 +149,32 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="App_Start\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Status.BLL\Status.Bll.csproj">
+      <Project>{97C2732B-463D-41A7-895C-219B7EDA05CB}</Project>
+      <Name>Status.Bll</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Status.ETL\Status.Etl.csproj">
+      <Project>{50BE225F-5293-4D70-AB9A-DF46FA4F7445}</Project>
+      <Name>Status.Etl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Status.Model\Status.Model.csproj">
+      <Project>{25EF6D75-7E30-4FC8-B50C-7F9F967DFCC0}</Project>
+      <Name>Status.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Status.Persistence\Status.Persistence.csproj">
+      <Project>{D7744E4E-4A50-4D9A-B500-EDBA64095698}</Project>
+      <Name>Status.Persistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Status.Repository\Status.Repository.csproj">
+      <Project>{C556F5FA-F524-4B6D-AE87-0C7C62F4FB0C}</Project>
+      <Name>Status.Repository</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

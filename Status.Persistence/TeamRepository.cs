@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NHibernate;
 using Status.Repository;
 using NHibernate.Linq;
 using Status.Model;
@@ -10,6 +11,31 @@ namespace Status.Persistence
 {
     public class TeamRepository : RepositoryBase, ITeamRepository
     {
+        #region Constructors
+
+        public TeamRepository()
+        {
+        }
+
+        public TeamRepository(string connectionString) : base(connectionString)
+        {
+        }
+
+        public TeamRepository(ISession session) : base(session)
+        {
+        }
+
+        public TeamRepository(ITransaction transaction) : base(transaction)
+        {
+        }
+
+        public TeamRepository(string connectionString, ISession session) : base(connectionString, session)
+        {
+        }
+
+        #endregion
+
+
         public IList<Team> GetAllTeams()
         {
             return (from t in this.Session.Query<Team>()
@@ -27,7 +53,7 @@ namespace Status.Persistence
         {
             return (from t in this.Session.Query<Team>()
                     where t.Name.Equals(name)
-                    select t).Single();
+                    select t).SingleOrDefault();
         }
 
         public void AddTeam(Model.Team team)

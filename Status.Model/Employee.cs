@@ -10,5 +10,6 @@ namespace Status.Model
         public virtual string EdsId { get; set; }
         public virtual Team Team { get; set; }
         public virtual Title Title { get; set; }
+        public virtual string WindowsLogin { get; set; }
     }
 }

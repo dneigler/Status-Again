@@ -43,7 +43,13 @@ namespace Status.Model
                 return String.Format("{0} {1}", this.FirstName, this.LastName);
             }
             set {
-                // _fullName = value;
+                if (!value.Contains(" "))
+                    this.LastName = value;
+                else
+                {
+                    this.FirstName = value.Substring(0, value.IndexOf(" "));
+                    this.LastName = value.Substring(value.IndexOf(" ") + 1);
+                }
             }
         }
 

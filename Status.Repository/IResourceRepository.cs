@@ -16,6 +16,8 @@ namespace Status.Repository
 
         Resource GetResourceByExternalId(string externalId);
 
+        Resource GetResourceByLogin(string login);
+
         Resource GetResourceByEmail(string emailAddress);
 
         void AddResource(Resource resource);

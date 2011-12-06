@@ -1,8 +1,14 @@
-﻿@{
+﻿@using StatusMvc.Models
+@model IList<StatusReportViewModel>
+@{
     ViewBag.Title = "Home Page";
 }
 
 <h2>@ViewBag.Message</h2>
+@foreach (var srvm in this.Model)
+{
+    <h3>@srvm.Caption (@srvm.NumberOfStatusItems - @srvm.PeriodStart)</h3>
+}
 <p>
     To learn more about ASP.NET MVC visit <a href="http://asp.net/mvc" title="ASP.NET MVC Website">http://asp.net/mvc</a>.
 </p>

@@ -36,6 +36,11 @@ namespace Status.Persistence
         #endregion
 
         #region IStatusReportRepository Members
+        public IList<StatusReport> GetAllStatusReports()
+        {
+            return (from s in this.Session.Query<StatusReport>()
+                    select s).ToList();
+        }
 
         public StatusReport GetActiveStatusReport()
         {

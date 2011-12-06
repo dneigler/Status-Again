@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
+using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Ninject;
+using Ninject.Web.Mvc;
+using StatusMvc.Modules;
 
 namespace StatusMvc
 {
     // Note: For instructions on enabling IIS6 or IIS7 classic mode, 
     // visit http://go.microsoft.com/?LinkId=9394801
 
-    public class MvcApplication : System.Web.HttpApplication
+    public class MvcApplication : NinjectHttpApplication
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
@@ -29,10 +34,18 @@ namespace StatusMvc
 
         }
 
-        protected void Application_Start()
+        protected override IKernel CreateKernel()
         {
-            AreaRegistration.RegisterAllAreas();
+            var kernel = new StandardKernel(new DefaultStatusAgainWebModule(ConfigurationManager.ConnectionStrings["StatusAgain"].ConnectionString));
+            // kernel.Load(Assembly.GetExecutingAssembly());
+            return kernel;
+        }
 
+        protected override void OnApplicationStarted()
+        {
+            base.OnApplicationStarted();
+
+            AreaRegistration.RegisterAllAreas();
             RegisterGlobalFilters(GlobalFilters.Filters);
             RegisterRoutes(RouteTable.Routes);
         }
