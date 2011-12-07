@@ -52,6 +52,7 @@
     <Compile Include="AuditInfoMap.cs" />
     <Compile Include="CompanyMap.cs" />
     <Compile Include="DepartmentMap.cs" />
+    <Compile Include="DepartmentRepository.cs" />
     <Compile Include="EmployeeMap.cs" />
     <Compile Include="JiraIssueTopicMap.cs" />
     <Compile Include="JiraProjectTopicMap.cs" />

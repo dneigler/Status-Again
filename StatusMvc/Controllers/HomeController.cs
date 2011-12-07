@@ -21,11 +21,16 @@ namespace StatusMvc.Controllers
 
         public ActionResult Index()
         {
-            Mapper.CreateMap<StatusReport, StatusReportViewModel>();
+            Mapper.CreateMap<StatusReport, StatusReportViewModel>()
+                .ForMember(m => m.NumberOfStatusItems, opt => opt.ResolveUsing<NumberOfStatusItemsFormatter>());
+            Mapper.CreateMap<StatusItem, StatusReportItemViewModel>();
+                //.ForMember(dest => dest.ProjectLeadFullName, opt => opt.MapFrom(src => src.Project.Lead.FullName))
+                //.ForMember(dest => dest.ProjectTeamLeadFullName, opt => opt.MapFrom(src => src.Project.Team.Lead.FullName));
+
             var data = _repository.GetAllStatusReports();
             var vm = Mapper.Map<IList<StatusReport>, IList<StatusReportViewModel>>(data);
 
-            ViewBag.Message = "Welcome to ASP.NET MVC!";
+            ViewBag.Message = "Status Reports";
 
             return View(vm);
         }
@@ -33,6 +38,14 @@ namespace StatusMvc.Controllers
         public ActionResult About()
         {
             return View();
+        }
+    }
+
+    public class NumberOfStatusItemsFormatter : ValueResolver<StatusReport, int>
+    {
+        protected override int ResolveCore(StatusReport source)
+        {
+            return source.Items.Count;
         }
     }
 }

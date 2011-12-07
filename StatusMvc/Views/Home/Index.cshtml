@@ -3,12 +3,53 @@
 @{
     ViewBag.Title = "Home Page";
 }
-
 <h2>@ViewBag.Message</h2>
-@foreach (var srvm in this.Model)
-{
-    <h3>@srvm.Caption (@srvm.NumberOfStatusItems - @srvm.PeriodStart)</h3>
-}
-<p>
-    To learn more about ASP.NET MVC visit <a href="http://asp.net/mvc" title="ASP.NET MVC Website">http://asp.net/mvc</a>.
-</p>
+<table>
+    <tr>
+        <th>
+            Caption
+        </th>
+        <th>
+            Project Name
+        </th>
+        <th>
+            Milestone Type
+        </th>
+        <th>
+            Date
+        </th>
+        <th>
+            Lead Name
+        </th>
+        <th>
+            Confidence
+        </th>
+    </tr>
+    @foreach (var srvm in this.Model)
+    {
+        <tr>
+            <td colspan="6" style="text-align: center;background-color: #e7e7e7;font-weight:bold;">@srvm.Caption (@srvm.NumberOfStatusItems - @srvm.PeriodStart.ToShortDateString())
+            </td>
+        </tr>
+        foreach (var si in srvm.Items)
+        {
+        <tr>
+            <td>@si.Caption
+            </td>
+            <td>@si.ProjectName
+            </td>
+            <td>@si.MilestoneType
+            </td>
+            <td style="text-align: right;">@if (si.MilestoneDate != null)
+                {
+                    @si.MilestoneDate.Value.ToShortDateString()}
+
+            </td>
+            <td>@si.ProjectLeadFullName
+            </td>
+            <td>@si.MilestoneConfidenceLevel
+            </td>
+        </tr>
+        }
+    }
+</table>

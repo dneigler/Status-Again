@@ -93,22 +93,22 @@ namespace Status.ETL.Csv
                 // things to check
                 // all projects exist and project id's returned
                 var grpProjects = items.GroupBy(item => item.Project);
-
-                IList<string> projectNames = grpProjects.Select(g => g.Key).ToList();
-
-                // all should be encapsulated in repository later on...
-                // below is sql retrieval optimization but makes updating more complicated
-                var projects = this.ProjectRepository.GetProjectsByNames(projectNames);
-
-                foreach (var project in projects)
+                foreach (var projectG in grpProjects)
                 {
-                    _logger.Debug("Project found: {0}", project.Name);
-                    projectNames.Remove(project.Name);
+                    var p = this.ProjectRepository.GetProject(projectG.Key);
+                    if (p == null)
+                    {
+                        var pItem = projectG.First();
+                        // var pTeam = this.TeamRepository.GetTeamByName() // not going to work with this file format as team id is made up
+                        var pLead = this.ResourceRepository.GetResourcesByName(pItem.TeamLead)[0];
+                        var project = new Project() { 
+                            Name = pItem.Project, 
+                            Caption = pItem.ProjectSummary, 
+                            Lead=pLead as Employee
+                        };
+                        this.ProjectRepository.AddProject(project);
+                    }
                 }
-
-                // any remaining projects will need to be created before moving forward
-                // we can derive team from project team on any status item in the list
-                projectNames.ToList().ForEach(p => this.ProjectRepository.AddProject(new Project() { Name = p, Caption = p }));
 
                 // map JIRA ID's to topics in the new system
                 var grpTopics = items.GroupBy(item => item.JiraID);
