@@ -2,7 +2,7 @@
 
 namespace Status.Repository
 {
-    public interface ITopicRepository : IRepository
+    public interface ITopicRepository : IRepository<Topic>
     {
         Topic GetTopicByExternalId(string topicId);
 

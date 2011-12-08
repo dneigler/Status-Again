@@ -3,7 +3,7 @@ using Status.Model;
 
 namespace Status.Repository
 {
-    public interface IProjectRepository : IRepository
+    public interface IProjectRepository : IRepository<Project>
     {
         Project GetProject(string projectName);
 

@@ -10,7 +10,7 @@ using Status.Repository;
 
 namespace Status.Persistence
 {
-    public class StatusReportRepository : RepositoryBase, IStatusReportRepository
+    public class StatusReportRepository : RepositoryBase<StatusReport>, IStatusReportRepository
     {
         #region Constructors
 

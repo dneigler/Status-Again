@@ -6,7 +6,7 @@ using Status.Repository;
 
 namespace Status.Persistence
 {
-    public class RepositoryBase : IDisposable, IRepository
+    public class RepositoryBase<T> : IDisposable, IRepository<T>
     {
         private volatile ISessionFactory _sessionFactory = null;
 
@@ -151,6 +151,11 @@ namespace Status.Persistence
                 return _session;
             }
             set { _session = value; }
+        }
+
+        public void Add(T itemToAdd)
+        {
+            this.Session.Save(itemToAdd);
         }
 
         #region IDisposable Members

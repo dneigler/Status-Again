@@ -27,13 +27,16 @@ namespace Status.ETL.Csv
 
         public ITeamRepository TeamRepository { get; set; }
 
-        public CsvStatusEtlBridge(IStatusReportRepository statusReportRepository, IProjectRepository projectRepository, ITopicRepository topicRepository, IResourceRepository resourceRepository, ITeamRepository teamRepository)
+        public IDepartmentRepository DepartmentRepository { get; set; }
+
+        public CsvStatusEtlBridge(IStatusReportRepository statusReportRepository, IProjectRepository projectRepository, ITopicRepository topicRepository, IResourceRepository resourceRepository, ITeamRepository teamRepository, IDepartmentRepository departmentRepository)
         {
             StatusReportRepository = statusReportRepository;
             ProjectRepository = projectRepository;
             TopicRepository = topicRepository;
             ResourceRepository = resourceRepository;
             TeamRepository = teamRepository;
+            DepartmentRepository = departmentRepository;
         }
 
         public void UpsertStatus(IList<StatusCsvItem> items)
@@ -74,6 +77,14 @@ namespace Status.ETL.Csv
                     dummyResource = new Resource() { EmailAddress = "t@t.com", FirstName = "FN", LastName = "LN" };
                 this.ResourceRepository.AddResource(dummyResource);
 
+                // create dummy department
+                var department = this.DepartmentRepository.GetByName("Department");
+                if (department == null)
+                {
+                    department = new Department() { Name = "Department", Manager = dummyResource as Employee };
+                    this.DepartmentRepository.Add(department);
+                }
+
                 // create all teams
                 var grpTeams = items.GroupBy(item => item.TeamName);
                 foreach (var teamG in grpTeams)
@@ -85,7 +96,7 @@ namespace Status.ETL.Csv
                         // lookup lead by eamil address?
                         var teamCsv = teamG.ToList()[0];
                         var lead = this.ResourceRepository.GetResourcesByName(teamCsv.TeamLead).SingleOrDefault();
-                        var t = new Team() { Name = teamG.Key, Lead = (Employee)lead };
+                        var t = new Team() { Name = teamG.Key, Lead = (Employee)lead, Department = department};
                         this.TeamRepository.AddTeam(t);
                     }
                 }
@@ -104,7 +115,8 @@ namespace Status.ETL.Csv
                         var project = new Project() { 
                             Name = pItem.Project, 
                             Caption = pItem.ProjectSummary, 
-                            Lead=pLead as Employee
+                            Lead=pLead as Employee,
+                            Department = department
                         };
                         this.ProjectRepository.AddProject(project);
                     }

@@ -6,7 +6,7 @@ using Status.Model;
 
 namespace Status.Repository
 {
-    public interface ITeamRepository : IRepository
+    public interface ITeamRepository : IRepository<Team>
     {
         IList<Team> GetAllTeams();
 

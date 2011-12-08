@@ -9,7 +9,7 @@ using Status.Repository;
 
 namespace Status.Persistence
 {
-    public class ProjectRepository : RepositoryBase, IProjectRepository
+    public class ProjectRepository : RepositoryBase<Project>, IProjectRepository
     {
         #region Constructors
 

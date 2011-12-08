@@ -9,7 +9,7 @@ using Status.Model;
 
 namespace Status.Persistence
 {
-    public class ResourceRepository : RepositoryBase, IResourceRepository
+    public class ResourceRepository : RepositoryBase<Resource>, IResourceRepository
     {
         #region Constructors
 

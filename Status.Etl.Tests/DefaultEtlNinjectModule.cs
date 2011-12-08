@@ -44,7 +44,8 @@ namespace Status.Etl.Tests
                 .WithConstructorArgument("connectionString", ConnString);
             Bind<ITeamRepository>().To<TeamRepository>()
                 .WithConstructorArgument("connectionString", ConnString);
-
+            Bind<IDepartmentRepository>().To<DepartmentRepository>()
+                .WithConstructorArgument("connectionString", ConnString);
         }
     }
 }

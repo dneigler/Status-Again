@@ -6,7 +6,7 @@ using Status.Repository;
 
 namespace Status.Persistence
 {
-    public class TopicRepository : RepositoryBase, ITopicRepository
+    public class TopicRepository : RepositoryBase<Topic>, ITopicRepository
     {
         public TopicRepository(string connectionString) : base(connectionString)
         {

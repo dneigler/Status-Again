@@ -2,7 +2,7 @@
 
 namespace Status.Repository
 {
-    public interface IRepository
+    public interface IRepository<in T>
     {
         ITransaction BeginTransaction();
         void CommitTransaction();
@@ -14,5 +14,6 @@ namespace Status.Repository
         void CloseSession();
         void CloseSession(ISession session);
         ISession Session { get; set; }
+        void Add(T itemToAdd);
     }
 }
