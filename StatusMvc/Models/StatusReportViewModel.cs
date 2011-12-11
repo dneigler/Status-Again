@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using MVCControlsToolkit.DataAnnotations;
 using Status.Model;
 
 namespace StatusMvc.Models
@@ -9,6 +11,7 @@ namespace StatusMvc.Models
         //private IList<StatusItem> _items = null;
         public int Id { get; set; }
         public DateTime PeriodStart { get; set; }
+        [Required, CanSort, Display(Name = "Caption")]
         public string Caption { get; set; }
         public int NumberOfStatusItems { get; set; }
         public IList<StatusReportItemViewModel> Items { get; set; } 
@@ -17,11 +20,18 @@ namespace StatusMvc.Models
     public class StatusReportItemViewModel
     {
         public int Id { get; set; }
+        
+        [Required, CanSort, Display(Name = "Caption")]
         public string TopicCaption { get; set; }
         public string TopicExternalId { get; set; }
         public int TopicId { get; set; }
+
+        [Required, CanSort, Display(Name = "Type")]
         public MilestoneTypes MilestoneType { get; set; }
+
+        [DateRange(SMinimum = "Today-3M", SMaximum = "Today+6M")]
         public DateTime? MilestoneDate { get; set; }
+
         public MilestoneConfidenceLevels MilestoneConfidenceLevel { get; set; }
 
         public string Caption { get; set; }

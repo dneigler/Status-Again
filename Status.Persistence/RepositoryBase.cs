@@ -158,6 +158,16 @@ namespace Status.Persistence
             this.Session.Save(itemToAdd);
         }
 
+        public void Update(T itemToUpdate)
+        {
+            this.Session.SaveOrUpdate(itemToUpdate);
+        }
+
+        public void Delete(T itemToDelete)
+        {
+            this.Session.Delete(itemToDelete);
+        }
+
         #region IDisposable Members
 
         public void Dispose()

@@ -54,7 +54,7 @@ namespace Status.Persistence
             var session = Session;
             {
                 StatusReport query = (from s in session.Query<StatusReport>()
-                                      where s.PeriodStart.Equals(statusDate)
+                                      where s.PeriodStart == statusDate
                                       select s).SingleOrDefault();
                 return query;
             }

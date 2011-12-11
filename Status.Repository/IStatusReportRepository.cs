@@ -17,5 +17,6 @@ namespace Status.Repository
         void AddStatusReport(StatusReport statusReport);
 
         IList<StatusReport> GetAllStatusReports();
+        
     }
 }

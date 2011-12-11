@@ -15,5 +15,7 @@ namespace Status.Repository
         void CloseSession(ISession session);
         ISession Session { get; set; }
         void Add(T itemToAdd);
+        void Update(T itemToUpdate);
+        void Delete(T itemToDelete);
     }
 }
