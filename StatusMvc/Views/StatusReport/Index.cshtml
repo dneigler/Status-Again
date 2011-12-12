@@ -24,6 +24,7 @@
     <p>
         Items: <span data-bind="value: NumberOfStatusItems"></span>
     </p>
+    <input type="button" click="statusReportVM.loadReport('@Request.QueryString["statusDate"]');" value="Reload"></input>
 </fieldset>
 <fieldset>
     <legend>Items</legend>New Status Item:
@@ -84,6 +85,7 @@
 <script type="text/javascript">
     $(function () {
         //activates KO
-        ko.applyBindings(statusReport);
+        ko.applyBindings(statusReportVM);
+        statusReportVM.loadReport( '@Request.QueryString["statusDate"]' );
     });
 </script>

@@ -1,4 +1,4 @@
-﻿var jsonDateRE = /^\/Date\((-?\d+)(\+|-)?(\d+)?\)\/$/;
+﻿ var jsonDateRE = /^\/Date\((-?\d+)(\+|-)?(\d+)?\)\/$/;
 
 var parseJsonDateString = function (value) {
     var arr = value && jsonDateRE.exec(value);
@@ -8,69 +8,122 @@ var parseJsonDateString = function (value) {
     return value;
 };
 
-var statusReport = {
-    Id: ko.observable(0),
-    PeriodStart: ko.observable(/Date(1322456400000)/),
-    Caption: ko.observable(''),
-    NumberOfStatusItems: ko.observable(0),
-    Items: ko.observableArray([]),
-    StatusItemToAdd: ko.observable(''),
-    StatusItemDateToAdd: ko.observable(new Date()),
-    StatusItemMilestoneToAdd: ko.observable(0)
-};
+var statusReportVM = {
+    Report: ko.observable(new statusReport()),
+    loadReport: function (reportDate) {
+        var url = "/StatusReport/GetStatusReport?statusDate=" + reportDate;
+        // alert(url);
+        $.ajax({
+            url: url,
+            success: function (response) {
+                if (response != null) {
+                    var sr = new statusReport()
+                        .Caption(response.PeriodStart)
+                        .PeriodStart(response.PeriodStart)
+                        .Id(response.Id)
+                        .NumberOfStatusItems(response.NumberOfStatusItems)
+                        .StatusItemToAdd("")
+                        .StatusItemDateToAdd(new Date())
+                        .StatusItemMilestoneToAdd(0);
+                    $.each(response.Items, function(x, item) {
+                        sr.Items.push(new statusReportItem()
+                                .Id(item.Id)
+                                .TopicCaption(item.TopicCaption)
+                                .TopicExternalId(item.TopicExternalId)
+                                .TopicId(item.TopicId)
+                                .MilestoneType(item.MilestoneType)
+                                .MilestoneDate(item.MilestoneDate)
+                                .MilestoneConfidenceLevel(item.MilestoneConfidenceLevel)
+                                .Caption(item.Caption)
+                                .ProjectId(item.ProjectId)
+                                .ProjectName(item.ProjectName)
+                                .ProjectDepartmentName(item.ProjectDepartmentName)
+                                .ProjectDepartmentManagerFullName(item.ProjectDepartmentManagerFullName)
+                                .ProjectType(item.ProjectType)
+                                .ProjectTeamName(item.ProjectTeamName)
+                        );
+                    });
+                    this.Report(sr);
 
-statusReport.PeriodStartFormatted = ko.dependentObservable(function () {
-    return parseJsonDateString(statusReport.PeriodStart());
-});
-
-statusReport.Name = ko.dependentObservable(function () {
-    return statusReport.Caption() +
-    " (" + statusReport.PeriodStart() + ")";
-});
-
-statusReport.addReport = function () {
-    $.ajax({
-        url: "/Home/Create/",
-        type: 'post',
-        data: ko.toJSON(this),
-        contentType: 'application/json',
-        success: function (result) {
-            alert(result);
-        }
-    });
-};
-
-var statusReportItem =
-{
-    Id: ko.observable(0),
-    TopicCaption: ko.observable(''),
-    TopicExternalId: ko.observable(null),
-    TopicId: ko.observable(0),
-    MilestoneType: ko.observable(1),
-    MilestoneDate: ko.observable(new Date()),
-    MilestoneConfidenceLevel: ko.observable(0),
-    Caption: ko.observable(''),
-    ProjectId: ko.observable(1),
-    ProjectName: ko.observable(''),
-    ProjectDepartmentName: ko.observable(''),
-    ProjectDepartmentManagerFullName: ko.observable(''),
-    ProjectType: ko.observable(0),
-    ProjectTeamName: ko.observable('')
-};
-
-statusReport.addStatusItem = function () {
-    if (statusReport.StatusItemToAdd() !== '') {
-        var sr = { Caption: ko.observable(statusReport.StatusItemToAdd()),
-            MilestoneType: ko.observable(statusReport.StatusItemMilestoneToAdd()),
-            MilestoneDate: ko.observable(statusReport.StatusItemDateToAdd())
-        };
-        statusReport.Items.push(sr);
-        statusReport.StatusItemToAdd('');
-        statusReport.StatusItemMilestoneToAdd(0);
-        statusReport.StatusItemDateToAdd(new Date());
+                    //                    $.each(response.results, function (x, game) {
+                    //                        theViewModel.games.push(new gameModel()
+                    //            .id(game.Id)
+                    //            .name(game.Name)
+                    //            .releaseDate(game.ReleaseDate)
+                    //            .price(game.Price)
+                    //            .imageUrl(game.ImageUrl)
+                    //            .genre(game.Genre));
+                    //});
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (response) {
+                alert("Failed to get report for date " + reportDate + "...");
+            }
+        });
     }
 };
 
-statusReport.removeStatusItem = function (itemToRemove) {
-    statusReport.Items.remove(itemToRemove);
-}
+function statusReport() {
+    this.Id = ko.observable(0);
+    this.PeriodStart = ko.observable(/Date(1322456400000)/);
+    this.Caption = ko.observable('');
+    this.NumberOfStatusItems = ko.observable(0);
+    this.Items = ko.observableArray([]);
+    this.StatusItemToAdd = ko.observable('');
+    this.StatusItemDateToAdd = ko.observable(new Date());
+    this.StatusItemMilestoneToAdd = ko.observable(0);
+    this.PeriodStartFormatted = ko.dependentObservable(function () {
+        return parseJsonDateString(this.PeriodStart());
+    } .bind(this));
+    this.Name = ko.dependentObservable(function() {
+        return this.Caption() + " (" + this.PeriodStart() + ")";
+    }.bind(this));
+    
+    this.addReport = function () {
+        $.ajax({
+            url: "/Home/Create/",
+            type: 'post',
+            data: ko.toJSON(this),
+            contentType: 'application/json',
+            success: function (result) {
+                alert(result);
+            }
+        });
+    };
+
+    this.addStatusItem = function() {
+        if (this.StatusItemToAdd() != '') {
+            var sri = new statusReportItem();
+            sri.Caption(this.StatusItemToAdd());
+            sri.MilestoneType(this.StatusItemMilestoneToAdd());
+            sri.MilestoneDate(this.StatusItemDateToAdd());
+            this.Items.push(sri);
+        };
+        this.StatusItemToAdd('');
+        this.StatusItemMilestoneToAdd(0);
+        this.StatusItemDateToAdd(new Date());
+    };
+
+    this.removeStatusItem = function(itemToRemove) {
+        statusReport.Items.remove(itemToRemove);
+    };
+};
+
+function statusReportItem() {
+    this.Id = ko.observable(0);
+    this.TopicCaption = ko.observable('');
+    this.TopicExternalId = ko.observable(null);
+    this.TopicId = ko.observable(0);
+    this.MilestoneType = ko.observable(1);
+    this.MilestoneDate = ko.observable(new Date());
+    this.MilestoneConfidenceLevel = ko.observable(0);
+    this.Caption = ko.observable('');
+    this.ProjectId = ko.observable(1);
+    this.ProjectName = ko.observable('');
+    this.ProjectDepartmentName = ko.observable('');
+    this.ProjectDepartmentManagerFullName = ko.observable('');
+    this.ProjectType = ko.observable(0);
+    this.ProjectTeamName = ko.observable('');
+};
