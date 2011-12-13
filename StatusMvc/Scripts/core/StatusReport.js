@@ -25,8 +25,8 @@ var statusReportVM = {
                         .StatusItemToAdd("")
                         .StatusItemDateToAdd(new Date())
                         .StatusItemMilestoneToAdd(0);
-                    $.each(response.Items, function(x, item) {
-                        sr.Items.push(new statusReportItem()
+                    $.each(response.Items, function (x, item) {
+                        var sri = new statusReportItem()
                                 .Report(sr)
                                 .Id(item.Id)
                                 .TopicCaption(item.TopicCaption)
@@ -43,8 +43,18 @@ var statusReportVM = {
                                 .ProjectType(item.ProjectType)
                                 .ProjectTeamName(item.ProjectTeamName)
                                 .ProjectLeadFullName(item.ProjectLeadFullName)
-                                .ProjectTeamLeadFullName(item.ProjectTeamLeadFullName)
-                        );
+                                .ProjectTeamLeadFullName(item.ProjectTeamLeadFullName);
+                        sr.Items.push(sri);
+                        //ItemsByProject
+                        var projects = ($.grep(sr.ItemsByProject(), function (i) {
+                            return (i.ProjectName() == sri.ProjectName());
+                        }));
+                        if (projects.length == 0)
+                            sr.createProjectFromStatusItem(sri);
+                        else {
+                            var proj = projects[0];
+                            proj.addItem(sri);
+                        }
                     });
                     statusReportVM.Report(sr);
 
@@ -77,6 +87,23 @@ function statusReport() {
     this.StatusItemToAdd = ko.observable('');
     this.StatusItemDateToAdd = ko.observable(new Date());
     this.StatusItemMilestoneToAdd = ko.observable(0);
+
+    this.ItemsByProject = ko.observableArray([]);
+    this.createProjectFromStatusItem = function (statusItem) {
+        var proj = new projectStatus()
+            .Report(this)
+            .ProjectId(statusItem.ProjectId())
+            .ProjectName(statusItem.ProjectName())
+            .ProjectDepartmentName(statusItem.ProjectDepartmentName())
+            .ProjectDepartmentManagerFullName(statusItem.ProjectDepartmentManagerFullName())
+            .ProjectType(statusItem.ProjectType())
+            .ProjectTeamName(statusItem.ProjectTeamName())
+            .ProjectLeadFullName(statusItem.ProjectLeadFullName())
+            .ProjectTeamLeadFullName(statusItem.ProjectTeamLeadFullName());
+        proj.addItem(statusItem);
+        this.ItemsByProject.push(proj);
+    };
+
     this.PeriodStartFormatted = ko.dependentObservable(function () {
         return parseJsonDateString(this.PeriodStart());
     } .bind(this));
@@ -135,4 +162,21 @@ function statusReportItem() {
 //    this.removeStatusItem = function () {
 //        this.Report.removeStatusItem(this);
 //    };
+};
+
+function projectStatus() {
+    this.Report = ko.observable(null);
+    this.ProjectId = ko.observable(1);
+    this.ProjectName = ko.observable('');
+    this.ProjectDepartmentName = ko.observable('');
+    this.ProjectDepartmentManagerFullName = ko.observable('');
+    this.ProjectType = ko.observable(0);
+    this.ProjectTeamName = ko.observable('');
+    this.ProjectLeadFullName = ko.observable('');
+    this.ProjectTeamLeadFullName = ko.observable('');
+    this.Items = ko.observableArray([]);
+
+    this.addItem = function (statusItem) {
+        this.Items.push(statusItem);
+    };
 };
