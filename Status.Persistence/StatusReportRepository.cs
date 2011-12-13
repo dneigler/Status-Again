@@ -45,8 +45,12 @@ namespace Status.Persistence
         public StatusReport GetActiveStatusReport()
         {
             // need to find the first status report, we'll stick to Mondays for now
-            DateTime statusDate = GetCurrentStatusReportDate();
-            return GetStatusReport(statusDate);
+            // DateTime statusDate = GetCurrentStatusReportDate();
+            // if no report found then we need the max report
+            StatusReport query = (from s in Session.Query<StatusReport>()
+                                  orderby s.PeriodStart descending
+                                  select s).First();
+            return query;// GetStatusReport(statusDate);
         }
 
         public StatusReport GetStatusReport(DateTime statusDate)

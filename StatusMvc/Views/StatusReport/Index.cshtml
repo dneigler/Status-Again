@@ -79,13 +79,13 @@
         <td><input class="required" data-bind="value: MilestoneDate, uniqueName: true"/></td>
         <td><input class="required" data-bind="value: ProjectLeadFullName, uniqueName: true"/></td>
         <td><input class="required" data-bind="value: MilestoneConfidenceLevel, uniqueName: true"/></td>
-        <td><a href="#" data-bind="click: function() { viewModel.removeStatusItem($data) }">Delete</a></td>
+        <td><a href="#" data-bind="click: function() { statusReportVM.Report().removeStatusItem($data) }">Delete</a></td>
     </tr>
 </script>
 <script type="text/javascript">
     $(function () {
         //activates KO
-        ko.applyBindings(statusReportVM);
+        ko.applyBindings(statusReportVM.Report);
         statusReportVM.loadReport( '@Request.QueryString["statusDate"]' );
     });
 </script>

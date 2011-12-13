@@ -27,6 +27,7 @@ var statusReportVM = {
                         .StatusItemMilestoneToAdd(0);
                     $.each(response.Items, function(x, item) {
                         sr.Items.push(new statusReportItem()
+                                .Report(sr)
                                 .Id(item.Id)
                                 .TopicCaption(item.TopicCaption)
                                 .TopicExternalId(item.TopicExternalId)
@@ -41,9 +42,11 @@ var statusReportVM = {
                                 .ProjectDepartmentManagerFullName(item.ProjectDepartmentManagerFullName)
                                 .ProjectType(item.ProjectType)
                                 .ProjectTeamName(item.ProjectTeamName)
+                                .ProjectLeadFullName(item.ProjectLeadFullName)
+                                .ProjectTeamLeadFullName(item.ProjectTeamLeadFullName)
                         );
                     });
-                    this.Report(sr);
+                    statusReportVM.Report(sr);
 
                     //                    $.each(response.results, function (x, game) {
                     //                        theViewModel.games.push(new gameModel()
@@ -59,7 +62,7 @@ var statusReportVM = {
                 }
             },
             error: function (response) {
-                alert("Failed to get report for date " + reportDate + "...");
+                alert("Failed to get report for date " + reportDate + "..." + response.responseText);
             }
         });
     }
@@ -107,11 +110,12 @@ function statusReport() {
     };
 
     this.removeStatusItem = function(itemToRemove) {
-        statusReport.Items.remove(itemToRemove);
+        this.Items.remove(itemToRemove);
     };
 };
 
 function statusReportItem() {
+    this.Report = ko.observable(null);
     this.Id = ko.observable(0);
     this.TopicCaption = ko.observable('');
     this.TopicExternalId = ko.observable(null);
@@ -126,4 +130,9 @@ function statusReportItem() {
     this.ProjectDepartmentManagerFullName = ko.observable('');
     this.ProjectType = ko.observable(0);
     this.ProjectTeamName = ko.observable('');
+    this.ProjectLeadFullName = ko.observable('');
+    this.ProjectTeamLeadFullName = ko.observable('');
+//    this.removeStatusItem = function () {
+//        this.Report.removeStatusItem(this);
+//    };
 };

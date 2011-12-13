@@ -46,9 +46,9 @@ namespace StatusMvc.Controllers
             return Json(vm, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetStatusReport(DateTime statusDate)
+        public JsonResult GetStatusReport(DateTime? statusDate)
         {
-            var data = StatusReportRepository.GetStatusReport(statusDate);
+            var data = statusDate.HasValue ? StatusReportRepository.GetStatusReport(statusDate.Value) : StatusReportRepository.GetActiveStatusReport();
             var vm = Mapper.Map<StatusReport, StatusReportViewModel>(data);
 
             return Json(vm, JsonRequestBehavior.AllowGet);

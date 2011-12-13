@@ -17,6 +17,8 @@ namespace Status.Repository
         void AddStatusReport(StatusReport statusReport);
 
         IList<StatusReport> GetAllStatusReports();
+
+        DateTime GetCurrentStatusReportDate();
         
     }
 }
