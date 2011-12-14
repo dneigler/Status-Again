@@ -42,6 +42,7 @@ namespace StatusMvc.Models
         public string ProjectDepartmentName { get; set; }
         public string ProjectDepartmentManagerFullName { get; set; }
         public ProjectType ProjectType { get; set; }
+        public int ProjectTeamId { get; set; }
         public string ProjectTeamName { get; set; }
         public string ProjectTeamLeadFullName { get; set; }
         public string ProjectLeadFullName { get; set; }
