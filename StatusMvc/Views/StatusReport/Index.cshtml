@@ -19,7 +19,7 @@
     </p>
     <p>
         Caption:
-        <input type="text" data-bind="value: Caption" />
+        <input type="text" data-bind="value: Caption" placeholder="Enter caption for status report" />
     </p>
     <p>
         Items: <span data-bind="value: NumberOfStatusItems"></span>
@@ -71,14 +71,14 @@
 </form>
 <script type="text/html" id="statusItemRowTemplate">
     <tr>
-        <td><input class="required" data-bind="value: Caption, uniqueName: true"/></td>
-        <td><input class="required" data-bind="value: ProjectName, uniqueName: true"/></td>
+        <td><input required data-bind="value: Caption, uniqueName: true"/></td>
+        <td><input required data-bind="value: ProjectName, uniqueName: true"/></td>
         <td>
             @Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
             new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })</td>
-        <td><input class="required" data-bind="value: MilestoneDate, uniqueName: true"/></td>
-        <td><input class="required" data-bind="value: ProjectLeadFullName, uniqueName: true"/></td>
-        <td><input class="required" data-bind="value: MilestoneConfidenceLevel, uniqueName: true"/></td>
+        <td><input required data-bind="value: MilestoneDate, uniqueName: true"/></td>
+        <td><input required data-bind="value: ProjectLeadFullName, uniqueName: true"/></td>
+        <td><input required data-bind="value: MilestoneConfidenceLevel, uniqueName: true"/></td>
         <td><a href="#" data-bind="click: function() { viewModel.removeStatusItem($data) }">Delete</a></td>
     </tr>
 </script>
