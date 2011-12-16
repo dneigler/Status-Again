@@ -49,8 +49,23 @@ var statusReportVM = {
                     statusReportVM.Report(sr);
                     //$("#tabs").tabs();
                     console.log("calling to #tabs in jquery");
-                    $(function () {
-                        $("#tabs").tabs();
+                    //$(function () {
+                    $("#tabs").tabs();
+                    $(".datefield").datepicker();
+                    //});
+                    $('textarea input').autoResize({
+                        // On resize:
+                        onResize: function () {
+                            $(this).css({ opacity: 0.8 });
+                        },
+                        // After resize:
+                        animateCallback: function () {
+                            $(this).css({ opacity: 1 });
+                        },
+                        // Quite slow animation:
+                        animateDuration: 300,
+                        // More extra space:
+                        extraSpace: 40
                     });
                 } else {
                     alert(response.message);
@@ -189,6 +204,9 @@ function statusReportItem() {
     this.ProjectTeamName = ko.observable('');
     this.ProjectLeadFullName = ko.observable('');
     this.ProjectTeamLeadFullName = ko.observable('');
+    this.MilestoneDateFormatted = ko.dependentObservable(function () {
+        return parseJsonDateString(this.MilestoneDate());
+    } .bind(this));
 //    this.removeStatusItem = function () {
 //        this.Report.removeStatusItem(this);
 //    };
