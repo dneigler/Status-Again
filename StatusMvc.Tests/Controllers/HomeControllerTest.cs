@@ -24,7 +24,7 @@ namespace StatusMvc.Tests.Controllers
             ViewResult result = controller.Index() as ViewResult;
 
             // Assert
-            Assert.AreEqual("Welcome to ASP.NET MVC!", result.ViewBag.Message);
+            Assert.AreEqual("Status Reports", result.ViewBag.Message);
         }
 
         [TestMethod]
