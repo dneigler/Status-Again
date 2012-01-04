@@ -2,143 +2,143 @@
 @using Status.Model
 @using StatusMvc.Extensions
 @{
-    ViewBag.Title = "Index";
+	ViewBag.Title = "Index";
 }
 @section HeadSection {
-    <script src="@Url.Content("~/Scripts/core/StatusReport.js")" type="text/javascript"></script>
-    <style type="text/css">
-            .statusCaptionText { width: 400px; font-size: 8pt; }
-            .projectNameHeader { font-weight: bold; font-size: 12pt; padding-top: 5px; }
-            .statusItemSecondLine { margin-left: 10px; }
-            textarea { display: inline-block; }
-    </style>
+	<script src="@Url.Content("~/Scripts/core/StatusReport.js")" type="text/javascript"></script>
+	<style type="text/css">
+			.statusCaptionText { width: 400px; font-size: 8pt; }
+			.projectNameHeader { font-weight: bold; font-size: 12pt; padding-top: 5px; }
+			.statusItemSecondLine { margin-left: 10px; }
+			textarea { display: inline-block; }
+	</style>
 
   
 }
 <h2>@ViewBag.Message</h2>  
 <form data-bind="submit: addReport">
 <fieldset>
-    <legend>Teams</legend>
-    <div id="tabs">
-	    <ul data-bind='template: {name: "teamTabTemplate", foreach: ItemsByTeam }'></ul>
-        <div data-bind='template: {name: "teamTabContentTemplate", foreach: ItemsByTeam }'></div>
-    </div>
+	<legend>Teams</legend>
+	<div id="tabs">
+		<ul data-bind='template: {name: "teamTabTemplate", foreach: ItemsByTeam }'></ul>
+		<div data-bind='template: {name: "teamTabContentTemplate", foreach: ItemsByTeam }'></div>
+	</div>
 </fieldset>
 @*<fieldset>
-    <legend>Projects</legend>
-    <div data-bind='template: {name: "projectRowTemplate", foreach: ItemsByProject }'>
-    </div>
+	<legend>Projects</legend>
+	<div data-bind='template: {name: "projectRowTemplate", foreach: ItemsByProject }'>
+	</div>
 </fieldset>*@
 @*<fieldset>
-    <legend>Status Items</legend>
-    <div data-bind='template: {name: "statusTableTemplate" }'>
-    </div>
+	<legend>Status Items</legend>
+	<div data-bind='template: {name: "statusTableTemplate" }'>
+	</div>
 </fieldset>*@
 <fieldset>
-    <legend>Status Report</legend>
-    <p>
-        Date:
-        <input type="text" data-bind="value: PeriodStartFormatted" />
-    </p>
-    <p>
-        Caption:
-        <input type="text" data-bind="value: Caption" placeholder="Enter caption for status report" />
-    </p>
-    <p>
-        Items: <span data-bind="value: NumberOfStatusItems"></span>
-    </p>
-    <input type="button" click="statusReportVM.loadReport('@Request.QueryString["statusDate"]');" value="Reload"></input>
+	<legend>Status Report</legend>
+	<p>
+		Date:
+		<input type="text" data-bind="value: PeriodStartFormatted" />
+	</p>
+	<p>
+		Caption:
+		<input type="text" data-bind="value: Caption" placeholder="Enter caption for status report" />
+	</p>
+	<p>
+		Items: <span data-bind="value: NumberOfStatusItems"></span>
+	</p>
+	<input type="button" click="statusReportVM.loadReport('@Request.QueryString["statusDate"]');" value="Reload"></input>
 </fieldset>
 <fieldset>
-    <legend>Items</legend>New Status Item:
-    <input type="text" data-bind='value: StatusItemToAdd, valueUpdate: "afterkeydown"' />
-    <input type="text" data-bind='value: StatusItemDateToAdd, valueUpdate: "afterkeydown"' />
-    @Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
-            new Dictionary<string, object> { { "data-bind", "value:StatusItemMilestoneToAdd" } })
-    <button type="submit" data-bind="enable: StatusItemToAdd().length > 0, click: addStatusItem">
-        Add</button>
+	<legend>Items</legend>New Status Item:
+	<input type="text" data-bind='value: StatusItemToAdd, valueUpdate: "afterkeydown"' />
+	<input type="text" data-bind='value: StatusItemDateToAdd, valueUpdate: "afterkeydown"' />
+	@Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
+			new Dictionary<string, object> { { "data-bind", "value:StatusItemMilestoneToAdd" } })
+	<button type="submit" data-bind="enable: StatusItemToAdd().length > 0, click: addStatusItem">
+		Add</button>
 </fieldset>
 <input type="submit" value="Create" />
 </form>
 <script type="text/html" id="teamTabTemplate">
-    <li><a data-bind="attr: {href:'#tabs-' + TeamId(), title: Name}, text: Name"></a></li>
+	<li><a data-bind="attr: {href:'#tabs-' + TeamId(), title: Name}, text: Name"></a></li>
 </script>
 <script type="text/html" id="teamTabContentTemplate">
-    <div data-bind='attr: {id: "tabs-" + TeamId() }, template: { name: "projectItemsTemplate", foreach: ProjectItems }'></div>
+	<div data-bind='attr: {id: "tabs-" + TeamId() }, template: { name: "projectItemsTemplate", foreach: ProjectItems }'></div>
 </script>
 <script type="text/html" id="projectRowTemplate">
-    <div class="projectNameHeader">
-        <span data-bind="text: ProjectName"></span>
-    </div>
-    <div data-bind='template: { name: "projectItemsTemplate" }'></div>
-    <!--statusTableTemplate-->
+	<div class="projectNameHeader">
+		<span data-bind="text: ProjectName"></span>
+	</div>
+	<div data-bind='template: { name: "projectItemsTemplate" }'></div>
+	<!--statusTableTemplate-->
 </script>
 <script type="text/html" id="projectItemsTemplate">
-    <div class="projectNameHeader">
-        <span data-bind="text: ProjectName"></span> - <span data-bind="text: ProjectLeadFullName"></span>
-    </div>
-    <div data-bind='template: { name: "projectItemTemplate", foreach: Items }'></div>
+	<div class="projectNameHeader">
+		<span data-bind="text: ProjectName"></span> - <span data-bind="text: ProjectLeadFullName"></span>
+	</div>
+	<div data-bind='template: { name: "projectItemTemplate", foreach: Items }'></div>
 </script>
 <script type="text/html" id="projectItemTemplate">
-    <div><textarea class="required statusCaptionText" data-bind="value: Caption, uniqueName: true"/>
-        <input class="required datefield" data-bind="value: MilestoneDateFormatted, uniqueName: true"/>
-        @Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
-        new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
-        <a href="#" data-bind="click: function() { statusReportVM.Report().removeStatusItem($data) }">Delete</a>
-    </div>
-    <!--<div class="statusItemSecondLine">
-        <span><input class="required" data-bind="value: MilestoneConfidenceLevel, uniqueName: true"/></span>
-        <span></span>
-    </div>-->
+	<div><textarea class="required statusCaptionText" data-bind="value: Caption, uniqueName: true"/>
+		<input class="required datefield" data-bind="value: MilestoneDateString, uniqueName: true"/>
+		@Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
+		new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
+		<a href="#" data-bind="click: function() { statusReportVM.Report().removeStatusItem($data) }">Delete</a>
+	</div>
+	<!--<div class="statusItemSecondLine">
+		<span><input class="required" data-bind="value: MilestoneConfidenceLevel, uniqueName: true"/></span>
+		<span></span>
+	</div>-->
 </script>
 <script type="text/html" id="statusTableTemplate">
-    <table>
-        <thead>
-            <tr>
-                <th>
-                    Caption
-                </th>
-                <th>
-                    Project Name
-                </th>
-                <th>
-                    Milestone Type
-                </th>
-                <th>
-                    Date
-                </th>
-                <th>
-                    Lead Name
-                </th>
-                <th>
-                    Confidence
-                </th>
-                <th>
-                    Action
-                </th>
-            </tr>
-        </thead>
-        <tbody data-bind='template: { name: "statusItemRowTemplate", foreach: Items }'>
-        </tbody>
-    </table>
+	<table>
+		<thead>
+			<tr>
+				<th>
+					Caption
+				</th>
+				<th>
+					Project Name
+				</th>
+				<th>
+					Milestone Type
+				</th>
+				<th>
+					Date
+				</th>
+				<th>
+					Lead Name
+				</th>
+				<th>
+					Confidence
+				</th>
+				<th>
+					Action
+				</th>
+			</tr>
+		</thead>
+		<tbody data-bind='template: { name: "statusItemRowTemplate", foreach: Items }'>
+		</tbody>
+	</table>
 </script>
 <script type="text/html" id="statusItemRowTemplate">
-    <tr>
-        <td><input required data-bind="value: Caption, uniqueName: true"/></td>
-        <td><input required data-bind="value: ProjectName, uniqueName: true"/></td>
-        <td>
-            @Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
-            new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })</td>
-        <td><input required data-bind="value: MilestoneDate, uniqueName: true"/></td>
-        <td><input required data-bind="value: ProjectLeadFullName, uniqueName: true"/></td>
-        <td><input required data-bind="value: MilestoneConfidenceLevel, uniqueName: true"/></td>
-        <td><a href="#" data-bind="click: function() { statusReportVM.Report().removeStatusItem($data) }">Delete</a></td>
-    </tr>
+	<tr>
+		<td><input required data-bind="value: Caption, uniqueName: true"/></td>
+		<td><input required data-bind="value: ProjectName, uniqueName: true"/></td>
+		<td>
+			@Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
+			new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })</td>
+		<td><input required data-bind="value: MilestoneDate, uniqueName: true"/></td>
+		<td><input required data-bind="value: ProjectLeadFullName, uniqueName: true"/></td>
+		<td><input required data-bind="value: MilestoneConfidenceLevel, uniqueName: true"/></td>
+		<td><a href="#" data-bind="click: function() { statusReportVM.Report().removeStatusItem($data) }">Delete</a></td>
+	</tr>
 </script>
 <script type="text/javascript">
-    $(function () {
-        //activates KO
-        ko.applyBindings(statusReportVM.Report);
-        statusReportVM.loadReport( '@Request.QueryString["statusDate"]' );
-    });
+	$(function () {
+		//activates KO
+		ko.applyBindings(statusReportVM.Report);
+		statusReportVM.loadReport( '@Request.QueryString["statusDate"]' );
+	});
 </script>
