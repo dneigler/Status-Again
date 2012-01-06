@@ -12,7 +12,6 @@ var statusReportVM = {
     Report: ko.observable(new statusReport()),
     loadReport: function (reportDate) {
         var url = "/StatusReport/GetStatusReport?statusDate=" + reportDate;
-        // alert(url);
         $.ajax({
             url: url,
             success: function (response) {
@@ -41,32 +40,33 @@ var statusReportVM = {
                                 .ProjectDepartmentName(item.ProjectDepartmentName)
                                 .ProjectDepartmentManagerFullName(item.ProjectDepartmentManagerFullName)
                                 .ProjectType(item.ProjectType)
+                                .ProjectTeamId(item.ProjectTeamId)
                                 .ProjectTeamName(item.ProjectTeamName)
                                 .ProjectLeadFullName(item.ProjectLeadFullName)
                                 .ProjectTeamLeadFullName(item.ProjectTeamLeadFullName);
-                        sr.Items.push(sri);
-                        //ItemsByProject
-                        var projects = ($.grep(sr.ItemsByProject(), function (i) {
-                            return (i.ProjectName() == sri.ProjectName());
-                        }));
-                        if (projects.length == 0)
-                            sr.createProjectFromStatusItem(sri);
-                        else {
-                            var proj = projects[0];
-                            proj.addItem(sri);
-                        }
+                        sr.loadStatusItem(sri);
                     });
                     statusReportVM.Report(sr);
-
-                    //                    $.each(response.results, function (x, game) {
-                    //                        theViewModel.games.push(new gameModel()
-                    //            .id(game.Id)
-                    //            .name(game.Name)
-                    //            .releaseDate(game.ReleaseDate)
-                    //            .price(game.Price)
-                    //            .imageUrl(game.ImageUrl)
-                    //            .genre(game.Genre));
+                    //$("#tabs").tabs();
+                    console.log("calling to #tabs in jquery");
+                    //$(function () {
+                    $("#tabs").tabs();
+                    $(".datefield").datepicker();
                     //});
+                    $('textarea input').autoResize({
+                        // On resize:
+                        onResize: function () {
+                            $(this).css({ opacity: 0.8 });
+                        },
+                        // After resize:
+                        animateCallback: function () {
+                            $(this).css({ opacity: 1 });
+                        },
+                        // Quite slow animation:
+                        animateDuration: 300,
+                        // More extra space:
+                        extraSpace: 40
+                    });
                 } else {
                     alert(response.message);
                 }
@@ -89,24 +89,68 @@ function statusReport() {
     this.StatusItemMilestoneToAdd = ko.observable(0);
 
     this.ItemsByProject = ko.observableArray([]);
-    this.createProjectFromStatusItem = function (statusItem) {
-        var proj = new projectStatus()
-            .Report(this)
-            .ProjectId(statusItem.ProjectId())
-            .ProjectName(statusItem.ProjectName())
-            .ProjectDepartmentName(statusItem.ProjectDepartmentName())
-            .ProjectDepartmentManagerFullName(statusItem.ProjectDepartmentManagerFullName())
-            .ProjectType(statusItem.ProjectType())
-            .ProjectTeamName(statusItem.ProjectTeamName())
-            .ProjectLeadFullName(statusItem.ProjectLeadFullName())
-            .ProjectTeamLeadFullName(statusItem.ProjectTeamLeadFullName());
-        proj.addItem(statusItem);
-        this.ItemsByProject.push(proj);
+    this.ItemsByTeam = ko.observableArray([]);
+
+    this.loadStatusItem = function (statusItem) {
+        // autocreates team and project if not found
+        this.Items.push(statusItem);
+        var team = this.getOrCreateTeamFromStatusItem(statusItem);
+        console.log(team.Name());
+    };
+
+    this.teamCounter = 1;
+    
+    this.getOrCreateTeamFromStatusItem = function (statusItem) {
+        // ItemsByTeam
+        var teams = ($.grep(this.ItemsByTeam(), function (i) {
+            return (i.Name() == statusItem.ProjectLeadFullName());
+        }));
+        var team = null;
+        if (teams.length > 0) {
+            team = teams[0];
+        } else {
+            team = new teamStatus()
+                .Report(this)
+                .TeamId(this.teamCounter++)
+                .Name(statusItem.ProjectLeadFullName());
+            this.ItemsByTeam.push(team);
+            //statusItem.ProjectTeamId()
+        }
+        team.addProject(this.getOrCreateProjectFromStatusItem(statusItem));
+        return team;
+    };
+
+    this.getOrCreateProjectFromStatusItem = function (statusItem) {
+        //ItemsByProject
+        var projects = ($.grep(this.ItemsByProject(), function (i) {
+            return (i.ProjectName() == statusItem.ProjectName());
+        }));
+        var proj = null;
+        if (projects.length > 0) {
+            proj = projects[0];
+            proj.addItem(statusItem);
+        } else {
+            proj = new projectStatus()
+                .Report(this)
+                .ProjectId(statusItem.ProjectId())
+                .ProjectName(statusItem.ProjectName())
+                .ProjectDepartmentName(statusItem.ProjectDepartmentName())
+                .ProjectDepartmentManagerFullName(statusItem.ProjectDepartmentManagerFullName())
+                .ProjectType(statusItem.ProjectType())
+                .ProjectTeamId(statusItem.ProjectTeamId())
+                .ProjectTeamName(statusItem.ProjectTeamName())
+                .ProjectLeadFullName(statusItem.ProjectLeadFullName())
+                .ProjectTeamLeadFullName(statusItem.ProjectTeamLeadFullName());
+            proj.addItem(statusItem);
+            this.ItemsByProject.push(proj);
+        }
+        return proj;
     };
 
     this.PeriodStartFormatted = ko.dependentObservable(function () {
         return parseJsonDateString(this.PeriodStart());
     } .bind(this));
+    
     this.Name = ko.dependentObservable(function() {
         return this.Caption() + " (" + this.PeriodStart() + ")";
     }.bind(this));
@@ -156,9 +200,13 @@ function statusReportItem() {
     this.ProjectDepartmentName = ko.observable('');
     this.ProjectDepartmentManagerFullName = ko.observable('');
     this.ProjectType = ko.observable(0);
+    this.ProjectTeamId = ko.observable(0);
     this.ProjectTeamName = ko.observable('');
     this.ProjectLeadFullName = ko.observable('');
     this.ProjectTeamLeadFullName = ko.observable('');
+    this.MilestoneDateFormatted = ko.dependentObservable(function () {
+        return parseJsonDateString(this.MilestoneDate());
+    } .bind(this));
 //    this.removeStatusItem = function () {
 //        this.Report.removeStatusItem(this);
 //    };
@@ -171,6 +219,7 @@ function projectStatus() {
     this.ProjectDepartmentName = ko.observable('');
     this.ProjectDepartmentManagerFullName = ko.observable('');
     this.ProjectType = ko.observable(0);
+    this.ProjectTeamId = ko.observable(0);
     this.ProjectTeamName = ko.observable('');
     this.ProjectLeadFullName = ko.observable('');
     this.ProjectTeamLeadFullName = ko.observable('');
@@ -180,3 +229,14 @@ function projectStatus() {
         this.Items.push(statusItem);
     };
 };
+
+function teamStatus() {
+    this.Report = ko.observable(null);
+    this.TeamId = ko.observable(0);
+    this.Name = ko.observable('');
+    this.ProjectItems = ko.observableArray([]);
+
+    this.addProject = function(project) {
+        this.ProjectItems.push(project);
+    };
+}

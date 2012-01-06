@@ -50,7 +50,7 @@ namespace Status.Persistence
             StatusReport query = (from s in Session.Query<StatusReport>()
                                   orderby s.PeriodStart descending
                                   select s).First();
-            return query;// GetStatusReport(statusDate);
+            return query;
         }
 
         public StatusReport GetStatusReport(DateTime statusDate)

@@ -43,7 +43,7 @@ namespace Status.Etl.Tests
                 testContextInstance = value;
             }
         }
-
+        
         #region Additional test attributes
         // 
         //You can use the following additional attributes as you write your tests:
