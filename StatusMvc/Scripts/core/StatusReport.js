@@ -162,6 +162,7 @@ var statusReportVM = {
 };
 
 function statusReport() {
+    var self = this;
     this.Id = ko.observable(0);
     this.PeriodStart = ko.observable(/Date(1322456400000)/);
     this.Caption = ko.observable('');
@@ -263,8 +264,9 @@ function statusReport() {
         this.StatusItemDateToAdd(new Date());
     };
 
-    this.removeStatusItem = function(itemToRemove) {
-        this.Items.remove(itemToRemove);
+    self.removeStatusItem = function (itemToRemove) {
+        console.log("about to remove status item " + itemToRemove);
+        self.Items.remove(itemToRemove);
     };
 };
 
@@ -296,20 +298,67 @@ function statusReportItem() {
 };
 
 function projectStatus() {
-    this.Report = ko.observable(null);
-    this.ProjectId = ko.observable(1);
-    this.ProjectName = ko.observable('');
-    this.ProjectDepartmentName = ko.observable('');
-    this.ProjectDepartmentManagerFullName = ko.observable('');
-    this.ProjectType = ko.observable(0);
-    this.ProjectTeamId = ko.observable(0);
-    this.ProjectTeamName = ko.observable('');
-    this.ProjectLeadFullName = ko.observable('');
-    this.ProjectTeamLeadFullName = ko.observable('');
-    this.Items = ko.observableArray([]);
+    var self = this;
+    self.Report = ko.observable(null);
+    self.ProjectId = ko.observable(1);
+    self.ProjectName = ko.observable('');
+    self.ProjectDepartmentName = ko.observable('');
+    self.ProjectDepartmentManagerFullName = ko.observable('');
+    self.ProjectType = ko.observable(0);
+    self.ProjectTeamId = ko.observable(0);
+    self.ProjectTeamName = ko.observable('');
+    self.ProjectLeadFullName = ko.observable('');
+    self.ProjectTeamLeadFullName = ko.observable('');
+    self.Items = ko.observableArray([]);
+    self.NewStatusItemText = ko.observable();
+    self.NewStatusItemMilestoneDate = ko.observable(new Date());
+    
+    self.removeStatusItem = function (itemToRemove) {
+        console.log("about to remove item via projectStatus " + itemToRemove.TopicCaption());
+        self.Items.remove(itemToRemove);
+        self.Report().removeStatusItem(itemToRemove);
+    };
 
-    this.addItem = function (statusItem) {
-        this.Items.push(statusItem);
+    self.addItem = function (statusItem) {
+        self.Items.push(statusItem);
+        self.Report().addStatusItem(statusItem);
+        $(".datefield").datepicker({ dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true });
+    };
+    self.addItemFromTemplate = function () {
+        var statusItem = new statusReportItem()
+            .Report(self.Report)
+            .ProjectId(self.ProjectId())
+            .ProjectName(self.ProjectName())
+            .ProjectDepartmentName(self.ProjectDepartmentName())
+            .ProjectDepartmentManagerFullName(self.ProjectDepartmentManagerFullName())
+            .ProjectType(self.ProjectType())
+            .ProjectTeamId(self.ProjectTeamId())
+            .ProjectTeamName(self.ProjectTeamName())
+            .ProjectLeadFullName(self.ProjectLeadFullName())
+            .ProjectTeamLeadFullName(self.ProjectTeamLeadFullName());
+
+        self.addItem(statusItem);
+
+    };
+    self.addItemFromStubProperties = function () {
+        var statusItem = new statusReportItem()
+            .Report(self.Report)
+            .ProjectId(self.ProjectId())
+            .ProjectName(self.ProjectName())
+            .ProjectDepartmentName(self.ProjectDepartmentName())
+            .ProjectDepartmentManagerFullName(self.ProjectDepartmentManagerFullName())
+            .ProjectType(self.ProjectType())
+            .ProjectTeamId(self.ProjectTeamId())
+            .ProjectTeamName(self.ProjectTeamName())
+            .ProjectLeadFullName(self.ProjectLeadFullName())
+            .ProjectTeamLeadFullName(self.ProjectTeamLeadFullName())
+            .TopicCaption(self.NewStatusItemText())
+            .Caption(self.NewStatusItemText())
+            .MilestoneDate(self.NewStatusItemMilestoneDate());
+
+        self.addItem(statusItem);
+        self.NewStatusItemText('');
+        self.NewStatusItemMilestoneDate(new Date());
     };
 };
 
