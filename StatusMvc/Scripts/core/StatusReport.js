@@ -230,11 +230,11 @@ function statusReport() {
         return proj;
     };
 
-    this.PeriodStartFormatted = ko.dependentObservable(function () {
+    this.PeriodStartFormatted = ko.computed(function () {
         return parseJsonDateString(this.PeriodStart());
     } .bind(this));
     
-    this.Name = ko.dependentObservable(function() {
+    this.Name = ko.computed(function() {
         return this.Caption() + " (" + this.PeriodStart() + ")";
     }.bind(this));
     
@@ -287,10 +287,10 @@ function statusReportItem() {
     this.ProjectTeamName = ko.observable('');
     this.ProjectLeadFullName = ko.observable('');
     this.ProjectTeamLeadFullName = ko.observable('');
-    this.MilestoneDateFormatted = ko.dependentObservable(function () {
+    this.MilestoneDateFormatted = ko.computed(function () {
         return parseJsonDateString(this.MilestoneDate());
     } .bind(this));
-    this.MilestoneDateString = ko.dependentObservable(function () {
+    this.MilestoneDateString = ko.computed(function () {
         return $.datepicker.formatDate('mm/dd/yy', this.MilestoneDate());
     } .bind(this));
 };
