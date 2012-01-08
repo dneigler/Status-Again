@@ -43,10 +43,12 @@
             /// <param name="data" type="String">The JSON string to parse.</param>
             /// <param name="convertDates" optional="true" type="Boolean">Set to true when you want ISO/Asp.net dates to be auto-converted to dates.</param>
 
+            // convertDates = convertDates === false ? false : true;
+            
             if (typeof data !== "string" || !data) {
                 return null;
             }
-
+            
             // Make sure leading/trailing whitespace is removed (IE can't handle it)
             data = $.trim(data);
 
@@ -92,6 +94,11 @@ var statusReportVM = {
         $.ajax({
             url: url,
             dataType: "json",
+            converters: {
+                "text json": function (data) {
+                    return $.parseJSON(data, true);
+                }
+            },
             success: function (response) {
                 if (response != null) {
                     var sr = new statusReport()

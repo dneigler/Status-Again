@@ -81,7 +81,7 @@
 </script>
 <script type="text/html" id="projectItemTemplate">
 	<div><textarea class="required statusCaptionText" data-bind="value: Caption, uniqueName: true"/>
-		<input class="required datefield" data-bind="value: MilestoneDateString, uniqueName: true"/>
+		<input class="required datefield" data-bind="value: MilestoneDate, uniqueName: true"/>
 		@Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
 		new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
 		<a href="#" data-bind="click: function() { statusReportVM.Report().removeStatusItem($data) }">Delete</a>
