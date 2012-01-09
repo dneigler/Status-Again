@@ -271,29 +271,30 @@ function statusReport() {
 };
 
 function statusReportItem() {
-    this.Report = ko.observable(null);
-    this.Id = ko.observable(0);
-    this.TopicCaption = ko.observable('');
-    this.TopicExternalId = ko.observable(null);
-    this.TopicId = ko.observable(0);
-    this.MilestoneType = ko.observable(1);
-    this.MilestoneDate = ko.observable(new Date());
-    this.MilestoneConfidenceLevel = ko.observable(0);
-    this.Caption = ko.observable('');
-    this.ProjectId = ko.observable(1);
-    this.ProjectName = ko.observable('');
-    this.ProjectDepartmentName = ko.observable('');
-    this.ProjectDepartmentManagerFullName = ko.observable('');
-    this.ProjectType = ko.observable(0);
-    this.ProjectTeamId = ko.observable(0);
-    this.ProjectTeamName = ko.observable('');
-    this.ProjectLeadFullName = ko.observable('');
-    this.ProjectTeamLeadFullName = ko.observable('');
-    this.MilestoneDateFormatted = ko.computed(function () {
-        return parseJsonDateString(this.MilestoneDate());
+    var self = this;
+    self.Report = ko.observable(null);
+    self.Id = ko.observable(0);
+    self.TopicCaption = ko.observable('');
+    self.TopicExternalId = ko.observable(null);
+    self.TopicId = ko.observable(0);
+    self.MilestoneType = ko.observable(1);
+    self.MilestoneDate = ko.observable(new Date());
+    self.MilestoneConfidenceLevel = ko.observable(0);
+    self.Caption = ko.observable('');
+    self.ProjectId = ko.observable(1);
+    self.ProjectName = ko.observable('');
+    self.ProjectDepartmentName = ko.observable('');
+    self.ProjectDepartmentManagerFullName = ko.observable('');
+    self.ProjectType = ko.observable(0);
+    self.ProjectTeamId = ko.observable(0);
+    self.ProjectTeamName = ko.observable('');
+    self.ProjectLeadFullName = ko.observable('');
+    self.ProjectTeamLeadFullName = ko.observable('');
+    self.MilestoneDateFormatted = ko.computed(function () {
+        return parseJsonDateString(self.MilestoneDate());
     } .bind(this));
     this.MilestoneDateString = ko.computed(function () {
-        return $.datepicker.formatDate('mm/dd/yy', this.MilestoneDate());
+        return $.datepicker.formatDate('mm/dd/yy', self.MilestoneDate());
     } .bind(this));
 };
 
