@@ -108,7 +108,7 @@ ko.bindingHandlers.datepicker = {
     },
     update: function (element, valueAccessor) {
         var value = ko.utils.unwrapObservable(valueAccessor());
-        console.log("value", value);
+        //console.log("value", value);
         $(element).datepicker("setDate", value);
     }
 };
@@ -160,7 +160,7 @@ var statusReportVM = {
                     });
                     statusReportVM.Report(sr);
                     //$("#tabs").tabs();
-                    console.log("calling to #tabs in jquery");
+                    //console.log("calling to #tabs in jquery");
                     $("#tabs").tabs();
                     // $(".datefield").datepicker({dateFormat:'yy-mm-dd',changeMonth:true,changeYear:true });
                     $('textarea input').autoResize({
@@ -206,11 +206,11 @@ function statusReport() {
         // autocreates team and project if not found
         this.Items.push(statusItem);
         var team = this.getOrCreateTeamFromStatusItem(statusItem);
-        console.log(team.Name());
+        //console.log(team.Name());
     };
 
     this.teamCounter = 1;
-    
+
     this.getOrCreateTeamFromStatusItem = function (statusItem) {
         // ItemsByTeam
         var teams = ($.grep(this.ItemsByTeam(), function (i) {
@@ -224,9 +224,11 @@ function statusReport() {
                 .Report(this)
                 .TeamId(this.teamCounter++)
                 .Name(statusItem.ProjectLeadFullName());
+            console.log("Created team " + team.Name());
             this.ItemsByTeam.push(team);
             //statusItem.ProjectTeamId()
         }
+
         team.addProject(this.getOrCreateProjectFromStatusItem(statusItem));
         return team;
     };
@@ -234,12 +236,11 @@ function statusReport() {
     this.getOrCreateProjectFromStatusItem = function (statusItem) {
         //ItemsByProject
         var projects = ($.grep(this.ItemsByProject(), function (i) {
-            return (i.ProjectName() == statusItem.ProjectName());
+            return (i.ProjectId() == statusItem.ProjectId());
         }));
         var proj = null;
         if (projects.length > 0) {
             proj = projects[0];
-            proj.addItem(statusItem);
         } else {
             proj = new projectStatus()
                 .Report(this)
@@ -252,9 +253,10 @@ function statusReport() {
                 .ProjectTeamName(statusItem.ProjectTeamName())
                 .ProjectLeadFullName(statusItem.ProjectLeadFullName())
                 .ProjectTeamLeadFullName(statusItem.ProjectTeamLeadFullName());
-            proj.addItem(statusItem);
+            console.log("Created project " + proj.ProjectName() + " - " + proj.ProjectId());
             this.ItemsByProject.push(proj);
         }
+        proj.addItem(statusItem);
         return proj;
     };
 
@@ -396,7 +398,11 @@ function teamStatus() {
     this.Name = ko.observable('');
     this.ProjectItems = ko.observableArray([]);
 
-    this.addProject = function(project) {
-        this.ProjectItems.push(project);
+    this.addProject = function (project) {
+        var projects = ($.grep(this.ProjectItems(), function (i) {
+            return (i.ProjectId() == project.ProjectId());
+        }));
+        if (projects.length == 0)
+            this.ProjectItems.push(project);
     };
 }

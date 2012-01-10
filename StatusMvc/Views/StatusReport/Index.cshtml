@@ -39,7 +39,7 @@
                 <div data-bind='foreach: Items'>
                     <div>
                         <textarea class="required statusCaptionText" data-bind="value: Caption, uniqueName: true"></textarea>
-                        <input class="required datefield" data-bind="datepicker: MilestoneDate, datepickerOptions: { minDate: new Date() }" />
+                        <input class="required datefield" data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
                         @Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
                             new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
                         <a href="#" data-bind="click: $parent.removeStatusItem">Delete</a>
@@ -53,7 +53,7 @@
     <legend>Status Report</legend>
     <p>
         Date:
-        <input type="text" data-bind="value: PeriodStartFormatted" />
+        <input type="text" data-bind="datepicker: PeriodStartFormatted" />
     </p>
     <p>
         Caption:
