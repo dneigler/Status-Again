@@ -64,11 +64,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Csv\CsvResourceAllocationBridge.cs" />
     <Compile Include="Csv\CsvStatusEtl.cs" />
     <Compile Include="Csv\CsvStatusEtlBridge.cs" />
+    <Compile Include="Csv\ICsvResourceAllocationBridge.cs" />
     <Compile Include="Csv\ICsvStatusEtlBridge.cs" />
     <Compile Include="Csv\MilestoneConfidenceConverter.cs" />
     <Compile Include="Csv\MilestoneTypeConverter.cs" />
+    <Compile Include="Csv\ResourceAllocationCsvItem.cs" />
     <Compile Include="Csv\StatusCsvItem.cs" />
     <Compile Include="IStatusEtl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

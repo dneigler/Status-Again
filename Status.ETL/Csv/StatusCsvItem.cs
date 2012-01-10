@@ -22,7 +22,7 @@ namespace Status.Etl.Csv
         /// <summary>
         /// Should be an enumeration
         /// </summary>
-        [FieldConverter(typeof(MilestoneTypeConverter))] 
+        [FieldConverter(typeof(MilestoneTypeConverter))]
         public MilestoneTypes StatusType;
 
         [FieldConverter(ConverterKind.Date, "M/d/yyyy")]
