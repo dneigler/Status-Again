@@ -11,6 +11,7 @@
 			.projectNameHeader { font-weight: bold; font-size: 12pt; padding-top: 5px; }
 			.statusItemSecondLine { margin-left: 10px; }
 			textarea { display: inline-block; }
+            .datefield { text-align: right;width: 85px; }
 	</style>
 }
 <h2>@ViewBag.Message</h2>
@@ -38,7 +39,7 @@
                 <div data-bind='foreach: Items'>
                     <div>
                         <textarea class="required statusCaptionText" data-bind="value: Caption, uniqueName: true"></textarea>
-                        <input class="required datefield" data-bind="value: MilestoneDate, uniqueName: true" />
+                        <input class="required datefield" data-bind="datepicker: MilestoneDate, datepickerOptions: { minDate: new Date() }" />
                         @Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
                             new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
                         <a href="#" data-bind="click: $parent.removeStatusItem">Delete</a>

@@ -87,6 +87,33 @@ var parseJsonDateString = function (value) {
     return value;
 };
 
+
+ko.bindingHandlers.datepicker = {
+    init: function (element, valueAccessor, allBindingsAccessor) {
+        //initialize datepicker with some optional options
+        var options = allBindingsAccessor().datepickerOptions || {};
+        $(element).datepicker(options);
+
+        //handle the field changing
+        ko.utils.registerEventHandler(element, "change", function () {
+            var observable = valueAccessor();
+            observable($(element).datepicker("getDate"));
+        });
+
+        //handle disposal (if KO removes by the template binding)
+        ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
+            $(element).datepicker("destroy");
+        });
+
+    },
+    update: function (element, valueAccessor) {
+        var value = ko.utils.unwrapObservable(valueAccessor());
+        console.log("value", value);
+        $(element).datepicker("setDate", value);
+    }
+};
+
+
 var statusReportVM = {
     Report: ko.observable(new statusReport()),
     loadReport: function (reportDate) {
@@ -135,7 +162,7 @@ var statusReportVM = {
                     //$("#tabs").tabs();
                     console.log("calling to #tabs in jquery");
                     $("#tabs").tabs();
-                    $(".datefield").datepicker({dateFormat:'yy-mm-dd',changeMonth:true,changeYear:true });
+                    // $(".datefield").datepicker({dateFormat:'yy-mm-dd',changeMonth:true,changeYear:true });
                     $('textarea input').autoResize({
                         // On resize:
                         onResize: function () {
