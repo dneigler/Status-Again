@@ -89,6 +89,7 @@
     <Compile Include="App_Start\MySuperPackage.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ResourceAllocationController.cs" />
     <Compile Include="Controllers\StatusReportController.cs" />
     <Compile Include="Extensions\SelectListExtension.cs" />
     <Compile Include="Global.asax.cs">
