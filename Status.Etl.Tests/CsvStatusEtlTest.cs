@@ -81,7 +81,7 @@ namespace Status.Etl.Tests
 
 
         /// <summary>
-        ///A test for ImportStatus
+        ///A test for ImportAllocations
         ///</summary>
         [TestMethod]
         public void ImportStatusTest()
@@ -101,7 +101,7 @@ namespace Status.Etl.Tests
         }
 
         /// <summary>
-        ///A test for ExportStatus
+        ///A test for ExportAllocations
         ///</summary>
         [TestMethod()]
         public void ExportStatusTest()
@@ -114,7 +114,7 @@ namespace Status.Etl.Tests
         }
 
         /// <summary>
-        ///A test for ExportStatus
+        ///A test for ExportAllocations
         ///</summary>
         [TestMethod()]
         public void ExportStatusTest1()

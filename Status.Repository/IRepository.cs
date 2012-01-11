@@ -1,8 +1,9 @@
-﻿using NHibernate;
+﻿using System.Collections.Generic;
+using NHibernate;
 
 namespace Status.Repository
 {
-    public interface IRepository<in T>
+    public interface IRepository<T>
     {
         ITransaction BeginTransaction();
         void CommitTransaction();
@@ -14,6 +15,7 @@ namespace Status.Repository
         void CloseSession();
         void CloseSession(ISession session);
         ISession Session { get; set; }
+        IList<T> GetAll();
         void Add(T itemToAdd);
         void Update(T itemToUpdate);
         void Delete(T itemToDelete);

@@ -5,7 +5,7 @@ namespace Status.Repository
 {
     public interface IProjectRepository : IRepository<Project>
     {
-        Project GetProject(string projectName);
+        Project GetProjectByName(string projectName);
 
         IList<Project> GetProjectsByNames(IList<string> projectNames);
         

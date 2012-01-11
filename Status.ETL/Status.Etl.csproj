@@ -72,7 +72,9 @@
     <Compile Include="Csv\MilestoneConfidenceConverter.cs" />
     <Compile Include="Csv\MilestoneTypeConverter.cs" />
     <Compile Include="Csv\ResourceAllocationCsvItem.cs" />
+    <Compile Include="Csv\CsvResourceAllocationEtl.cs" />
     <Compile Include="Csv\StatusCsvItem.cs" />
+    <Compile Include="IResourceAllocationEtl.cs" />
     <Compile Include="IStatusEtl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

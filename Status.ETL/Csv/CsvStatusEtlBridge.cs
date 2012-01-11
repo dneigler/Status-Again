@@ -106,7 +106,7 @@ namespace Status.ETL.Csv
                 var grpProjects = items.GroupBy(item => item.Project);
                 foreach (var projectG in grpProjects)
                 {
-                    var p = this.ProjectRepository.GetProject(projectG.Key);
+                    var p = this.ProjectRepository.GetProjectByName(projectG.Key);
                     if (p == null)
                     {
                         var pItem = projectG.First();
@@ -170,7 +170,7 @@ namespace Status.ETL.Csv
                                                      if (statusItem.Topic == null)
                                                          statusItem.Topic = this.TopicRepository.GetTopicByCaption(statusReportItem.Note);
 
-                                                     statusItem.Project = this.ProjectRepository.GetProject(statusReportItem.Project);
+                                                     statusItem.Project = this.ProjectRepository.GetProjectByName(statusReportItem.Project);
 
                                                      statusItem.Milestone = new Milestone()
                                                      {
@@ -203,7 +203,6 @@ namespace Status.ETL.Csv
             }
             finally
             {
-                // this.StatusReportRepository.RollbackTransaction();
             }
         }
     }

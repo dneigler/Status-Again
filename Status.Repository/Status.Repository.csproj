@@ -46,6 +46,7 @@
     <Compile Include="IDepartmentRepository.cs" />
     <Compile Include="IProjectRepository.cs" />
     <Compile Include="IRepository.cs" />
+    <Compile Include="IResourceAllocationRepository.cs" />
     <Compile Include="IResourceRepository.cs" />
     <Compile Include="IStatusReportRepository.cs" />
     <Compile Include="ITeamRepository.cs" />

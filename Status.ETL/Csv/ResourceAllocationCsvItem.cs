@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FileHelpers;
 
 namespace Status.ETL.Csv
 {
@@ -11,7 +12,7 @@ namespace Status.ETL.Csv
     // ProjectTypeCaptionRollup,BusinessAlignment,TechnologyAlignment,ResourceTeamID,
     // ProjectTeamID,Team,ResourceTeam,ProjectTeam,ResourceTeamLead,BillingCode,TaskCode,
     // QuarterNumber,Quarter,AllocationPercentageNegative,ProjectYear,Year
-
+    [DelimitedRecord(",")]
     public class ResourceAllocationCsvItem
     {
         public string EmployeeID;
@@ -22,12 +23,14 @@ namespace Status.ETL.Csv
 
         public string EmployeeType;
 
-        public string EmployeeCategory; 
-        
+        public string EmployeeCategory;
+
+        [FieldConverter(ConverterKind.Date, "M/d/yyyy")]
         public DateTime Month; 
         
         public uint ProjectID;
-
+        
+        [FieldQuoted()]
         public string Project;
 
         public decimal AllocationPercentage;
@@ -38,14 +41,16 @@ namespace Status.ETL.Csv
 
         public decimal WeightedPercentage;
 
-        public decimal MonthlyCost; 
-        
+        public decimal MonthlyCost;
+
+        [FieldQuoted()]
         public string ProjectType; 
         
         public string ParentProjectType; 
         
-        public string BudgetType; 
-        
+        public string BudgetType;
+
+        [FieldQuoted()]
         public string ProjectCaptionRollup;
 
         public string ProjectTypeCaptionRollup; 

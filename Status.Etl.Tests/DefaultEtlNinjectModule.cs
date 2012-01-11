@@ -33,6 +33,7 @@ namespace Status.Etl.Tests
             Bind<IRollStatusDateProcessor>().To<DefaultRollStatusDateProcessor>();
             Bind<IStatusEtl>().To<Csv.CsvStatusEtl>();
             Bind<ICsvStatusEtlBridge>().To<CsvStatusEtlBridge>();
+            Bind<ICsvResourceAllocationBridge>().To<CsvResourceAllocationBridge>();
 
             Bind<IStatusReportRepository>().To<StatusReportRepository>()
                 .WithConstructorArgument("connectionString", ConnString);
@@ -45,6 +46,8 @@ namespace Status.Etl.Tests
             Bind<ITeamRepository>().To<TeamRepository>()
                 .WithConstructorArgument("connectionString", ConnString);
             Bind<IDepartmentRepository>().To<DepartmentRepository>()
+                .WithConstructorArgument("connectionString", ConnString);
+            Bind<IResourceAllocationRepository>().To<ResourceAllocationRepository>()
                 .WithConstructorArgument("connectionString", ConnString);
         }
     }

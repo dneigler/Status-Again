@@ -1,7 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
 using NHibernate;
 using System;
+using NHibernate.Linq;
+using Status.Model;
 using Status.Repository;
 
 namespace Status.Persistence
@@ -151,6 +155,13 @@ namespace Status.Persistence
                 return _session;
             }
             set { _session = value; }
+        }
+
+        public IList<T> GetAll()
+        {
+            var query = (from ra in this.Session.Query<ResourceAllocation>()
+                         select ra);
+            return (IList<T>) query.ToList();
         }
 
         public void Add(T itemToAdd)

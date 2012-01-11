@@ -32,7 +32,7 @@ namespace Status.Persistence
         #endregion
 
 
-        public Project GetProject(string projectName)
+        public Project GetProjectByName(string projectName)
         {
             var session = Session;
             {
@@ -78,7 +78,7 @@ namespace Status.Persistence
         public void AddProject(Project project)
         {
             // double check that project doesn't exist
-            Project existingProject = this.GetProject(project.Name);
+            Project existingProject = this.GetProjectByName(project.Name);
             if (existingProject != null) throw new Exception(string.Format("Project name {0} already exists with id {1}", existingProject.Name, existingProject.Id));
 
             var session = Session;
