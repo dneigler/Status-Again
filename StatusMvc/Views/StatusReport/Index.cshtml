@@ -2,83 +2,83 @@
 @using Status.Model
 @using StatusMvc.Extensions
 @{
-    ViewBag.Title = "Index";
+	ViewBag.Title = "Index";
 }
 @section HeadSection {
-    <script src="@Url.Content("~/Scripts/core/StatusReport.js")" type="text/javascript"></script>
-    <style type="text/css">
+	<script src="@Url.Content("~/Scripts/core/StatusReport.js")" type="text/javascript"></script>
+	<style type="text/css">
 			.statusCaptionText { width: 400px; font-size: 8pt; }
 			.projectNameHeader { font-weight: bold; font-size: 12pt; padding-top: 5px; }
 			.statusItemSecondLine { margin-left: 10px; }
 			textarea { display: inline-block; }
-            .datefield { text-align: right;width: 85px; }
+			.datefield { text-align: right;width: 85px; }
 	</style>
 }
 <h2>@ViewBag.Message</h2>
-@*<form data-bind="submit: addReport">*@
+<button data-bind="click: save">Save</button>
 <fieldset>
-    <legend>Teams</legend>
-    <div id="tabs">
-        <ul data-bind='foreach: ItemsByTeam'>
-            <li><a data-bind="attr: {href:'#tabs-' + TeamId(), title: Name}, text: Name"></a>
-            </li>
-        </ul>
-        <div data-bind='foreach: ItemsByTeam'>
-            <div data-bind='attr: {id: "tabs-" + TeamId() }, foreach: ProjectItems'>
-                <div class="projectNameHeader">
-                    <span data-bind="text: ProjectName"></span><a href="#" data-bind="click: addItemFromTemplate">
-                        +</a>
-                </div>
-                <div>
-                    <form data-bind="submit: addItemFromStubProperties">
-                    <input type="text" data-bind="value: NewStatusItemText" placeholder="New status item caption..." />
-                    <button type="submit">
-                        Add</button>
-                    </form>
-                </div>
-                <div data-bind='foreach: Items'>
-                    <div>
-                        <textarea class="required statusCaptionText" data-bind="value: Caption, uniqueName: true"></textarea>
-                        <input class="required datefield" data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
-                        @Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
-                            new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
-                        <a href="#" data-bind="click: $parent.removeStatusItem">Delete</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+	<legend>Teams</legend>
+	<div id="tabs">
+		<ul data-bind='foreach: ItemsByTeam'>
+			<li><a data-bind="attr: {href:'#tabs-' + TeamId(), title: Name}, text: Name"></a>
+			</li>
+		</ul>
+		<div data-bind='foreach: ItemsByTeam'>
+			<div data-bind='attr: {id: "tabs-" + TeamId() }, foreach: ProjectItems'>
+				<div class="projectNameHeader">
+					<span data-bind="text: ProjectName"></span><a href="#" data-bind="click: addItemFromTemplate">
+						+</a>
+				</div>
+				<div>
+					<form data-bind="submit: addItemFromStubProperties">
+					<input type="text" data-bind="value: NewStatusItemText" placeholder="New status item caption..." />
+					<button type="submit">
+						Add</button>
+					</form>
+				</div>
+				<div data-bind='foreach: Items'>
+					<div>
+						<textarea class="required statusCaptionText" data-bind="value: Caption, uniqueName: true"></textarea>
+						<input class="required datefield" data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
+						@Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
+							new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
+						<a href="#" data-bind="click: $parent.removeStatusItem">Delete</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </fieldset>
 <fieldset>
-    <legend>Status Report</legend>
-    <p>
-        Date:
-        <input type="text" data-bind="datepicker: PeriodStartFormatted" />
-    </p>
-    <p>
-        Caption:
-        <input type="text" data-bind="value: Caption" placeholder="Enter caption for status report" />
-    </p>
-    <p>
-        Items: <span data-bind="value: NumberOfStatusItems"></span>
-    </p>
-    <input type="button" click="statusReportVM.loadReport('@Request.QueryString["statusDate"]');" value="Reload"></input>
+	<legend>Status Report</legend>
+	<p>
+		Date:
+		<input type="text" data-bind="datepicker: PeriodStartFormatted" />
+	</p>
+	<p>
+		Caption:
+		<input type="text" data-bind="value: Caption" placeholder="Enter caption for status report" />
+	</p>
+	<p>
+		Items: <span data-bind="value: NumberOfStatusItems"></span>
+	</p>
+	<input type="button" click="statusReportVM.loadReport('@Request.QueryString["statusDate"]');" value="Reload"></input>
 </fieldset>
 <fieldset>
-    <legend>Items</legend>New Status Item:
-    <input type="text" data-bind='value: StatusItemToAdd, valueUpdate: "afterkeydown"' />
-    <input type="text" data-bind='value: StatusItemDateToAdd, valueUpdate: "afterkeydown"' />
-    @Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
-            new Dictionary<string, object> { { "data-bind", "value:StatusItemMilestoneToAdd" } })
-    <button type="submit" data-bind="enable: StatusItemToAdd().length > 0, click: addStatusItem">
-        Add</button>
+	<legend>Items</legend>New Status Item:
+	<input type="text" data-bind='value: StatusItemToAdd, valueUpdate: "afterkeydown"' />
+	<input type="text" data-bind='value: StatusItemDateToAdd, valueUpdate: "afterkeydown"' />
+	@Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
+			new Dictionary<string, object> { { "data-bind", "value:StatusItemMilestoneToAdd" } })
+	<button type="submit" data-bind="enable: StatusItemToAdd().length > 0, click: addStatusItem">
+		Add</button>
 </fieldset>
 <input type="submit" value="Create" />
 @*</form>*@
 <script type="text/javascript">
-    $(function () {
-        //activates KO
-        ko.applyBindings(statusReportVM.Report);
-        statusReportVM.loadReport('@Request.QueryString["statusDate"]');
-    });
+	$(function () {
+		//activates KO
+		ko.applyBindings(statusReportVM.Report);
+		statusReportVM.loadReport('@Request.QueryString["statusDate"]');
+	});
 </script>

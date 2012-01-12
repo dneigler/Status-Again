@@ -209,6 +209,15 @@ function statusReport() {
         //console.log(team.Name());
     };
 
+    this.save = function() {
+        $.ajax("/StatusReport/Save", {
+            data: ko.toJSON({ tasks: self }),
+            type: "post",
+            contentType: "application/json",
+            success: function(result) { alert(result); }
+        });
+    };
+
     this.teamCounter = 1;
 
     this.getOrCreateTeamFromStatusItem = function (statusItem) {

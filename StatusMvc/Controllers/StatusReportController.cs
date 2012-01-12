@@ -62,6 +62,12 @@ namespace StatusMvc.Controllers
         //    return View();
         //}
 
+        [HttpPost]
+        public JsonResult Save(IEnumerable<StatusReportViewModel> report)
+        {
+            return Json(report);
+        }
+        
         ////
         //// GET: /StatusReport/Create
         [HttpPost]
