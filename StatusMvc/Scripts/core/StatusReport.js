@@ -138,7 +138,7 @@ var statusReportVM = {
                         .StatusItemMilestoneToAdd(0);
                     $.each(response.Items, function (x, item) {
                         var sri = new statusReportItem()
-                                .Report(sr)
+                                //.Report(sr)
                                 .Id(item.Id)
                                 .TopicCaption(item.TopicCaption)
                                 .TopicExternalId(item.TopicExternalId)
@@ -211,7 +211,7 @@ function statusReport() {
 
     this.save = function() {
         $.ajax("/StatusReport/Save", {
-            data: ko.toJSON({ tasks: self }),
+            data: ko.toJSON({ tasks: self.Items }),
             type: "post",
             contentType: "application/json",
             success: function(result) { alert(result); }
@@ -310,7 +310,7 @@ function statusReport() {
 
 function statusReportItem() {
     var self = this;
-    self.Report = ko.observable(null);
+    //self.Report = ko.observable(null);
     self.Id = ko.observable(0);
     self.TopicCaption = ko.observable('');
     self.TopicExternalId = ko.observable(null);
