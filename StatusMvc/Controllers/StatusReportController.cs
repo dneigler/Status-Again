@@ -65,7 +65,7 @@ namespace StatusMvc.Controllers
         [HttpPost]
         public JsonResult Save(IEnumerable<StatusReportViewModel> report)
         {
-            return Json(report);
+            return Json(report, JsonRequestBehavior.AllowGet);
         }
         
         ////

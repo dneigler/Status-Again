@@ -25,10 +25,10 @@
 		</ul>
 		<div data-bind='foreach: ItemsByTeam'>
 			<div data-bind='attr: {id: "tabs-" + TeamId() }, foreach: ProjectItems'>
-				<div class="projectNameHeader">
-					<span data-bind="text: ProjectName"></span><a href="#" data-bind="click: addItemFromTemplate">
-						+</a>
-				</div>
+                <div class="projectNameHeader">
+                    <span data-bind="text: ProjectName"></span><a href="#" data-bind="click: addItemFromTemplate">
+                                                                   +</a>
+                </div>
 				<div>
 					<form data-bind="submit: addItemFromStubProperties">
 					<input type="text" data-bind="value: NewStatusItemText" placeholder="New status item caption..." />
@@ -37,13 +37,14 @@
 					</form>
 				</div>
 				<div data-bind='foreach: Items'>
-					<div>
-						<textarea class="required statusCaptionText" data-bind="value: Caption, uniqueName: true"></textarea>
-						<input class="required datefield" data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
-						@Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
-							new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
-						<a href="#" data-bind="click: $parent.removeStatusItem">Delete</a>
-					</div>
+                    <div>
+                        <span data-bind="visible: HasChanges" style="color:limegreen;">*</span>
+                        <textarea class="required statusCaptionText" data-bind="value: Caption, uniqueName: true"></textarea>
+                        <input class="required datefield" data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
+                        @Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
+                         new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
+                        <a href="#" data-bind="click: $parent.removeStatusItem">Delete</a>
+                    </div>
 				</div>
 			</div>
 		</div>
