@@ -95,7 +95,9 @@ namespace StatusMvc.Controllers
                                             Project project = this.ProjectRepository.Get(r.ProjectId);
                                             sri.Topic = topic;
                                             sri.Project = project;
-                                            this.StatusReportRepository.UpsertStatusReportItem(sri);
+                                            StatusReport sr = this.StatusReportRepository.Get(r.StatusReportId);
+                                            sr.AddStatusItem(sri);
+                                            this.StatusReportRepository.Update(sr);//.UpsertStatusReportItem(sri);
                                         });
             return Json(report, JsonRequestBehavior.AllowGet);
         }

@@ -387,6 +387,7 @@ function statusReportItem() {
 	self.ProjectTeamName = ko.observable('');
 	self.ProjectLeadFullName = ko.observable('');
 	self.ProjectTeamLeadFullName = ko.observable('');
+	self.StatusReportId = ko.observable(0);
 
 	this.LoadFromObject = function (item) {
 	    self.Id(item.Id)
@@ -526,7 +527,8 @@ function projectStatus() {
 			.ProjectTeamLeadFullName(self.ProjectTeamLeadFullName())
 			.TopicCaption(self.NewStatusItemText())
 			.Caption(self.NewStatusItemText())
-			.MilestoneDate(self.NewStatusItemMilestoneDate());
+			.MilestoneDate(self.NewStatusItemMilestoneDate())
+            .StatusReportId(self.Report().Id());
 	    statusItem.ListenForChanges();
 	    self.addItem(statusItem);
 	    self.NewStatusItemText('');
