@@ -21,6 +21,8 @@ namespace StatusMvc.Models
     {
         public int Id { get; set; }
         
+        public int StatusReportId { get; set; }
+
         [Required, CanSort, Display(Name = "Caption")]
         public string TopicCaption { get; set; }
         public string TopicExternalId { get; set; }

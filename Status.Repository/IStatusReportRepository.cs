@@ -19,6 +19,7 @@ namespace Status.Repository
         IList<StatusReport> GetAllStatusReports();
 
         DateTime GetCurrentStatusReportDate();
-        
+
+        void UpsertStatusReportItem(StatusItem statusItem);
     }
 }

@@ -32,7 +32,7 @@
 				<div>
 					<form data-bind="submit: addItemFromStubProperties">
 					<input type="text" data-bind="value: NewStatusItemText" placeholder="New status item caption..." />
-					<button type="submit">
+					<button type="submit" data-bind="enable: HasNewItem">
 						Add</button>
 					</form>
 				</div>

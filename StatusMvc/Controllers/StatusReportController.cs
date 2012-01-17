@@ -13,13 +13,17 @@ namespace StatusMvc.Controllers
     public class StatusReportController : Controller
     {
         private IStatusReportRepository _repository;
+        private ITopicRepository _topicRepository;
 
-        public StatusReportController(IStatusReportRepository repository)
+        public StatusReportController(IStatusReportRepository repository, ITopicRepository topicRepository)
         {
             _repository = repository;
+            TopicRepository = topicRepository;
             Mapper.CreateMap<StatusReport, StatusReportViewModel>()
                 .ForMember(m => m.NumberOfStatusItems, opt => opt.ResolveUsing<NumberOfStatusItemsFormatter>());
             Mapper.CreateMap<StatusItem, StatusReportItemViewModel>();
+            Mapper.CreateMap<StatusReportItemViewModel, StatusItem>();
+            //.ForMember(m => m.StatusReportId, opt => opt.M);
             //.ForMember(dest => dest.ProjectLeadFullName, opt => opt.MapFrom(src => src.Project.Lead.FullName))
             //.ForMember(dest => dest.ProjectTeamLeadFullName, opt => opt.MapFrom(src => src.Project.Team.Lead.FullName));
 
@@ -28,6 +32,12 @@ namespace StatusMvc.Controllers
         public IStatusReportRepository StatusReportRepository
         {
             get { return _repository; }
+        }
+
+        public ITopicRepository TopicRepository
+        {
+            get { return _topicRepository; }
+            set { _topicRepository = value; }
         }
 
         //
@@ -63,8 +73,24 @@ namespace StatusMvc.Controllers
         //}
 
         [HttpPost]
-        public JsonResult Save(IEnumerable<StatusReportViewModel> report)
+        public JsonResult Save(StatusReportViewModel report)
         {
+            report.Items.ToList().ForEach(r =>
+                                        {
+                                            // need to map this back to status report
+                                            var sri = Mapper.Map<StatusReportItemViewModel, StatusItem>(r);
+                                            // if topic doesn't exist yet, we should create
+                                            Topic topic = this.TopicRepository.GetTopicByCaption(sri.Caption);
+                                            if (topic != null)
+                                                sri.Topic = topic;
+                                            else
+                                            {
+                                                this.TopicRepository.Add(new Topic() { Caption = sri.Caption })  ;
+                                                Topic outputTopic = this.TopicRepository.GetTopicByCaption(sri.Caption);
+                                                sri.Topic = outputTopic;
+                                            }
+                                            this.StatusReportRepository.UpsertStatusReportItem(sri);
+                                        });
             return Json(report, JsonRequestBehavior.AllowGet);
         }
         

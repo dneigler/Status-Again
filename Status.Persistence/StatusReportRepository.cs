@@ -94,6 +94,10 @@ namespace Status.Persistence
             session.Save(statusReport);
         }
 
+        public void UpsertStatusReportItem(StatusItem statusItem)
+        {
+            this.Session.SaveOrUpdate(statusItem);
+        }
         #endregion
 
         public DateTime GetCurrentStatusReportDate()

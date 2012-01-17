@@ -115,20 +115,20 @@ ko.bindingHandlers.datepicker = {
 
 
 var statusReportVM = {
-    Report: ko.observable(new statusReport()),
-    loadReport: function (reportDate) {
-        var url = "/StatusReport/GetStatusReport?statusDate=" + reportDate;
-        $.ajax({
-            url: url,
-            dataType: "json",
-            converters: {
-                "text json": function (data) {
-                    return $.parseJSON(data, true);
-                }
-            },
-            success: function (response) {
-                if (response != null) {
-                    var sr = new statusReport()
+	Report: ko.observable(new statusReport()),
+	loadReport: function (reportDate) {
+		var url = "/StatusReport/GetStatusReport?statusDate=" + reportDate;
+		$.ajax({
+			url: url,
+			dataType: "json",
+			converters: {
+				"text json": function (data) {
+					return $.parseJSON(data, true);
+				}
+			},
+			success: function (response) {
+				if (response != null) {
+					var sr = new statusReport()
 						.Caption(response.PeriodStart)
 						.PeriodStart(response.PeriodStart)
 						.Id(response.Id)
@@ -136,59 +136,60 @@ var statusReportVM = {
 						.StatusItemToAdd("")
 						.StatusItemDateToAdd(new Date())
 						.StatusItemMilestoneToAdd(0);
-                    $.each(response.Items, function (x, item) {
-                        var sri = new statusReportItem()
-                        //.Report(sr)
-								.Id(item.Id)
-								.TopicCaption(item.TopicCaption)
-								.TopicExternalId(item.TopicExternalId)
-								.TopicId(item.TopicId)
-								.MilestoneType(item.MilestoneType)
-								.MilestoneDate(item.MilestoneDate)
-								.MilestoneConfidenceLevel(item.MilestoneConfidenceLevel)
-								.Caption(item.Caption)
-								.ProjectId(item.ProjectId)
-								.ProjectName(item.ProjectName)
-								.ProjectDepartmentName(item.ProjectDepartmentName)
-								.ProjectDepartmentManagerFullName(item.ProjectDepartmentManagerFullName)
-								.ProjectType(item.ProjectType)
-								.ProjectTeamId(item.ProjectTeamId)
-								.ProjectTeamName(item.ProjectTeamName)
-								.ProjectLeadFullName(item.ProjectLeadFullName)
-								.ProjectTeamLeadFullName(item.ProjectTeamLeadFullName);
-                        sri.OriginalVersion = getMembers(item);
-                        sri.ListenForChanges();
+					$.each(response.Items, function (x, item) {
+						var sri = new statusReportItem()
+							.LoadFromObject(item);
+						//.Report(sr)
+//								.Id(item.Id)
+//								.TopicCaption(item.TopicCaption)
+//								.TopicExternalId(item.TopicExternalId)
+//								.TopicId(item.TopicId)
+//								.MilestoneType(item.MilestoneType)
+//								.MilestoneDate(item.MilestoneDate)
+//								.MilestoneConfidenceLevel(item.MilestoneConfidenceLevel)
+//								.Caption(item.Caption)
+//								.ProjectId(item.ProjectId)
+//								.ProjectName(item.ProjectName)
+//								.ProjectDepartmentName(item.ProjectDepartmentName)
+//								.ProjectDepartmentManagerFullName(item.ProjectDepartmentManagerFullName)
+//								.ProjectType(item.ProjectType)
+//								.ProjectTeamId(item.ProjectTeamId)
+//								.ProjectTeamName(item.ProjectTeamName)
+//								.ProjectLeadFullName(item.ProjectLeadFullName)
+//								.ProjectTeamLeadFullName(item.ProjectTeamLeadFullName);
+//						sri.OriginalVersion = getMembers(item);
+//						sri.ListenForChanges();
 
-                        sr.loadStatusItem(sri);
-                    });
-                    statusReportVM.Report(sr);
-                    //$("#tabs").tabs();
-                    //console.log("calling to #tabs in jquery");
-                    $("#tabs").tabs();
-                    // $(".datefield").datepicker({dateFormat:'yy-mm-dd',changeMonth:true,changeYear:true });
-                    $('textarea input').autoResize({
-                        // On resize:
-                        onResize: function () {
-                            $(this).css({ opacity: 0.8 });
-                        },
-                        // After resize:
-                        animateCallback: function () {
-                            $(this).css({ opacity: 1 });
-                        },
-                        // Quite slow animation:
-                        animateDuration: 300,
-                        // More extra space:
-                        extraSpace: 40
-                    });
-                } else {
-                    alert(response.message);
-                }
-            },
-            error: function (response) {
-                alert("Failed to get report for date " + reportDate + "..." + response.responseText);
-            }
-        });
-    }
+						sr.loadStatusItem(sri);
+					});
+					statusReportVM.Report(sr);
+					//$("#tabs").tabs();
+					//console.log("calling to #tabs in jquery");
+					$("#tabs").tabs();
+					// $(".datefield").datepicker({dateFormat:'yy-mm-dd',changeMonth:true,changeYear:true });
+					$('textarea input').autoResize({
+						// On resize:
+						onResize: function () {
+							$(this).css({ opacity: 0.8 });
+						},
+						// After resize:
+						animateCallback: function () {
+							$(this).css({ opacity: 1 });
+						},
+						// Quite slow animation:
+						animateDuration: 300,
+						// More extra space:
+						extraSpace: 40
+					});
+				} else {
+					alert(response.message);
+				}
+			},
+			error: function (response) {
+				alert("Failed to get report for date " + reportDate + "..." + response.responseText);
+			}
+		});
+	}
 };
 
 function statusReport() {
@@ -213,34 +214,40 @@ function statusReport() {
 	};
 
 	this.save = function () {
-	    console.log("About to save self.Items = " + self.Items().length);
-	    var url = "/StatusReport/Save";
-	    var itemsToPost = ko.utils.arrayFilter(self.Items(), function (item) {
-	        return item.HasChanges(); // ko.utils.stringStartsWith(item.name().toLowerCase(), filter);
-	    });
-	    $.ajax({
-	        url: url,
-	        dataType: "json",
-	        data: ko.toJSON({ report: itemsToPost }),
-	        type: "post",
-	        contentType: "application/json",
-	        success: function (result) { alert(result); },
-	        error: function (xhr, status) {
-	            switch (status) {
-	                case 404:
-	                    alert('File not found');
-	                    break;
-	                case 500:
-	                    alert('Server error');
-	                    break;
-	                case 0:
-	                    alert('Request aborted');
-	                    break;
-	                default:
-	                    alert('Unknown error ' + status);
-	            }
-	        }
-	    });
+		var url = "/StatusReport/Save";
+		var miniReport = new statusReport();
+		miniReport.PeriodStart = self.PeriodStart();
+		miniReport.Id = self.Id();
+		miniReport.Caption = self.Caption();
+		
+		miniReport.Items = ko.utils.arrayFilter(self.Items(), function (item) {
+			return item.HasChanges(); // ko.utils.stringStartsWith(item.name().toLowerCase(), filter);
+		});
+		console.log("About to save self.Items = " + miniReport.Items.length);
+		
+		$.ajax({
+			url: url,
+			dataType: "json",
+			data: ko.toJSON({ report: miniReport }),
+			type: "post",
+			contentType: "application/json",
+			success: function (result) { alert(result); },
+			error: function (xhr, status) {
+				switch (status) {
+					case 404:
+						alert('File not found');
+						break;
+					case 500:
+						alert('Server error');
+						break;
+					case 0:
+						alert('Request aborted');
+						break;
+					default:
+						alert('Unknown error ' + status);
+				}
+			}
+		});
 	};
 	
 	
@@ -316,17 +323,18 @@ function statusReport() {
 		});
 	};
 
-	this.addStatusItem = function() {
-		if (this.StatusItemToAdd() != '') {
-			var sri = new statusReportItem();
-			sri.Caption(this.StatusItemToAdd());
-			sri.MilestoneType(this.StatusItemMilestoneToAdd());
-			sri.MilestoneDate(this.StatusItemDateToAdd());
-			this.Items.push(sri);
-		};
-		this.StatusItemToAdd('');
-		this.StatusItemMilestoneToAdd(0);
-		this.StatusItemDateToAdd(new Date());
+	this.addStatusItem = function (sri) {
+	    //if (this.StatusItemToAdd() != '') {
+//	        var sri = new statusReportItem();
+//	        sri.Caption(this.NewStatusItemText());
+//	        sri.MilestoneType(this.StatusItemMilestoneToAdd());
+//	        sri.MilestoneDate(this.StatusItemDateToAdd());
+//	        sri.ListenForChanges();
+	    this.Items.push(sri);
+	    //};
+	    this.StatusItemToAdd('');
+	    this.StatusItemMilestoneToAdd(0);
+	    this.StatusItemDateToAdd(new Date());
 	};
 
 	self.removeStatusItem = function (itemToRemove) {
@@ -340,11 +348,22 @@ Returns the names of all the obj's
 variables and functions in a sorted
 array
 */
+
+//do some basic mapping (without mapping plugin)
+var mappedData = ko.utils.arrayMap(dataFromServer, function (item) {
+    return new Item(item.name, item.category, item.price);
+});
+
 function getMembers(original) {
-    // Shallow copy
-    var clone = jQuery.extend({}, original);
-    // var b = obj.slice(0);//  jQuery.extend({}, obj);
-	return clone;
+    var sri = new Array();
+    $.each(original, function (index, item) {
+        sri[index] = ko.utils.unwrapObservable(item);
+    });
+    return sri;
+//    // Shallow copy
+//	var clone = jQuery.extend({}, original);
+//	// var b = obj.slice(0);//  jQuery.extend({}, obj);
+//	return clone;
 }
 
 function statusReportItem() {
@@ -368,37 +387,74 @@ function statusReportItem() {
 	self.ProjectTeamName = ko.observable('');
 	self.ProjectLeadFullName = ko.observable('');
 	self.ProjectTeamLeadFullName = ko.observable('');
+
+	this.LoadFromObject = function (item) {
+	    self.Id(item.Id)
+		.TopicCaption(item.TopicCaption)
+		.TopicExternalId(item.TopicExternalId)
+		.TopicId(item.TopicId)
+		.MilestoneType(item.MilestoneType)
+		.MilestoneDate(item.MilestoneDate)
+		.MilestoneConfidenceLevel(item.MilestoneConfidenceLevel)
+		.Caption(item.Caption)
+		.ProjectId(item.ProjectId)
+		.ProjectName(item.ProjectName)
+		.ProjectDepartmentName(item.ProjectDepartmentName)
+		.ProjectDepartmentManagerFullName(item.ProjectDepartmentManagerFullName)
+		.ProjectType(item.ProjectType)
+		.ProjectTeamId(item.ProjectTeamId)
+		.ProjectTeamName(item.ProjectTeamName)
+		.ProjectLeadFullName(item.ProjectLeadFullName)
+		.ProjectTeamLeadFullName(item.ProjectTeamLeadFullName);
+	    self.OriginalVersion = getMembers(item);
+	    self.ListenForChanges();
+	    return self;
+	};
+	
+	self.Subscribers = new Array();
+
+	this.ClearSubscribers = function () {
+		$.each(self.Subscribers, function (x, item) {
+			item.dispose();
+		});
+		// clear change logs
+		self.ChangeLog.removeAll();
+	};
+
 	self.MilestoneDateFormatted = ko.computed(function () {
 		return parseJsonDateString(self.MilestoneDate());
-    } .bind(this));
-    self.ChangeLog = ko.observableArray();
-    this.ListenForChanges = function () {
-        $.each(self, function (x, item) {
-            if (x != "ChangeLog" && x != "HasChanges" && ko.isObservable(item)) {
-                console.log("Subscribing to changes in " + x);
+	} .bind(this));
 
-                item.subscribe(function (newValue) {
-                    var currentlyChangeExists = ($.inArray(x, self.ChangeLog()) >= 0);
-                    if (newValue != self.OriginalVersion[x] && !currentlyChangeExists) {
-                        console.log("The new value for " + x + " is " + newValue + " from " + self.OriginalVersion[x]);
-                        self.ChangeLog.push(x);
-                    } else if (currentlyChangeExists) {
-                        self.ChangeLog.pop(x);
-                    }
-                });
-            }
-        });
-    };
-    this.HasChanges = ko.computed(function () {
-        console.log("HasChanges called returning " + self.ChangeLog().length);
-        return self.ChangeLog().length > 0;
-        //console.log(self.OriginalVersion);
-        //	    $.each(self.OriginalVersion, function (x, item) {
-        //	        if (self[item]() != self.OriginalVersion[item])
-        //	            return true;
-        //	    });
-        //return false;
-    } .bind(this));
+	self.ChangeLog = ko.observableArray();
+	this.ListenForChanges = function () {
+		self.ClearSubscribers();
+		$.each(self, function (x, item) {
+			if (x != "ChangeLog" && x != "HasChanges" && ko.isObservable(item)) {
+				console.log("Subscribing to changes in " + x);
+
+				var sub = item.subscribe(function (newValue) {
+					var currentlyChangeExists = ($.inArray(x, self.ChangeLog()) >= 0);
+					if (newValue != self.OriginalVersion[x] && !currentlyChangeExists) {
+						console.log("The new value for " + x + " is " + newValue + " from " + self.OriginalVersion[x]);
+						self.ChangeLog.push(x);
+					} else if (currentlyChangeExists) {
+						self.ChangeLog.pop(x);
+					}
+				});
+				self.Subscribers.push(sub);
+			}
+		});
+	};
+	this.HasChanges = ko.computed(function () {
+		console.log("HasChanges called returning " + self.ChangeLog().length);
+		return self.ChangeLog().length > 0;
+		//console.log(self.OriginalVersion);
+		//	    $.each(self.OriginalVersion, function (x, item) {
+		//	        if (self[item]() != self.OriginalVersion[item])
+		//	            return true;
+		//	    });
+		//return false;
+	} .bind(this));
 	this.MilestoneDateString = ko.computed(function () {
 		return $.datepicker.formatDate('mm/dd/yy', self.MilestoneDate());
 	} .bind(this));
@@ -419,7 +475,11 @@ function projectStatus() {
 	self.Items = ko.observableArray([]);
 	self.NewStatusItemText = ko.observable();
 	self.NewStatusItemMilestoneDate = ko.observable(new Date());
-	
+
+	this.HasNewItem = ko.computed(function () {
+	    return (self.NewStatusItemText() != '' && self.NewStatusItemText() != null);
+	} .bind(this));
+    
 	self.removeStatusItem = function (itemToRemove) {
 		console.log("about to remove item via projectStatus " + itemToRemove.TopicCaption());
 		self.Items.remove(itemToRemove);
@@ -433,7 +493,7 @@ function projectStatus() {
 	};
 	self.addItemFromTemplate = function () {
 		var statusItem = new statusReportItem()
-			//.Report(self.Report)
+		//.Report(self.Report)
 			.ProjectId(self.ProjectId())
 			.ProjectName(self.ProjectName())
 			.ProjectDepartmentName(self.ProjectDepartmentName())
@@ -442,14 +502,19 @@ function projectStatus() {
 			.ProjectTeamId(self.ProjectTeamId())
 			.ProjectTeamName(self.ProjectTeamName())
 			.ProjectLeadFullName(self.ProjectLeadFullName())
-			.ProjectTeamLeadFullName(self.ProjectTeamLeadFullName());
+			.ProjectTeamLeadFullName(self.ProjectTeamLeadFullName())
+			;
+		// statusItem.OriginalVersion = getMembers(statusItem);
+		// statusItem.ListenForChanges();
 
+		// statusItem.ListenForChanges();
+		// needs to be treated as new anyway
 		self.addItem(statusItem);
 
 	};
 	self.addItemFromStubProperties = function () {
-		var statusItem = new statusReportItem()
-			// .Report(self.Report)
+	    var statusItem = new statusReportItem()
+	    // .Report(self.Report)
 			.ProjectId(self.ProjectId())
 			.ProjectName(self.ProjectName())
 			.ProjectDepartmentName(self.ProjectDepartmentName())
@@ -462,10 +527,10 @@ function projectStatus() {
 			.TopicCaption(self.NewStatusItemText())
 			.Caption(self.NewStatusItemText())
 			.MilestoneDate(self.NewStatusItemMilestoneDate());
-
-		self.addItem(statusItem);
-		self.NewStatusItemText('');
-		self.NewStatusItemMilestoneDate(new Date());
+	    statusItem.ListenForChanges();
+	    self.addItem(statusItem);
+	    self.NewStatusItemText('');
+	    self.NewStatusItemMilestoneDate(new Date());
 	};
 };
 
