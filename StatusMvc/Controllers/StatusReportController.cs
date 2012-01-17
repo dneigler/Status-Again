@@ -87,8 +87,14 @@ namespace StatusMvc.Controllers
                                             // need to map this back to status report
                                             var sri = Mapper.Map<StatusReportItemViewModel, StatusItem>(r);
                                             // if topic doesn't exist yet, we should create
-                                            Topic topic = this.TopicRepository.GetOrAddTopicByCaption(sri.Caption);
-                                            //Project project = this.ProjectRepository.GetProj
+                                            if (string.IsNullOrEmpty(sri.Caption)) throw new ArgumentNullException("Caption cannot be null!");
+                                            Topic topic = null;
+                                            if (r.TopicId != 0)
+                                                topic = this.TopicRepository.Get(r.TopicId);
+                                            else topic = this.TopicRepository.GetOrAddTopicByCaption(sri.Caption);
+                                            Project project = this.ProjectRepository.Get(r.ProjectId);
+                                            sri.Topic = topic;
+                                            sri.Project = project;
                                             this.StatusReportRepository.UpsertStatusReportItem(sri);
                                         });
             return Json(report, JsonRequestBehavior.AllowGet);

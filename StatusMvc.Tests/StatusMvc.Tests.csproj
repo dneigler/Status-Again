@@ -96,6 +96,10 @@
       <Project>{25EF6D75-7E30-4FC8-B50C-7F9F967DFCC0}</Project>
       <Name>Status.Model</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Status.Persistence.Tests\Status.Persistence.Tests.csproj">
+      <Project>{6646D134-C0FA-4CC2-A8DF-7A99C0D87577}</Project>
+      <Name>Status.Persistence.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Status.Persistence\Status.Persistence.csproj">
       <Project>{D7744E4E-4A50-4D9A-B500-EDBA64095698}</Project>
       <Name>Status.Persistence</Name>

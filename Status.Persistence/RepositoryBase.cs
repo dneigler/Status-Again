@@ -164,10 +164,10 @@ namespace Status.Persistence
             return (IList<T>) query.ToList();
         }
 
-        public T Get(IIdentityColumn idValue)
+        public T Get(int idValue)
         {
             var query = (from item in this.Session.Query<T>()
-                         where item.Id.Equals(idValue)
+                         where item.Id ==idValue
                          select item).FirstOrDefault();
             return query;
         }

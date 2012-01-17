@@ -8,8 +8,9 @@ using Status.BLL;
 using Status.ETL.Csv;
 using Status.Persistence;
 using Status.Repository;
+using Status.Etl;
 
-namespace Status.Etl.Tests
+namespace Status.Persistence.Tests
 {
     public class DefaultEtlNinjectModule : NinjectModule
     {
@@ -31,7 +32,7 @@ namespace Status.Etl.Tests
             Bind<IStatusReportManager>().To<StatusReportManager>();
             Bind<IRollStatusProcessor>().To<DefaultRollStatusProcessor>();
             Bind<IRollStatusDateProcessor>().To<DefaultRollStatusDateProcessor>();
-            Bind<IStatusEtl>().To<Csv.CsvStatusEtl>();
+            Bind<IStatusEtl>().To<Status.Etl.Csv.CsvStatusEtl>();
             Bind<ICsvStatusEtlBridge>().To<CsvStatusEtlBridge>();
             Bind<ICsvResourceAllocationBridge>().To<CsvResourceAllocationBridge>();
 

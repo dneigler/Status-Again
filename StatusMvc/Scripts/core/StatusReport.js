@@ -350,9 +350,9 @@ array
 */
 
 //do some basic mapping (without mapping plugin)
-var mappedData = ko.utils.arrayMap(dataFromServer, function (item) {
-    return new Item(item.name, item.category, item.price);
-});
+//var mappedData = ko.utils.arrayMap(dataFromServer, function (item) {
+//    return new Item(item.name, item.category, item.price);
+//});
 
 function getMembers(original) {
     var sri = new Array();

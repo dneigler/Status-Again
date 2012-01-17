@@ -8,6 +8,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting.Web;
 using Status.Repository;
 using StatusMvc.Models;
 using System.Web.Mvc;
+using Status.Persistence.Tests;
+using Ninject;
+using System.Collections.Generic;
 
 namespace StatusMvc.Tests.Controllers
 {
@@ -23,6 +26,11 @@ namespace StatusMvc.Tests.Controllers
 
 
         private TestContext testContextInstance;
+        private static StandardKernel _kernel;
+        private readonly static string _connString = "server=.\\SQLExpress;" +
+            "database=StatusAgain;" +
+            "Integrated Security=SSPI;";
+        private readonly static NHibernateUnitTestConfiguration _config = new NHibernateUnitTestConfiguration(_connString);
 
         /// <summary>
         ///Gets or sets the test context which provides
@@ -44,11 +52,13 @@ namespace StatusMvc.Tests.Controllers
         // 
         //You can use the following additional attributes as you write your tests:
         //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
+        [ClassInitialize()]
+        public static void MyClassInitialize(TestContext testContext)
+        {
+            _kernel = new StandardKernel(new DefaultEtlNinjectModule(_connString));
+            // _config.Configure();
+        }
+
         //
         //Use ClassCleanup to run code after all tests in a class have run
         //[ClassCleanup()]
@@ -78,122 +88,128 @@ namespace StatusMvc.Tests.Controllers
         // http://.../Default.aspx). This is necessary for the unit test to be executed on the web server,
         // whether you are testing a page, web service, or a WCF service.
         [TestMethod()]
-        [HostType("ASP.NET")]
-        [AspNetDevelopmentServerHost("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\StatusAgain\\StatusMvc", "/")]
-        [UrlToTest("http://localhost:57254/")]
+        //[HostType("ASP.NET")]
+        ////[AspNetDevelopmentServerHost("C:\\Users\\davidne\\Documents\\Visual Studio 2010\\Projects\\StatusAgain\\StatusMvc", "http://localhost:57254/")]
+        //[UrlToTest("http://localhost:57254/")]
         public void StatusReportControllerConstructorTest()
         {
             IStatusReportRepository repository = new StatusReportRepository(ConfigurationManager.ConnectionStrings["StatusAgain"].ConnectionString); // TODO: Initialize to an appropriate value
-            StatusReportController target = new StatusReportController(repository);
-            
+            StatusReportController target = _kernel.Get<StatusReportController>();// new StatusReportController(repository);
+            StatusReportViewModel vm = new StatusReportViewModel {
+                Caption = "SR 1",
+                Items = new List<StatusReportItemViewModel>()
+            };
+            vm.Items.Add(new StatusReportItemViewModel { ProjectId=1,Caption="TEST CAPTION 1" });
+            target.Save(vm);
+
             Assert.Inconclusive("TODO: Implement code to verify target");
         }
 
-        /// <summary>
-        ///A test for Create
-        ///</summary>
-        // TODO: Ensure that the UrlToTest attribute specifies a URL to an ASP.NET page (for example,
-        // http://.../Default.aspx). This is necessary for the unit test to be executed on the web server,
-        // whether you are testing a page, web service, or a WCF service.
-        [TestMethod()]
-        [HostType("ASP.NET")]
-        [AspNetDevelopmentServerHost("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\StatusAgain\\StatusMvc", "/")]
-        [UrlToTest("http://localhost:57254/")]
-        public void CreateTest()
-        {
+        ///// <summary>
+        /////A test for Create
+        /////</summary>
+        //// TODO: Ensure that the UrlToTest attribute specifies a URL to an ASP.NET page (for example,
+        //// http://.../Default.aspx). This is necessary for the unit test to be executed on the web server,
+        //// whether you are testing a page, web service, or a WCF service.
+        //[TestMethod()]
+        //[HostType("ASP.NET")]
+        //[AspNetDevelopmentServerHost("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\StatusAgain\\StatusMvc", "/")]
+        //[UrlToTest("http://localhost:57254/")]
+        //public void CreateTest()
+        //{
             
-            IStatusReportRepository repository = null; // TODO: Initialize to an appropriate value
-            StatusReportController target = new StatusReportController(repository); // TODO: Initialize to an appropriate value
-            StatusReportViewModel vm = null; // TODO: Initialize to an appropriate value
-            JsonResult expected = null; // TODO: Initialize to an appropriate value
-            JsonResult actual;
-            actual = target.Create(vm);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
+        //    IStatusReportRepository repository = null; // TODO: Initialize to an appropriate value
+        //    StatusReportController target = new StatusReportController(repository); // TODO: Initialize to an appropriate value
+        //    StatusReportViewModel vm = null; // TODO: Initialize to an appropriate value
+        //    JsonResult expected = null; // TODO: Initialize to an appropriate value
+        //    JsonResult actual;
+        //    actual = target.Create(vm);
+        //    Assert.AreEqual(expected, actual);
+        //    Assert.Inconclusive("Verify the correctness of this test method.");
+        //}
 
-        /// <summary>
-        ///A test for GetAllStatusReports
-        ///</summary>
-        // TODO: Ensure that the UrlToTest attribute specifies a URL to an ASP.NET page (for example,
-        // http://.../Default.aspx). This is necessary for the unit test to be executed on the web server,
-        // whether you are testing a page, web service, or a WCF service.
-        [TestMethod()]
-        [HostType("ASP.NET")]
-        [AspNetDevelopmentServerHost("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\StatusAgain\\StatusMvc", "/")]
-        [UrlToTest("http://localhost:57254/")]
-        public void GetAllStatusReportsTest()
-        {
-            IStatusReportRepository repository = null; // TODO: Initialize to an appropriate value
-            StatusReportController target = new StatusReportController(repository); // TODO: Initialize to an appropriate value
-            JsonResult expected = null; // TODO: Initialize to an appropriate value
-            JsonResult actual;
-            actual = target.GetAllStatusReports();
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
+        ///// <summary>
+        /////A test for GetAllStatusReports
+        /////</summary>
+        //// TODO: Ensure that the UrlToTest attribute specifies a URL to an ASP.NET page (for example,
+        //// http://.../Default.aspx). This is necessary for the unit test to be executed on the web server,
+        //// whether you are testing a page, web service, or a WCF service.
+        //[TestMethod()]
+        //[HostType("ASP.NET")]
+        //[AspNetDevelopmentServerHost("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\StatusAgain\\StatusMvc", "/")]
+        //[UrlToTest("http://localhost:57254/")]
+        //public void GetAllStatusReportsTest()
+        //{
+        //    IStatusReportRepository repository = null; // TODO: Initialize to an appropriate value
+        //    StatusReportController target = new StatusReportController(repository); // TODO: Initialize to an appropriate value
+        //    JsonResult expected = null; // TODO: Initialize to an appropriate value
+        //    JsonResult actual;
+        //    actual = target.GetAllStatusReports();
+        //    Assert.AreEqual(expected, actual);
+        //    Assert.Inconclusive("Verify the correctness of this test method.");
+        //}
 
-        /// <summary>
-        ///A test for GetStatusReport
-        ///</summary>
-        // TODO: Ensure that the UrlToTest attribute specifies a URL to an ASP.NET page (for example,
-        // http://.../Default.aspx). This is necessary for the unit test to be executed on the web server,
-        // whether you are testing a page, web service, or a WCF service.
-        [TestMethod()]
-        [HostType("ASP.NET")]
-        [AspNetDevelopmentServerHost("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\StatusAgain\\StatusMvc", "/")]
-        [UrlToTest("http://localhost:57254/")]
-        public void GetStatusReportTest()
-        {
-            IStatusReportRepository repository = new StatusReportRepository(ConfigurationManager.ConnectionStrings["StatusAgain"].ConnectionString); // TODO: Initialize to an appropriate value
-            StatusReportController target = new StatusReportController(repository);
-            Nullable<DateTime> statusDate = null;// new Nullable<DateTime>(); // TODO: Initialize to an appropriate value
-            JsonResult expected = null; // TODO: Initialize to an appropriate value
-            JsonResult actual;
-            actual = target.GetStatusReport(statusDate);
-            Assert.IsNotNull(actual, "actual != null");
-            Console.WriteLine("actual.Data= {0}", actual.Data);
+        ///// <summary>
+        /////A test for GetStatusReport
+        /////</summary>
+        //// TODO: Ensure that the UrlToTest attribute specifies a URL to an ASP.NET page (for example,
+        //// http://.../Default.aspx). This is necessary for the unit test to be executed on the web server,
+        //// whether you are testing a page, web service, or a WCF service.
+        //[TestMethod()]
+        //[HostType("ASP.NET")]
+        //[AspNetDevelopmentServerHost("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\StatusAgain\\StatusMvc", "/")]
+        //[UrlToTest("http://localhost:57254/")]
+        //public void GetStatusReportTest()
+        //{
+        //    IStatusReportRepository repository = new StatusReportRepository(ConfigurationManager.ConnectionStrings["StatusAgain"].ConnectionString); // TODO: Initialize to an appropriate value
+        //    StatusReportController target = new StatusReportController(repository);
+        //    Nullable<DateTime> statusDate = null;// new Nullable<DateTime>(); // TODO: Initialize to an appropriate value
+        //    JsonResult expected = null; // TODO: Initialize to an appropriate value
+        //    JsonResult actual;
+        //    actual = target.GetStatusReport(statusDate);
+        //    Assert.IsNotNull(actual, "actual != null");
+        //    Console.WriteLine("actual.Data= {0}", actual.Data);
             
-        }
+        //}
 
-        /// <summary>
-        ///A test for Index
-        ///</summary>
-        // TODO: Ensure that the UrlToTest attribute specifies a URL to an ASP.NET page (for example,
-        // http://.../Default.aspx). This is necessary for the unit test to be executed on the web server,
-        // whether you are testing a page, web service, or a WCF service.
-        [TestMethod()]
-        [HostType("ASP.NET")]
-        [AspNetDevelopmentServerHost("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\StatusAgain\\StatusMvc", "/")]
-        [UrlToTest("http://localhost:57254/")]
-        public void IndexTest()
-        {
-            IStatusReportRepository repository = null; // TODO: Initialize to an appropriate value
-            StatusReportController target = new StatusReportController(repository); // TODO: Initialize to an appropriate value
-            ActionResult expected = null; // TODO: Initialize to an appropriate value
-            ActionResult actual;
-            actual = target.Index();
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
+        ///// <summary>
+        /////A test for Index
+        /////</summary>
+        //// TODO: Ensure that the UrlToTest attribute specifies a URL to an ASP.NET page (for example,
+        //// http://.../Default.aspx). This is necessary for the unit test to be executed on the web server,
+        //// whether you are testing a page, web service, or a WCF service.
+        //[TestMethod()]
+        //[HostType("ASP.NET")]
+        //[AspNetDevelopmentServerHost("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\StatusAgain\\StatusMvc", "/")]
+        //[UrlToTest("http://localhost:57254/")]
+        //public void IndexTest()
+        //{
+        //    IStatusReportRepository repository = null; // TODO: Initialize to an appropriate value
+        //    StatusReportController target = new StatusReportController(repository); // TODO: Initialize to an appropriate value
+        //    ActionResult expected = null; // TODO: Initialize to an appropriate value
+        //    ActionResult actual;
+        //    actual = target.Index();
+        //    Assert.AreEqual(expected, actual);
+        //    Assert.Inconclusive("Verify the correctness of this test method.");
+        //}
 
-        /// <summary>
-        ///A test for StatusReportRepository
-        ///</summary>
-        // TODO: Ensure that the UrlToTest attribute specifies a URL to an ASP.NET page (for example,
-        // http://.../Default.aspx). This is necessary for the unit test to be executed on the web server,
-        // whether you are testing a page, web service, or a WCF service.
-        [TestMethod()]
-        [HostType("ASP.NET")]
-        [AspNetDevelopmentServerHost("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\StatusAgain\\StatusMvc", "/")]
-        [UrlToTest("http://localhost:57254/")]
-        public void StatusReportRepositoryTest()
-        {
-            IStatusReportRepository repository = null; // TODO: Initialize to an appropriate value
-            StatusReportController target = new StatusReportController(repository); // TODO: Initialize to an appropriate value
-            IStatusReportRepository actual;
-            actual = target.StatusReportRepository;
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
+        ///// <summary>
+        /////A test for StatusReportRepository
+        /////</summary>
+        //// TODO: Ensure that the UrlToTest attribute specifies a URL to an ASP.NET page (for example,
+        //// http://.../Default.aspx). This is necessary for the unit test to be executed on the web server,
+        //// whether you are testing a page, web service, or a WCF service.
+        //[TestMethod()]
+        //[HostType("ASP.NET")]
+        //[AspNetDevelopmentServerHost("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\StatusAgain\\StatusMvc", "/")]
+        //[UrlToTest("http://localhost:57254/")]
+        //public void StatusReportRepositoryTest()
+        //{
+        //    IStatusReportRepository repository = null; // TODO: Initialize to an appropriate value
+        //    StatusReportController target = new StatusReportController(repository); // TODO: Initialize to an appropriate value
+        //    IStatusReportRepository actual;
+        //    actual = target.StatusReportRepository;
+        //    Assert.Inconclusive("Verify the correctness of this test method.");
+        //}
     }
 }
