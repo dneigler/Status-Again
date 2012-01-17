@@ -44,12 +44,18 @@ namespace Status.Persistence
             return topic;
         }
 
-        public void AddTopic(Topic topic)
+        public Topic GetOrAddTopicByCaption(string caption)
         {
-            var session = Session;
+            Topic topic = this.GetTopicByCaption(caption);
+            if (topic == null)
             {
-                session.Save(topic);
+                topic = new Topic() { Caption = caption };
+                this.Add(topic);
+                // should not need to requery - fix Add method
+                topic = this.GetTopicByCaption(caption);
             }
+            return topic;
         }
+
     }
 }

@@ -8,6 +8,6 @@ namespace Status.Repository
 
         Topic GetTopicByCaption(string caption);
 
-        void AddTopic(Topic topic);
+        Topic GetOrAddTopicByCaption(string caption);
     }
 }

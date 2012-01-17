@@ -10,7 +10,7 @@ using Status.Repository;
 
 namespace Status.Persistence
 {
-    public class RepositoryBase<T> : IDisposable, IRepository<T>
+    public class RepositoryBase<T> : IDisposable, IRepository<T> where T : IIdentityColumn
     {
         private volatile ISessionFactory _sessionFactory = null;
 
@@ -159,9 +159,17 @@ namespace Status.Persistence
 
         public IList<T> GetAll()
         {
-            var query = (from ra in this.Session.Query<ResourceAllocation>()
+            var query = (from ra in this.Session.Query<T>()
                          select ra);
             return (IList<T>) query.ToList();
+        }
+
+        public T Get(IIdentityColumn idValue)
+        {
+            var query = (from item in this.Session.Query<T>()
+                         where item.Id.Equals(idValue)
+                         select item).FirstOrDefault();
+            return query;
         }
 
         public void Add(T itemToAdd)

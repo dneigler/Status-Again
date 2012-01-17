@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Status.Model
 {
-    public class StatusItem
+    public class StatusItem : IIdentityColumn
     {
         private string _caption = null;
 

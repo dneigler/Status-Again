@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using NHibernate;
+using Status.Model;
 
 namespace Status.Repository
 {
-    public interface IRepository<T>
+    public interface IRepository<T> where T : IIdentityColumn
     {
         ITransaction BeginTransaction();
         void CommitTransaction();

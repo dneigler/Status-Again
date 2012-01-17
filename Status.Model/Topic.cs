@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Status.Model
 {
-    public class Topic
+    public class Topic : IIdentityColumn
     {
         public virtual int Id { get; set; }
         public virtual string Caption { get; set; }

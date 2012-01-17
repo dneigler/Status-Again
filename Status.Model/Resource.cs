@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Status.Model
 {
-    public class Resource
+    public class Resource : IIdentityColumn
     {
         private string _firstName = null,
             _lastName = null,

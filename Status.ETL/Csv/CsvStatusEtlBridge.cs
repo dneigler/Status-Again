@@ -138,13 +138,13 @@ namespace Status.ETL.Csv
                             {
                                 // steal the topic from the first item in list
                                 var firstItem = gt.First();
-                                this.TopicRepository.AddTopic(new JiraIssueTopic() { JiraId = jiraId, Caption = firstItem.Note });
+                                this.TopicRepository.Add(new JiraIssueTopic() { JiraId = jiraId, Caption = firstItem.Note });
                             }
                         }
                         else
                         {
                             // all the empty topics will be grouped together, so if that is the case, create as new topics now
-                            gt.ToList().ForEach(item => this.TopicRepository.AddTopic(new Topic() { Caption = item.Note }));
+                            gt.ToList().ForEach(item => this.TopicRepository.Add(new Topic() { Caption = item.Note }));
                         }
 
                     });

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Status.Model
 {
-    public class ResourceAllocation
+    public class ResourceAllocation : IIdentityColumn
     {
         public virtual int Id { get; set; }
 

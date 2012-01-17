@@ -14,11 +14,14 @@ namespace StatusMvc.Controllers
     {
         private IStatusReportRepository _repository;
         private ITopicRepository _topicRepository;
+        private IProjectRepository _projectRepository;
 
-        public StatusReportController(IStatusReportRepository repository, ITopicRepository topicRepository)
+        
+        public StatusReportController(IStatusReportRepository repository, ITopicRepository topicRepository, IProjectRepository projectRepository)
         {
             _repository = repository;
-            TopicRepository = topicRepository;
+            _topicRepository = topicRepository;
+            _projectRepository = projectRepository;
             Mapper.CreateMap<StatusReport, StatusReportViewModel>()
                 .ForMember(m => m.NumberOfStatusItems, opt => opt.ResolveUsing<NumberOfStatusItemsFormatter>());
             Mapper.CreateMap<StatusItem, StatusReportItemViewModel>();
@@ -37,7 +40,11 @@ namespace StatusMvc.Controllers
         public ITopicRepository TopicRepository
         {
             get { return _topicRepository; }
-            set { _topicRepository = value; }
+        }
+
+        public IProjectRepository ProjectRepository
+        {
+            get { return _projectRepository; }
         }
 
         //
@@ -80,15 +87,8 @@ namespace StatusMvc.Controllers
                                             // need to map this back to status report
                                             var sri = Mapper.Map<StatusReportItemViewModel, StatusItem>(r);
                                             // if topic doesn't exist yet, we should create
-                                            Topic topic = this.TopicRepository.GetTopicByCaption(sri.Caption);
-                                            if (topic != null)
-                                                sri.Topic = topic;
-                                            else
-                                            {
-                                                this.TopicRepository.Add(new Topic() { Caption = sri.Caption })  ;
-                                                Topic outputTopic = this.TopicRepository.GetTopicByCaption(sri.Caption);
-                                                sri.Topic = outputTopic;
-                                            }
+                                            Topic topic = this.TopicRepository.GetOrAddTopicByCaption(sri.Caption);
+                                            //Project project = this.ProjectRepository.GetProj
                                             this.StatusReportRepository.UpsertStatusReportItem(sri);
                                         });
             return Json(report, JsonRequestBehavior.AllowGet);
