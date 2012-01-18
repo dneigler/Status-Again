@@ -16,8 +16,7 @@ namespace Status.Persistence
             Map(x => x.PeriodStart);
             Map(x => x.PeriodEnd);
             HasMany(x => x.Items)
-                .Cascade
-                .AllDeleteOrphan();
+                .Cascade.All();
         }
     }
 }

@@ -82,23 +82,35 @@ namespace StatusMvc.Controllers
         [HttpPost]
         public JsonResult Save(StatusReportViewModel report)
         {
-            report.Items.ToList().ForEach(r =>
-                                        {
-                                            // need to map this back to status report
-                                            var sri = Mapper.Map<StatusReportItemViewModel, StatusItem>(r);
-                                            // if topic doesn't exist yet, we should create
-                                            if (string.IsNullOrEmpty(sri.Caption)) throw new ArgumentNullException("Caption cannot be null!");
-                                            Topic topic = null;
-                                            if (r.TopicId != 0)
-                                                topic = this.TopicRepository.Get(r.TopicId);
-                                            else topic = this.TopicRepository.GetOrAddTopicByCaption(sri.Caption);
-                                            Project project = this.ProjectRepository.Get(r.ProjectId);
-                                            sri.Topic = topic;
-                                            sri.Project = project;
-                                            StatusReport sr = this.StatusReportRepository.Get(r.StatusReportId);
-                                            sr.AddStatusItem(sri);
-                                            this.StatusReportRepository.Update(sr);//.UpsertStatusReportItem(sri);
-                                        });
+
+            StatusReport sr = this.StatusReportRepository.Get(report.Id);
+
+            using (var txn = this.StatusReportRepository.BeginTransaction())
+            {
+                report.Items.ToList().ForEach(r =>
+                                                  {
+                                                      // need to map this back to status report
+                                                      var sri = Mapper.Map<StatusReportItemViewModel, StatusItem>(r);
+                                                      // if topic doesn't exist yet, we should create
+                                                      if (string.IsNullOrEmpty(sri.Caption))
+                                                          throw new ArgumentNullException("Caption cannot be null!");
+                                                      Topic topic = null;
+                                                      if (r.TopicId != 0)
+                                                          topic = this.TopicRepository.Get(r.TopicId);
+                                                      else
+                                                          topic =
+                                                              this.TopicRepository.GetOrAddTopicByCaption(sri.Caption);
+                                                      Project project = this.ProjectRepository.Get(r.ProjectId);
+                                                      sri.Topic = topic;
+                                                      sri.Project = project;
+                                                      sri.Milestone.Date = r.MilestoneDate;
+                                                      
+                                                      sr.AddStatusItem(sri);
+
+                                                  });
+                this.StatusReportRepository.Update(sr); //.UpsertStatusReportItem(sri);
+                txn.Commit();
+            }
             return Json(report, JsonRequestBehavior.AllowGet);
         }
         
