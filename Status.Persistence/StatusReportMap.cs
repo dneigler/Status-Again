@@ -15,6 +15,8 @@ namespace Status.Persistence
             Map(x => x.Caption);
             Map(x => x.PeriodStart);
             Map(x => x.PeriodEnd);
+            Component(x => x.AuditInfo);
+
             HasMany(x => x.Items)
                 .Cascade.All();
         }
