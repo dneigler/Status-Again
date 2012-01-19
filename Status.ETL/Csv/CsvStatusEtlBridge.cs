@@ -160,6 +160,7 @@ namespace Status.ETL.Csv
                         try { this.StatusReportRepository.DeleteStatusReport(statusReportDate); }
                         catch (NullReferenceException) { }
                         var statusReport = StatusReport.Create(statusReportDate, String.Format("Status report for {0:MM/dd/yyyy}", statusReportDate));
+                        statusReport.AuditInfo = new AuditInfo(dummyResource);
                         // iterate through each item for that date and add them
                         gsd.ToList().ForEach(statusReportItem =>
                                                  {
@@ -171,7 +172,7 @@ namespace Status.ETL.Csv
                                                          statusItem.Topic = this.TopicRepository.GetTopicByCaption(statusReportItem.Note);
 
                                                      statusItem.Project = this.ProjectRepository.GetProjectByName(statusReportItem.Project);
-
+                                                     statusItem.AuditInfo = new AuditInfo(dummyResource);
                                                      statusItem.Milestone = new Milestone()
                                                      {
                                                          ConfidenceLevel = statusReportItem.MilestoneConfidence ?? MilestoneConfidenceLevels.High,

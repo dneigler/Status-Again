@@ -21,6 +21,7 @@ namespace Status.Persistence
                 .Length(50);
             Map(x => x.FullName)
                 .Not.Nullable()
+                .Unique()
                 .Length(100);
             DiscriminateSubClassesOnColumn("Type");
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using Status.Repository;
 using NHibernate;
@@ -75,6 +76,20 @@ namespace Status.Persistence
             return (from r in session.Query<Employee>()
                     where r.EdsId.Equals(externalId)
                     select r).SingleOrDefault();
+        }
+
+        public Resource GetOrCreateResourceByIIdentity(IIdentity identity)
+        {
+            var r = this.GetResourceByLogin(identity.Name);
+            if (r == null)
+            {
+                r = new Employee()
+                        {
+                            WindowsLogin = identity.Name
+                        };
+                this.Add(r);
+            }
+            return r;
         }
 
         public Model.Resource GetResourceByEmail(string emailAddress)

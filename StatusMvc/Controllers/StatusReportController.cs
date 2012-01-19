@@ -15,13 +15,14 @@ namespace StatusMvc.Controllers
         private IStatusReportRepository _repository;
         private ITopicRepository _topicRepository;
         private IProjectRepository _projectRepository;
-
+        private IResourceRepository _resourceRepository;
         
-        public StatusReportController(IStatusReportRepository repository, ITopicRepository topicRepository, IProjectRepository projectRepository)
+        public StatusReportController(IStatusReportRepository repository, ITopicRepository topicRepository, IProjectRepository projectRepository, IResourceRepository resourceRepository)
         {
             _repository = repository;
             _topicRepository = topicRepository;
             _projectRepository = projectRepository;
+            ResourceRepository = resourceRepository;
             Mapper.CreateMap<StatusReport, StatusReportViewModel>()
                 .ForMember(m => m.NumberOfStatusItems, opt => opt.ResolveUsing<NumberOfStatusItemsFormatter>());
             Mapper.CreateMap<StatusItem, StatusReportItemViewModel>();
@@ -45,6 +46,12 @@ namespace StatusMvc.Controllers
         public IProjectRepository ProjectRepository
         {
             get { return _projectRepository; }
+        }
+
+        public IResourceRepository ResourceRepository
+        {
+            get { return _resourceRepository; }
+            set { _resourceRepository = value; }
         }
 
         //
@@ -91,6 +98,8 @@ namespace StatusMvc.Controllers
                                                   {
                                                       // need to map this back to status report
                                                       var sri = Mapper.Map<StatusReportItemViewModel, StatusItem>(r);
+                                                      
+                                                      sri.AuditInfo = new AuditInfo(this.ResourceRepository.GetOrCreateResourceByIIdentity(User.Identity));
                                                       // if topic doesn't exist yet, we should create
                                                       if (string.IsNullOrEmpty(sri.Caption))
                                                           throw new ArgumentNullException("Caption cannot be null!");

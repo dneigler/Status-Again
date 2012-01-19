@@ -17,6 +17,7 @@ namespace Status.Persistence
             Map(x => x.MachineName);
             References(x => x.Author)
                 .Not.Nullable();
+                //.Cascade.SaveUpdate();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using Status.Model;
 
@@ -21,5 +22,7 @@ namespace Status.Repository
         Resource GetResourceByEmail(string emailAddress);
 
         void AddResource(Resource resource);
+
+        Resource GetOrCreateResourceByIIdentity(IIdentity identity);
     }
 }

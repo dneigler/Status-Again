@@ -1,18 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.DirectoryServices.AccountManagement;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
+using System.Threading;
 
 namespace Status.Model
 {
     public class AuditInfo : IEquatable<AuditInfo>
     {
+        private static readonly Employee DefaultEmployee = new Employee();
         public Resource Author { get; private set; }
         public DateTime AuditTime { get; private set; }
         public string MachineName { get; private set; }
 
-        private AuditInfo()
+        // we shouldn't use this constructor as can result in duplicates in database
+        private AuditInfo() : this(DefaultEmployee, DateTime.Now, Environment.MachineName)
         {
+            // default to employee
         }
 
         public AuditInfo(Resource author, DateTime auditTime, string machineName)
