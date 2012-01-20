@@ -139,26 +139,6 @@ var statusReportVM = {
 					$.each(response.Items, function (x, item) {
 						var sri = new statusReportItem()
 							.LoadFromObject(item);
-						//.Report(sr)
-//								.Id(item.Id)
-//								.TopicCaption(item.TopicCaption)
-//								.TopicExternalId(item.TopicExternalId)
-//								.TopicId(item.TopicId)
-//								.MilestoneType(item.MilestoneType)
-//								.MilestoneDate(item.MilestoneDate)
-//								.MilestoneConfidenceLevel(item.MilestoneConfidenceLevel)
-//								.Caption(item.Caption)
-//								.ProjectId(item.ProjectId)
-//								.ProjectName(item.ProjectName)
-//								.ProjectDepartmentName(item.ProjectDepartmentName)
-//								.ProjectDepartmentManagerFullName(item.ProjectDepartmentManagerFullName)
-//								.ProjectType(item.ProjectType)
-//								.ProjectTeamId(item.ProjectTeamId)
-//								.ProjectTeamName(item.ProjectTeamName)
-//								.ProjectLeadFullName(item.ProjectLeadFullName)
-//								.ProjectTeamLeadFullName(item.ProjectTeamLeadFullName);
-//						sri.OriginalVersion = getMembers(item);
-//						sri.ListenForChanges();
 
 						sr.loadStatusItem(sri);
 					});
@@ -205,6 +185,7 @@ function statusReport() {
 
 	this.ItemsByProject = ko.observableArray([]);
 	this.ItemsByTeam = ko.observableArray([]);
+    this.ItemsToRemove = ko.observableArray([]);
 
 	this.loadStatusItem = function (statusItem) {
 		// autocreates team and project if not found
@@ -213,41 +194,63 @@ function statusReport() {
 		//console.log(team.Name());
 	};
 
+    this.PendingChangesCount = ko.computed(function () {
+        var arrCount = ko.utils.arrayFilter(self.Items(), function (item) {
+	        return item.HasChanges();
+	    });
+        return arrCount.length;
+    } .bind(this));
+    
+    this.PendingDeletionsCount = ko.computed(function() {
+        return self.ItemsToRemove().length;
+    } .bind(this));
+
+    this.reset = function () {
+        $.each(this.Items(), function (x, item) {
+            item.reset();
+        });
+        self.ItemsToRemove.removeAll();
+    };
 	this.save = function () {
-		var url = "/StatusReport/Save";
-		var miniReport = new statusReport();
-		miniReport.PeriodStart = self.PeriodStart();
-		miniReport.Id = self.Id();
-		miniReport.Caption = self.Caption();
-		
-		miniReport.Items = ko.utils.arrayFilter(self.Items(), function (item) {
-			return item.HasChanges(); // ko.utils.stringStartsWith(item.name().toLowerCase(), filter);
-		});
-		console.log("About to save self.Items = " + miniReport.Items.length);
-		
-		$.ajax({
-			url: url,
-			dataType: "json",
-			data: ko.toJSON({ report: miniReport }),
-			type: "post",
-			contentType: "application/json",
-			success: function (result) { alert(result); },
-			error: function (xhr, status) {
-				switch (status) {
-					case 404:
-						alert('File not found');
-						break;
-					case 500:
-						alert('Server error');
-						break;
-					case 0:
-						alert('Request aborted');
-						break;
-					default:
-						alert('Unknown error ' + status);
-				}
-			}
-		});
+	    var url = "/StatusReport/Save";
+	    var miniReport = new statusReport();
+	    miniReport.PeriodStart = self.PeriodStart();
+	    miniReport.Id = self.Id();
+	    miniReport.Caption = self.Caption();
+
+	    miniReport.Items = ko.utils.arrayFilter(self.Items(), function (item) {
+	        return item.HasChanges(); // ko.utils.stringStartsWith(item.name().toLowerCase(), filter);
+	    });
+	    miniReport.ItemsToRemove = self.ItemsToRemove();
+
+	    console.log("About to save self.Items = " + miniReport.Items.length);
+
+	    $.ajax({
+	        url: url,
+	        dataType: "json",
+	        data: ko.toJSON({ report: miniReport }),
+	        type: "post",
+	        contentType: "application/json",
+	        success: function (result) {
+	            // alert(result);
+	            self.reset();
+	        },
+	        error: function (xhr, status) {
+	            switch (status) {
+	                case 404:
+	                    alert('File not found');
+	                    break;
+	                case 500:
+	                    alert('Server error');
+	                    break;
+	                case 0:
+	                    alert('Request aborted');
+	                    break;
+	                default:
+	                    alert('Unknown error ' + status);
+	            }
+	        }
+	    });
 	};
 	
 	
@@ -324,22 +327,16 @@ function statusReport() {
 	};
 
 	this.addStatusItem = function (sri) {
-	    //if (this.StatusItemToAdd() != '') {
-//	        var sri = new statusReportItem();
-//	        sri.Caption(this.NewStatusItemText());
-//	        sri.MilestoneType(this.StatusItemMilestoneToAdd());
-//	        sri.MilestoneDate(this.StatusItemDateToAdd());
-//	        sri.ListenForChanges();
 	    this.Items.push(sri);
-	    //};
 	    this.StatusItemToAdd('');
 	    this.StatusItemMilestoneToAdd(0);
 	    this.StatusItemDateToAdd(new Date());
 	};
 
 	self.removeStatusItem = function (itemToRemove) {
-		console.log("about to remove status item " + itemToRemove);
-		self.Items.remove(itemToRemove);
+	    console.log("about to remove status item " + itemToRemove);
+	    self.ItemsToRemove.push(itemToRemove);
+	    self.Items.remove(itemToRemove);
 	};
 };
 
@@ -445,7 +442,11 @@ function statusReportItem() {
 				self.Subscribers.push(sub);
 			}
 		});
-	};
+};
+
+    this.reset = function () {
+        self.ChangeLog.removeAll();
+    };
 	this.HasChanges = ko.computed(function () {
 		console.log("HasChanges called returning " + self.ChangeLog().length);
 		return self.ChangeLog().length > 0;
@@ -455,7 +456,8 @@ function statusReportItem() {
 		//	            return true;
 		//	    });
 		//return false;
-	} .bind(this));
+} .bind(this));
+
 	this.MilestoneDateString = ko.computed(function () {
 		return $.datepicker.formatDate('mm/dd/yy', self.MilestoneDate());
 	} .bind(this));
@@ -505,10 +507,7 @@ function projectStatus() {
 			.ProjectLeadFullName(self.ProjectLeadFullName())
 			.ProjectTeamLeadFullName(self.ProjectTeamLeadFullName())
 			;
-		// statusItem.OriginalVersion = getMembers(statusItem);
-		// statusItem.ListenForChanges();
-
-		// statusItem.ListenForChanges();
+		
 		// needs to be treated as new anyway
 		self.addItem(statusItem);
 

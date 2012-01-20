@@ -89,34 +89,61 @@ namespace StatusMvc.Controllers
         [HttpPost]
         public JsonResult Save(StatusReportViewModel report)
         {
-
+            // the following causes a problem - by reloading the status report from the database, we can't overwrite with 
+            // objects being posted back by the client.  Either client provides all details of statusreport, or we go 
+            // more manual on mapping back to actual objects.
             StatusReport sr = this.StatusReportRepository.Get(report.Id);
 
             using (var txn = this.StatusReportRepository.BeginTransaction())
             {
-                report.Items.ToList().ForEach(r =>
-                                                  {
-                                                      // need to map this back to status report
-                                                      var sri = Mapper.Map<StatusReportItemViewModel, StatusItem>(r);
-                                                      
-                                                      sri.AuditInfo = new AuditInfo(this.ResourceRepository.GetOrCreateResourceByIIdentity(User.Identity));
-                                                      // if topic doesn't exist yet, we should create
-                                                      if (string.IsNullOrEmpty(sri.Caption))
-                                                          throw new ArgumentNullException("Caption cannot be null!");
-                                                      Topic topic = null;
-                                                      if (r.TopicId != 0)
-                                                          topic = this.TopicRepository.Get(r.TopicId);
-                                                      else
-                                                          topic =
-                                                              this.TopicRepository.GetOrAddTopicByCaption(sri.Caption);
-                                                      Project project = this.ProjectRepository.Get(r.ProjectId);
-                                                      sri.Topic = topic;
-                                                      sri.Project = project;
-                                                      sri.Milestone.Date = r.MilestoneDate;
-                                                      
-                                                      sr.AddStatusItem(sri);
+                if (report.Items != null)
+                {
+                    report.Items.ToList().ForEach(r =>
+                                                      {
+                                                          // need to map this back to status report
+                                                          var srSource =
+                                                              (from srSourceItem in sr.Items
+                                                               where srSourceItem.Id == r.Id
+                                                               select srSourceItem).FirstOrDefault();
+                                                          
+                                                          var sri = Mapper.Map<StatusReportItemViewModel, StatusItem>(r, srSource);
 
-                                                  });
+                                                          sri.AuditInfo =
+                                                              new AuditInfo(
+                                                                  this.ResourceRepository.GetOrCreateResourceByIIdentity
+                                                                      (User.Identity));
+                                                          // if topic doesn't exist yet, we should create
+                                                          if (string.IsNullOrEmpty(sri.Caption))
+                                                              throw new ArgumentNullException("Caption cannot be null!");
+                                                          Topic topic = null;
+                                                          if (r.TopicId != 0)
+                                                              topic = this.TopicRepository.Get(r.TopicId);
+                                                          else
+                                                              topic =
+                                                                  this.TopicRepository.GetOrAddTopicByCaption(
+                                                                      sri.Caption);
+                                                          Project project = this.ProjectRepository.Get(r.ProjectId);
+                                                          sri.Topic = topic;
+                                                          sri.Project = project;
+                                                          sri.Milestone.Date = r.MilestoneDate;
+
+                                                          sr.AddStatusItem(sri);
+
+                                                      });
+                }
+                if (report.ItemsToRemove != null)
+                {
+                    report.ItemsToRemove.ToList().ForEach(r =>
+                                                              {
+                                                                  var sri =
+                                                                      Mapper.Map<StatusReportItemViewModel, StatusItem>(
+                                                                          r);
+                                                                  var sriDeleteItem = (from sriD in sr.Items
+                                                                                       where sriD.Id == sri.Id
+                                                                                       select sriD).First();
+                                                                  sr.Items.Remove(sriDeleteItem);
+                                                              });
+                }
                 this.StatusReportRepository.Update(sr); //.UpsertStatusReportItem(sri);
                 txn.Commit();
             }

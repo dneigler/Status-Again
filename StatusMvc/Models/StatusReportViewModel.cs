@@ -14,7 +14,8 @@ namespace StatusMvc.Models
         [Required, CanSort, Display(Name = "Caption")]
         public string Caption { get; set; }
         public int NumberOfStatusItems { get; set; }
-        public IList<StatusReportItemViewModel> Items { get; set; } 
+        public IList<StatusReportItemViewModel> Items { get; set; }
+        public IList<StatusReportItemViewModel> ItemsToRemove { get; set; } 
     }
 
     public class StatusReportItemViewModel

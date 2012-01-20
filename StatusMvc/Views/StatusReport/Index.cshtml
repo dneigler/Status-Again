@@ -12,10 +12,13 @@
 			.statusItemSecondLine { margin-left: 10px; }
 			textarea { display: inline-block; }
 			.datefield { text-align: right;width: 85px; }
+            .statusItemDiv {border-style: solid; border-left-width: 3px;border-top-width: 0px;border-right-width: 1px;border-bottom-width: 0px;padding-left: 2px;margin-bottom: 2px; border-color:whitesmoke; }
+            .hasChangesStyle { border-left-color: limegreen; }
 	</style>
 }
 <h2>@ViewBag.Message</h2>
 <button data-bind="click: save">Save</button>
+<div style="float:right;">Pending updates/adds: <span data-bind="text: PendingChangesCount"></span> / Pending deletions: <span data-bind="text:PendingDeletionsCount"></span></div>
 <fieldset>
 	<legend>Teams</legend>
 	<div id="tabs">
@@ -37,8 +40,7 @@
 					</form>
 				</div>
 				<div data-bind='foreach: Items'>
-                    <div>
-                        <span data-bind="visible: HasChanges" style="color:limegreen;">*</span>
+                    <div data-bind="css: { hasChangesStyle: HasChanges()}" class="statusItemDiv">
                         <textarea class="required statusCaptionText" data-bind="value: Caption, uniqueName: true"></textarea>
                         <input class="required datefield" data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
                         @Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
