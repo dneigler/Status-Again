@@ -116,5 +116,13 @@ namespace Status.Persistence
                 statusDate = statusDate.AddDays(-1);
             return statusDate;
         }
+
+        public DateTime GetActiveStatusReportDate()
+        {
+            var query = (from s in Session.Query<StatusReport>()
+                                  orderby s.PeriodStart descending
+                                  select s.PeriodStart).First();
+            return query;
+        }
     }
 }

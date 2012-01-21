@@ -59,7 +59,19 @@ namespace StatusMvc.Controllers
 
         public ActionResult Index()
         {
+            var statusDate = GetStatusDateFromQueryString();
+            ViewBag.Message = String.Format("Status Report for {0:MM/dd/yyyy}",
+                                            statusDate);
             return View();
+        }
+
+        private DateTime GetStatusDateFromQueryString()
+        {
+            DateTime statusDate;
+            bool validDate = DateTime.TryParse(Request.QueryString["statusDate"], out statusDate);
+            if (!validDate)
+                statusDate = this.StatusReportRepository.GetActiveStatusReportDate();
+            return statusDate;
         }
 
         public JsonResult GetAllStatusReports()

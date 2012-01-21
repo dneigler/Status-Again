@@ -10,7 +10,7 @@ using Status.Repository;
 
 namespace Status.Persistence
 {
-    public class RepositoryBase<T> : IDisposable, IRepository<T> where T : IIdentityColumn
+    public abstract class RepositoryBase<T> : IDisposable, IRepository<T> where T : IIdentityColumn
     {
         private volatile ISessionFactory _sessionFactory = null;
 
@@ -205,5 +205,7 @@ namespace Status.Persistence
         }
 
         #endregion
+
+
     }
 }

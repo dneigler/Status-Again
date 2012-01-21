@@ -136,7 +136,7 @@ var statusReportVM = {
 						.StatusItemToAdd("")
 						.StatusItemDateToAdd(new Date())
 						.StatusItemMilestoneToAdd(0)
-					    .StatusReportDates(response.StatusReportDates);
+						.StatusReportDates(response.StatusReportDates);
 					$.each(response.Items, function (x, item) {
 						var sri = new statusReportItem()
 							.LoadFromObject(item);
@@ -144,9 +144,8 @@ var statusReportVM = {
 						sr.loadStatusItem(sri);
 					});
 					statusReportVM.Report(sr);
-					//$("#tabs").tabs();
-					//console.log("calling to #tabs in jquery");
-					$("#tabs").tabs();
+					
+                    $("#tabs").tabs();
 					// $(".datefield").datepicker({dateFormat:'yy-mm-dd',changeMonth:true,changeYear:true });
 					$('textarea input').autoResize({
 						// On resize:
@@ -174,21 +173,21 @@ var statusReportVM = {
 };
 
 RedirectToReport = function (statusDate) {
-    // alert(statusDate);
-    //window.location.replace("?statusDate=" + this.PeriodStart());
+	// alert(statusDate);
+	//window.location.replace("?statusDate=" + this.PeriodStart());
 };
 
 function statusReport() {
 	var self = this;
 	this.Id = ko.observable(0);
-	this.PeriodStart = ko.observable(/Date(1322456400000)/);
-    
+	this.PeriodStart = ko.observable(null);
+	
 	this.Caption = ko.observable('');
 	this.NumberOfStatusItems = ko.observable(0);
 	this.Items = ko.observableArray([]);
 
 	this.StatusReportDates = ko.observableArray([]);
-    
+	
 	this.StatusItemToAdd = ko.observable('');
 	this.StatusItemDateToAdd = ko.observable(new Date());
 	this.StatusItemMilestoneToAdd = ko.observable(0);
@@ -199,50 +198,50 @@ function statusReport() {
 
 	
 	this.loadStatusItem = function (statusItem) {
-	    // autocreates team and project if not found
-	    console.log("loadStatusItem called: " + statusItem.Id() + " / " + statusItem.Caption());
-	    var matchingItem = ko.utils.arrayFilter(self.Items(), function (item) {
-	        return item.Id() == statusItem.Id();
-	    });
-	    if (!matchingItem)
-	        self.Items.push(statusItem);
-	    else {
-	        console.log("Matching item found for " + statusItem.Id());
-	    }
-	    var team = self.getOrCreateTeamFromStatusItem(statusItem);
+		// autocreates team and project if not found
+		console.log("loadStatusItem called: " + statusItem.Id() + " / " + statusItem.Caption());
+		var matchingItem = ko.utils.arrayFilter(self.Items(), function (item) {
+			return item.Id() == statusItem.Id();
+		});
+		if (!matchingItem)
+			self.Items.push(statusItem);
+		else {
+			console.log("Matching item found for " + statusItem.Id());
+		}
+		var team = self.getOrCreateTeamFromStatusItem(statusItem);
 	};
 
 	this.PendingChangesCount = ko.computed(function () {
-	    var arrCount = ko.utils.arrayFilter(self.Items(), function (item) {
-	        return item.HasChanges();
-	    });
-	    
-	    // debugging
-	    ko.utils.arrayForEach(self.Items(), function(item) {
-	        if (item.HasChanges())
-	            console.log(ko.toJSON(item)); // item.Id() + " / " + item.Caption());
-	    });
+		var arrCount = ko.utils.arrayFilter(self.Items(), function (item) {
+			return item.HasChanges();
+		});
+		
+		// debugging
+		ko.utils.arrayForEach(self.Items(), function(item) {
+			if (item.HasChanges())
+				console.log(ko.toJSON(item)); // item.Id() + " / " + item.Caption());
+		});
 //	    $.each(arrCount, function (x, item) {
 //	        console.log(item.Id() + " / " + item.Caption());
 //	    });
-	    return arrCount.length;
+		return arrCount.length;
 	} .bind(this));
 	
 	this.PendingDeletionsCount = ko.computed(function() {
 		return self.ItemsToRemove().length;
 	} .bind(this));
 
-    this.LogItems = function() {
-        // debugging
+	this.LogItems = function() {
+		// debugging
 //        ko.utils.arrayForEach(self.Items(), function(item) {
 //            console.log(ko.toJSON(item)); // item.Id() + " / " + item.Caption());
 //        });
-    };
-    
-    this.reset = function () {
-        ko.utils.arrayForEach(self.Items(), function(item) {
-            item.reset();
-        });
+	};
+	
+	this.reset = function () {
+		ko.utils.arrayForEach(self.Items(), function(item) {
+			item.reset();
+		});
 		self.ItemsToRemove.removeAll();
 	};
 	this.save = function () {
@@ -341,18 +340,15 @@ function statusReport() {
 	};
 
 	this.PeriodStartFormatted = ko.computed(function () {
-	    if (self.PeriodStart()) {
-	        var d = parseJsonDateString(this.PeriodStart());
-	        return d.getMonth()+1 + "-" + d.getDate() + "-" + d.getFullYear();
-	        var dp = Date.parse(d);
-	        if (dp != null)
-	            return Date.parse(d).toShortDateString(); // parseJsonDateString(this.PeriodStart());
-	    }
-	    return self.PeriodStart();
+		if (self.PeriodStart()) {
+			var d = parseJsonDateString(self.PeriodStart());
+			return d.getMonth()+1 + "-" + d.getDate() + "-" + d.getFullYear();
+		}
+		return self.PeriodStart();
 	} .bind(this));
 	
 	this.Name = ko.computed(function() {
-		return this.Caption() + " (" + this.PeriodStart() + ")";
+		return self.Caption() + " (" + self.PeriodStartFormatted() + ")";
 	}.bind(this));
 	
 	this.addReport = function () {
@@ -466,8 +462,8 @@ function statusReportItem() {
 
 	self.ChangeLog = ko.observableArray();
 	this.ListenForChanges = function () {
-	    self.ClearSubscribers();
-	    $.each(self, function (x, item) {
+		self.ClearSubscribers();
+		$.each(self, function (x, item) {
 			if (x != "ChangeLog" && x != "HasChanges" && ko.isObservable(item)) {
 				var sub = item.subscribe(function (newValue) {
 					var currentlyChangeExists = ($.inArray(x, self.ChangeLog()) >= 0);
@@ -481,7 +477,7 @@ function statusReportItem() {
 				self.Subscribers.push(sub);
 			}
 		});
-    };
+	};
 
 	this.reset = function () {
 		self.ChangeLog.removeAll();
@@ -489,7 +485,7 @@ function statusReportItem() {
 	this.HasChanges = ko.computed(function () {
 		// console.log("HasChanges called for Id " + self.Id() + "  (" + self.Caption() + ") returning " + self.ChangeLog().length);
 		return self.ChangeLog().length > 0;
-    } .bind(this));
+	} .bind(this));
 
 	this.MilestoneDateString = ko.computed(function () {
 		return $.datepicker.formatDate('mm/dd/yy', self.MilestoneDate());

@@ -19,11 +19,12 @@
     </style>
 }
 <h2>@ViewBag.Message</h2>
-<form method="get" name="ChangeStatusDateForm" style="display: inline">
-    <select id="statusDateSelect" name="statusDateSelect" data-bind="options: StatusReportDates, value: PeriodStart" 
+<form method="get" name="ChangeStatusDateForm" style="display: inline">    
+    Switch report: <select id="statusDateSelect" name="statusDateSelect" data-bind="options: StatusReportDates" 
         ></select>
-        <input type="hidden" id="statusDate" name="statusDate" data-bind="value: PeriodStartFormatted"/>
+    <input type="hidden" id="statusDate" name="statusDate" data-bind="value: PeriodStartFormatted"/>
     <input type="submit"/>
+    <span data-bind="text: PeriodStartFormatted"></span>
 </form>
 <div style="float:right;">
     <button data-bind="click: save, enable: PendingChangesCount() + PendingDeletionsCount() > 0">Save</button>
@@ -67,7 +68,7 @@
 	<legend>Status Report</legend>
 	<p>
 		Date:
-		<input type="text" data-bind="datepicker: PeriodStartFormatted" />
+		<input type="text" data-bind="datepicker: PeriodStart" />
 	</p>
 	<p>
 		Caption:
