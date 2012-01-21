@@ -2,10 +2,10 @@
 @using Status.Model
 @using StatusMvc.Extensions
 @{
-	ViewBag.Title = "Index";
+    ViewBag.Title = "Index";
 }
 @section HeadSection {
-	<script src="@Url.Content("~/Scripts/core/StatusReport.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/core/StatusReport.js")" type="text/javascript"></script>
     <style type="text/css">
         .statusCaptionText { width: 400px; font-size: 8pt; }
         .projectNameHeader { font-weight: bold; font-size: 12pt; padding-top: 5px; }
@@ -14,48 +14,57 @@
         .datefield { text-align: right;width: 85px; }
         .statusItemDiv {border-style: solid; border-left-width: 3px;border-top-width: 0px;border-right-width: 1px;border-bottom-width: 0px;padding-left: 2px;margin-bottom: 2px; border-color:whitesmoke; }
         .hasChangesStyle { border-left-color: limegreen; }
-        .hasDeletionsText { color: red;font-weight: bold; }
-        .hasUpdatesText { color: limegreen;font-weight: bold; }
+        .changeCountSection { font-size: 12pt;color: darkgrey;font-weight: bold; }
+        .hasDeletionsText { color: red;font-weight:bolder; }
+        .hasUpdatesText { color: limegreen;font-weight: bolder; }
+        .updatesSection { padding-left: 3px; padding-top: 1px;padding-bottom: 1px; }
     </style>
 }
 <h2>@ViewBag.Message</h2>
-<form method="get" name="ChangeStatusDateForm" style="display: inline">    
-    <select id="statusDateSelect" name="statusDateSelect" data-bind="options: StatusReportDates, 
+<form method="get" name="ChangeStatusDateForm" style="display: inline">
+<select id="statusDateSelect" name="statusDateSelect" data-bind="options: StatusReportDates, 
     optionsCaption: 'Switch report',
+    value: PeriodStart,
     optionsText: function(item) {
             var d = parseJsonDateString(item);
-			return d.getMonth()+1 + '-' + d.getDate() + '-' + d.getFullYear();}"
-        ></select>
-    <input type="hidden" id="statusDate" name="statusDate" data-bind="value: PeriodStartFormatted"/>
-    <input type="submit"/>
-    <span data-bind="text: PeriodStartFormatted"></span>
+			return d.getMonth()+1 + '-' + d.getDate() + '-' + d.getFullYear();}">
+</select>
+<input type="hidden" id="statusDate" name="statusDate" data-bind="value: PeriodStartFormatted" />
+<input type="submit" />
+@*<span data-bind="text: PeriodStartFormatted"></span>*@
 </form>
-<div style="float:right;">
-    <button data-bind="click: save, enable: PendingChangesCount() + PendingDeletionsCount() > 0">Save</button>
-    Pending updates/adds: <span data-bind="text: PendingChangesCount, css: { hasUpdatesText: PendingChangesCount() > 0 }"></span> / Pending deletions: <span data-bind="text:PendingDeletionsCount, css: { hasDeletionsText: PendingDeletionsCount() > 0 }"></span>
+<div style="float: right;">
+    <button data-bind="click: save, enable: PendingChangesCount() + PendingDeletionsCount() > 0">
+        Save</button>
+    <span class="updatesSection" style="border-right-width: 1px; border-color:lightslategray; border-right-style: dot-dash">Pending updates:
+        <span class="changeCountSection" data-bind="text: PendingChangesCount, css: { hasUpdatesText: PendingChangesCount() > 0 }">
+        </span></span>
+        <span class="updatesSection" style="border-right-width: 1px; border-right-style: dot-dash">Pending
+            deletions: <span class="changeCountSection" data-bind="text:PendingDeletionsCount, css: { hasDeletionsText: PendingDeletionsCount() > 0 }">
+            </span></span>
 </div>
 @*<a data-bind="click:LogItems()">Log</a>*@
 <fieldset>
-	<legend>Teams</legend>
-	<div id="tabs">
-		<ul data-bind='foreach: ItemsByTeam'>
-			<li><a data-bind="attr: {href:'#tabs-' + TeamId(), title: Name}, text: Name"></a>
-			</li>
-		</ul>
-		<div data-bind='foreach: ItemsByTeam'>
-			<div data-bind='attr: {id: "tabs-" + TeamId() }, foreach: ProjectItems'>
+    <legend>Teams</legend>
+    <div id="tabs">
+        <ul data-bind='foreach: ItemsByTeam'>
+            <li><a data-bind="attr: {href:'#tabs-' + TeamId(), title: Name}, text: Name"></a>
+            </li>
+        </ul>
+        <div data-bind='foreach: ItemsByTeam'>
+            <div data-bind='attr: {id: "tabs-" + TeamId() }, foreach: ProjectItems'>
                 <div class="projectNameHeader">
                     <span data-bind="text: ProjectName"></span><a href="#" data-bind="click: addItemFromTemplate">
-                                                                   +</a>
+                        +</a>
                 </div>
-				<div>
-					<form data-bind="submit: addItemFromStubProperties">
-					<input type="text" data-bind="value: NewStatusItemText" placeholder="New status item caption..." />
-					<button type="submit" data-bind="enable: HasNewItem">
-						Add</button>
-					</form>
-				</div>
-				<div data-bind='foreach: Items'>
+                <div>
+                    <form data-bind="submit: addItemFromStubProperties">
+                    <input type="text" data-bind="value: NewStatusItemText" placeholder="New status item caption..." />
+                    <button type="submit" data-bind="enable: HasNewItem">
+                        Add</button>
+                    </form>
+                </div>
+                <div data-bind='foreach: Items'>
                     <div data-bind="css: { hasChangesStyle: HasChanges()}" class="statusItemDiv">
                         <textarea class="required statusCaptionText" data-bind="value: Caption, uniqueName: true"></textarea>
                         <input class="required datefield" data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
@@ -63,41 +72,41 @@
                          new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
                         <a href="#" data-bind="click: $parent.removeStatusItem">Delete</a>
                     </div>
-				</div>
-			</div>
-		</div>
-	</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </fieldset>
 <fieldset>
-	<legend>Status Report</legend>
-	<p>
-		Date:
-		<input type="text" data-bind="datepicker: PeriodStart" />
-	</p>
-	<p>
-		Caption:
-		<input type="text" data-bind="value: Caption" placeholder="Enter caption for status report" />
-	</p>
-	<p>
-		Items: <span data-bind="value: NumberOfStatusItems"></span>
-	</p>
-	<input type="button" click="statusReportVM.loadReport('@Request.QueryString["statusDate"]');" value="Reload"></input>
+    <legend>Status Report</legend>
+    <p>
+        Date:
+        <input type="text" data-bind="datepicker: PeriodStart" />
+    </p>
+    <p>
+        Caption:
+        <input type="text" data-bind="value: Caption" placeholder="Enter caption for status report" />
+    </p>
+    <p>
+        Items: <span data-bind="value: NumberOfStatusItems"></span>
+    </p>
+    <input type="button" click="statusReportVM.loadReport('@Request.QueryString["statusDate"]');" value="Reload"></input>
 </fieldset>
 <fieldset>
-	<legend>Items</legend>New Status Item:
-	<input type="text" data-bind='value: StatusItemToAdd, valueUpdate: "afterkeydown"' />
-	<input type="text" data-bind='value: StatusItemDateToAdd, valueUpdate: "afterkeydown"' />
-	@Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
-			new Dictionary<string, object> { { "data-bind", "value:StatusItemMilestoneToAdd" } })
-	<button type="submit" data-bind="enable: StatusItemToAdd().length > 0, click: addStatusItem">
-		Add</button>
+    <legend>Items</legend>New Status Item:
+    <input type="text" data-bind='value: StatusItemToAdd, valueUpdate: "afterkeydown"' />
+    <input type="text" data-bind='value: StatusItemDateToAdd, valueUpdate: "afterkeydown"' />
+    @Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
+            new Dictionary<string, object> { { "data-bind", "value:StatusItemMilestoneToAdd" } })
+    <button type="submit" data-bind="enable: StatusItemToAdd().length > 0, click: addStatusItem">
+        Add</button>
 </fieldset>
 <input type="submit" value="Create" />
 @*</form>*@
 <script type="text/javascript">
-	$(function () {
-		//activates KO
-		ko.applyBindings(statusReportVM.Report);
-		statusReportVM.loadReport('@Request.QueryString["statusDate"]');
-	});
+    $(function () {
+        //activates KO
+        ko.applyBindings(statusReportVM.Report);
+        statusReportVM.loadReport('@Request.QueryString["statusDate"]');
+    });
 </script>
