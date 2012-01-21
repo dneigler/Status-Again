@@ -20,7 +20,11 @@
 }
 <h2>@ViewBag.Message</h2>
 <form method="get" name="ChangeStatusDateForm" style="display: inline">    
-    Switch report: <select id="statusDateSelect" name="statusDateSelect" data-bind="options: StatusReportDates" 
+    <select id="statusDateSelect" name="statusDateSelect" data-bind="options: StatusReportDates, 
+    optionsCaption: 'Switch report',
+    optionsText: function(item) {
+            var d = parseJsonDateString(item);
+			return d.getMonth()+1 + '-' + d.getDate() + '-' + d.getFullYear();}"
         ></select>
     <input type="hidden" id="statusDate" name="statusDate" data-bind="value: PeriodStartFormatted"/>
     <input type="submit"/>
