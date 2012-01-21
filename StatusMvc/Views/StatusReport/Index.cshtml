@@ -6,19 +6,30 @@
 }
 @section HeadSection {
 	<script src="@Url.Content("~/Scripts/core/StatusReport.js")" type="text/javascript"></script>
-	<style type="text/css">
-			.statusCaptionText { width: 400px; font-size: 8pt; }
-			.projectNameHeader { font-weight: bold; font-size: 12pt; padding-top: 5px; }
-			.statusItemSecondLine { margin-left: 10px; }
-			textarea { display: inline-block; }
-			.datefield { text-align: right;width: 85px; }
-            .statusItemDiv {border-style: solid; border-left-width: 3px;border-top-width: 0px;border-right-width: 1px;border-bottom-width: 0px;padding-left: 2px;margin-bottom: 2px; border-color:whitesmoke; }
-            .hasChangesStyle { border-left-color: limegreen; }
-	</style>
+    <style type="text/css">
+        .statusCaptionText { width: 400px; font-size: 8pt; }
+        .projectNameHeader { font-weight: bold; font-size: 12pt; padding-top: 5px; }
+        .statusItemSecondLine { margin-left: 10px; }
+        textarea { display: inline-block; }
+        .datefield { text-align: right;width: 85px; }
+        .statusItemDiv {border-style: solid; border-left-width: 3px;border-top-width: 0px;border-right-width: 1px;border-bottom-width: 0px;padding-left: 2px;margin-bottom: 2px; border-color:whitesmoke; }
+        .hasChangesStyle { border-left-color: limegreen; }
+        .hasDeletionsText { color: red;font-weight: bold; }
+        .hasUpdatesText { color: limegreen;font-weight: bold; }
+    </style>
 }
 <h2>@ViewBag.Message</h2>
-<button data-bind="click: save">Save</button>
-<div style="float:right;">Pending updates/adds: <span data-bind="text: PendingChangesCount"></span> / Pending deletions: <span data-bind="text:PendingDeletionsCount"></span></div>
+<form method="get" name="ChangeStatusDateForm" style="display: inline">
+    <select id="statusDateSelect" name="statusDateSelect" data-bind="options: StatusReportDates, value: PeriodStart" 
+        ></select>
+        <input type="hidden" id="statusDate" name="statusDate" data-bind="value: PeriodStartFormatted"/>
+    <input type="submit"/>
+</form>
+<div style="float:right;">
+    <button data-bind="click: save, enable: PendingChangesCount() + PendingDeletionsCount() > 0">Save</button>
+    Pending updates/adds: <span data-bind="text: PendingChangesCount, css: { hasUpdatesText: PendingChangesCount() > 0 }"></span> / Pending deletions: <span data-bind="text:PendingDeletionsCount, css: { hasDeletionsText: PendingDeletionsCount() > 0 }"></span>
+</div>
+@*<a data-bind="click:LogItems()">Log</a>*@
 <fieldset>
 	<legend>Teams</legend>
 	<div id="tabs">

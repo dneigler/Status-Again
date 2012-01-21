@@ -74,7 +74,9 @@ namespace StatusMvc.Controllers
         {
             var data = statusDate.HasValue ? StatusReportRepository.GetStatusReport(statusDate.Value) : StatusReportRepository.GetActiveStatusReport();
             var vm = Mapper.Map<StatusReport, StatusReportViewModel>(data);
-
+            // populate the recent dates
+            if (vm != null)
+                vm.StatusReportDates = this.StatusReportRepository.GetAllStatusReportDates();
             return Json(vm, JsonRequestBehavior.AllowGet);
         }
 

@@ -98,6 +98,15 @@ namespace Status.Persistence
         {
             this.Session.SaveOrUpdate(statusItem);
         }
+
+        public IList<DateTime> GetAllStatusReportDates()
+        {
+            var query = (from sr in Session.Query<StatusReport>()
+                         orderby sr.PeriodStart descending
+                         select sr.PeriodStart);
+            return query.ToList();
+        }
+
         #endregion
 
         public DateTime GetCurrentStatusReportDate()

@@ -135,7 +135,8 @@ var statusReportVM = {
 						.NumberOfStatusItems(response.NumberOfStatusItems)
 						.StatusItemToAdd("")
 						.StatusItemDateToAdd(new Date())
-						.StatusItemMilestoneToAdd(0);
+						.StatusItemMilestoneToAdd(0)
+					    .StatusReportDates(response.StatusReportDates);
 					$.each(response.Items, function (x, item) {
 						var sri = new statusReportItem()
 							.LoadFromObject(item);
@@ -172,85 +173,118 @@ var statusReportVM = {
 	}
 };
 
+RedirectToReport = function (statusDate) {
+    // alert(statusDate);
+    //window.location.replace("?statusDate=" + this.PeriodStart());
+};
+
 function statusReport() {
 	var self = this;
 	this.Id = ko.observable(0);
 	this.PeriodStart = ko.observable(/Date(1322456400000)/);
+    
 	this.Caption = ko.observable('');
 	this.NumberOfStatusItems = ko.observable(0);
 	this.Items = ko.observableArray([]);
+
+	this.StatusReportDates = ko.observableArray([]);
+    
 	this.StatusItemToAdd = ko.observable('');
 	this.StatusItemDateToAdd = ko.observable(new Date());
 	this.StatusItemMilestoneToAdd = ko.observable(0);
 
 	this.ItemsByProject = ko.observableArray([]);
 	this.ItemsByTeam = ko.observableArray([]);
-    this.ItemsToRemove = ko.observableArray([]);
+	this.ItemsToRemove = ko.observableArray([]);
 
+	
 	this.loadStatusItem = function (statusItem) {
-		// autocreates team and project if not found
-		this.Items.push(statusItem);
-		var team = this.getOrCreateTeamFromStatusItem(statusItem);
-		//console.log(team.Name());
+	    // autocreates team and project if not found
+	    console.log("loadStatusItem called: " + statusItem.Id() + " / " + statusItem.Caption());
+	    var matchingItem = ko.utils.arrayFilter(self.Items(), function (item) {
+	        return item.Id() == statusItem.Id();
+	    });
+	    if (!matchingItem)
+	        self.Items.push(statusItem);
+	    else {
+	        console.log("Matching item found for " + statusItem.Id());
+	    }
+	    var team = self.getOrCreateTeamFromStatusItem(statusItem);
 	};
 
-    this.PendingChangesCount = ko.computed(function () {
-        var arrCount = ko.utils.arrayFilter(self.Items(), function (item) {
+	this.PendingChangesCount = ko.computed(function () {
+	    var arrCount = ko.utils.arrayFilter(self.Items(), function (item) {
 	        return item.HasChanges();
 	    });
-        return arrCount.length;
-    } .bind(this));
-    
-    this.PendingDeletionsCount = ko.computed(function() {
-        return self.ItemsToRemove().length;
-    } .bind(this));
+	    
+	    // debugging
+	    ko.utils.arrayForEach(self.Items(), function(item) {
+	        if (item.HasChanges())
+	            console.log(ko.toJSON(item)); // item.Id() + " / " + item.Caption());
+	    });
+//	    $.each(arrCount, function (x, item) {
+//	        console.log(item.Id() + " / " + item.Caption());
+//	    });
+	    return arrCount.length;
+	} .bind(this));
+	
+	this.PendingDeletionsCount = ko.computed(function() {
+		return self.ItemsToRemove().length;
+	} .bind(this));
 
+    this.LogItems = function() {
+        // debugging
+//        ko.utils.arrayForEach(self.Items(), function(item) {
+//            console.log(ko.toJSON(item)); // item.Id() + " / " + item.Caption());
+//        });
+    };
+    
     this.reset = function () {
-        $.each(this.Items(), function (x, item) {
+        ko.utils.arrayForEach(self.Items(), function(item) {
             item.reset();
         });
-        self.ItemsToRemove.removeAll();
-    };
+		self.ItemsToRemove.removeAll();
+	};
 	this.save = function () {
-	    var url = "/StatusReport/Save";
-	    var miniReport = new statusReport();
-	    miniReport.PeriodStart = self.PeriodStart();
-	    miniReport.Id = self.Id();
-	    miniReport.Caption = self.Caption();
+		var url = "/StatusReport/Save";
+		var miniReport = new statusReport();
+		miniReport.PeriodStart = self.PeriodStart();
+		miniReport.Id = self.Id();
+		miniReport.Caption = self.Caption();
 
-	    miniReport.Items = ko.utils.arrayFilter(self.Items(), function (item) {
-	        return item.HasChanges(); // ko.utils.stringStartsWith(item.name().toLowerCase(), filter);
-	    });
-	    miniReport.ItemsToRemove = self.ItemsToRemove();
+		miniReport.Items = ko.utils.arrayFilter(self.Items(), function (item) {
+			return item.HasChanges(); // ko.utils.stringStartsWith(item.name().toLowerCase(), filter);
+		});
+		miniReport.ItemsToRemove = self.ItemsToRemove();
 
-	    console.log("About to save self.Items = " + miniReport.Items.length);
+		console.log("About to save self.Items = " + miniReport.Items.length);
 
-	    $.ajax({
-	        url: url,
-	        dataType: "json",
-	        data: ko.toJSON({ report: miniReport }),
-	        type: "post",
-	        contentType: "application/json",
-	        success: function (result) {
-	            // alert(result);
-	            self.reset();
-	        },
-	        error: function (xhr, status) {
-	            switch (status) {
-	                case 404:
-	                    alert('File not found');
-	                    break;
-	                case 500:
-	                    alert('Server error');
-	                    break;
-	                case 0:
-	                    alert('Request aborted');
-	                    break;
-	                default:
-	                    alert('Unknown error ' + status);
-	            }
-	        }
-	    });
+		$.ajax({
+			url: url,
+			dataType: "json",
+			data: ko.toJSON({ report: miniReport }),
+			type: "post",
+			contentType: "application/json",
+			success: function (result) {
+				// alert(result);
+				self.reset();
+			},
+			error: function (xhr, status) {
+				switch (status) {
+					case 404:
+						alert('File not found');
+						break;
+					case 500:
+						alert('Server error');
+						break;
+					case 0:
+						alert('Request aborted');
+						break;
+					default:
+						alert('Unknown error ' + status);
+				}
+			}
+		});
 	};
 	
 	
@@ -270,7 +304,7 @@ function statusReport() {
 				.Report(this)
 				.TeamId(this.teamCounter++)
 				.Name(statusItem.ProjectLeadFullName());
-			console.log("Created team " + team.Name());
+			// console.log("Created team " + team.Name());
 			this.ItemsByTeam.push(team);
 			//statusItem.ProjectTeamId()
 		}
@@ -299,7 +333,7 @@ function statusReport() {
 				.ProjectTeamName(statusItem.ProjectTeamName())
 				.ProjectLeadFullName(statusItem.ProjectLeadFullName())
 				.ProjectTeamLeadFullName(statusItem.ProjectTeamLeadFullName());
-			console.log("Created project " + proj.ProjectName() + " - " + proj.ProjectId());
+			// console.log("Created project " + proj.ProjectName() + " - " + proj.ProjectId());
 			this.ItemsByProject.push(proj);
 		}
 		proj.addItem(statusItem);
@@ -307,7 +341,14 @@ function statusReport() {
 	};
 
 	this.PeriodStartFormatted = ko.computed(function () {
-		return parseJsonDateString(this.PeriodStart());
+	    if (self.PeriodStart()) {
+	        var d = parseJsonDateString(this.PeriodStart());
+	        return d.getMonth()+1 + "-" + d.getDate() + "-" + d.getFullYear();
+	        var dp = Date.parse(d);
+	        if (dp != null)
+	            return Date.parse(d).toShortDateString(); // parseJsonDateString(this.PeriodStart());
+	    }
+	    return self.PeriodStart();
 	} .bind(this));
 	
 	this.Name = ko.computed(function() {
@@ -327,16 +368,16 @@ function statusReport() {
 	};
 
 	this.addStatusItem = function (sri) {
-	    this.Items.push(sri);
-	    this.StatusItemToAdd('');
-	    this.StatusItemMilestoneToAdd(0);
-	    this.StatusItemDateToAdd(new Date());
+		this.Items.push(sri);
+		this.StatusItemToAdd('');
+		this.StatusItemMilestoneToAdd(0);
+		this.StatusItemDateToAdd(new Date());
 	};
 
 	self.removeStatusItem = function (itemToRemove) {
-	    console.log("about to remove status item " + itemToRemove);
-	    self.ItemsToRemove.push(itemToRemove);
-	    self.Items.remove(itemToRemove);
+		console.log("about to remove status item " + itemToRemove);
+		self.ItemsToRemove.push(itemToRemove);
+		self.Items.remove(itemToRemove);
 	};
 };
 
@@ -352,11 +393,11 @@ array
 //});
 
 function getMembers(original) {
-    var sri = new Array();
-    $.each(original, function (index, item) {
-        sri[index] = ko.utils.unwrapObservable(item);
-    });
-    return sri;
+	var sri = new Array();
+	$.each(original, function (index, item) {
+		sri[index] = ko.utils.unwrapObservable(item);
+	});
+	return sri;
 //    // Shallow copy
 //	var clone = jQuery.extend({}, original);
 //	// var b = obj.slice(0);//  jQuery.extend({}, obj);
@@ -387,7 +428,7 @@ function statusReportItem() {
 	self.StatusReportId = ko.observable(0);
 
 	this.LoadFromObject = function (item) {
-	    self.Id(item.Id)
+		self.Id(item.Id)
 		.TopicCaption(item.TopicCaption)
 		.TopicExternalId(item.TopicExternalId)
 		.TopicId(item.TopicId)
@@ -404,9 +445,9 @@ function statusReportItem() {
 		.ProjectTeamName(item.ProjectTeamName)
 		.ProjectLeadFullName(item.ProjectLeadFullName)
 		.ProjectTeamLeadFullName(item.ProjectTeamLeadFullName);
-	    self.OriginalVersion = getMembers(item);
-	    self.ListenForChanges();
-	    return self;
+		self.OriginalVersion = getMembers(item);
+		self.ListenForChanges();
+		return self;
 	};
 	
 	self.Subscribers = new Array();
@@ -425,11 +466,9 @@ function statusReportItem() {
 
 	self.ChangeLog = ko.observableArray();
 	this.ListenForChanges = function () {
-		self.ClearSubscribers();
-		$.each(self, function (x, item) {
+	    self.ClearSubscribers();
+	    $.each(self, function (x, item) {
 			if (x != "ChangeLog" && x != "HasChanges" && ko.isObservable(item)) {
-				console.log("Subscribing to changes in " + x);
-
 				var sub = item.subscribe(function (newValue) {
 					var currentlyChangeExists = ($.inArray(x, self.ChangeLog()) >= 0);
 					if (newValue != self.OriginalVersion[x] && !currentlyChangeExists) {
@@ -442,21 +481,15 @@ function statusReportItem() {
 				self.Subscribers.push(sub);
 			}
 		});
-};
-
-    this.reset = function () {
-        self.ChangeLog.removeAll();
     };
+
+	this.reset = function () {
+		self.ChangeLog.removeAll();
+	};
 	this.HasChanges = ko.computed(function () {
-		console.log("HasChanges called returning " + self.ChangeLog().length);
+		// console.log("HasChanges called for Id " + self.Id() + "  (" + self.Caption() + ") returning " + self.ChangeLog().length);
 		return self.ChangeLog().length > 0;
-		//console.log(self.OriginalVersion);
-		//	    $.each(self.OriginalVersion, function (x, item) {
-		//	        if (self[item]() != self.OriginalVersion[item])
-		//	            return true;
-		//	    });
-		//return false;
-} .bind(this));
+    } .bind(this));
 
 	this.MilestoneDateString = ko.computed(function () {
 		return $.datepicker.formatDate('mm/dd/yy', self.MilestoneDate());
@@ -480,9 +513,9 @@ function projectStatus() {
 	self.NewStatusItemMilestoneDate = ko.observable(new Date());
 
 	this.HasNewItem = ko.computed(function () {
-	    return (self.NewStatusItemText() != '' && self.NewStatusItemText() != null);
+		return (self.NewStatusItemText() != '' && self.NewStatusItemText() != null);
 	} .bind(this));
-    
+	
 	self.removeStatusItem = function (itemToRemove) {
 		console.log("about to remove item via projectStatus " + itemToRemove.TopicCaption());
 		self.Items.remove(itemToRemove);
@@ -513,8 +546,8 @@ function projectStatus() {
 
 	};
 	self.addItemFromStubProperties = function () {
-	    var statusItem = new statusReportItem()
-	    // .Report(self.Report)
+		var statusItem = new statusReportItem()
+		// .Report(self.Report)
 			.ProjectId(self.ProjectId())
 			.ProjectName(self.ProjectName())
 			.ProjectDepartmentName(self.ProjectDepartmentName())
@@ -527,11 +560,11 @@ function projectStatus() {
 			.TopicCaption(self.NewStatusItemText())
 			.Caption(self.NewStatusItemText())
 			.MilestoneDate(self.NewStatusItemMilestoneDate())
-            .StatusReportId(self.Report().Id());
-	    statusItem.ListenForChanges();
-	    self.addItem(statusItem);
-	    self.NewStatusItemText('');
-	    self.NewStatusItemMilestoneDate(new Date());
+			.StatusReportId(self.Report().Id());
+		statusItem.ListenForChanges();
+		self.addItem(statusItem);
+		self.NewStatusItemText('');
+		self.NewStatusItemMilestoneDate(new Date());
 	};
 };
 

@@ -9,6 +9,7 @@ namespace StatusMvc.Models
     public class StatusReportViewModel
     {
         //private IList<StatusItem> _items = null;
+        public IList<DateTime> StatusReportDates { get; set; } 
         public int Id { get; set; }
         public DateTime PeriodStart { get; set; }
         [Required, CanSort, Display(Name = "Caption")]
