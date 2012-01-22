@@ -36,6 +36,7 @@
     <Reference Include="AutoMapper, Version=2.0.0.232, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="NHibernate, Version=3.2.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL" />
     <Reference Include="Ninject, Version=2.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\packages\Ninject.2.2.1.4\lib\net40-Full\Ninject.dll</HintPath>
     </Reference>
@@ -74,9 +75,25 @@
       <Project>{97C2732B-463D-41A7-895C-219B7EDA05CB}</Project>
       <Name>Status.Bll</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Status.ETL\Status.Etl.csproj">
+      <Project>{50BE225F-5293-4D70-AB9A-DF46FA4F7445}</Project>
+      <Name>Status.Etl</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Status.Model\Status.Model.csproj">
       <Project>{25EF6D75-7E30-4FC8-B50C-7F9F967DFCC0}</Project>
       <Name>Status.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Status.Persistence.Tests\Status.Persistence.Tests.csproj">
+      <Project>{6646D134-C0FA-4CC2-A8DF-7A99C0D87577}</Project>
+      <Name>Status.Persistence.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Status.Persistence\Status.Persistence.csproj">
+      <Project>{D7744E4E-4A50-4D9A-B500-EDBA64095698}</Project>
+      <Name>Status.Persistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Status.Repository\Status.Repository.csproj">
+      <Project>{C556F5FA-F524-4B6D-AE87-0C7C62F4FB0C}</Project>
+      <Name>Status.Repository</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

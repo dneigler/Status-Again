@@ -116,6 +116,24 @@ ko.bindingHandlers.datepicker = {
 
 var statusReportVM = {
 	Report: ko.observable(new statusReport()),
+	initJQuery: function () {
+	    $("#tabs").tabs();
+        // $(".datefield").datepicker({dateFormat:'yy-mm-dd',changeMonth:true,changeYear:true });
+        $('textarea input').autoResize({
+        // On resize:
+            onResize: function() {
+                $(this).css({ opacity: 0.8 });
+            },
+            // After resize:
+            animateCallback: function() {
+                $(this).css({ opacity: 1 });
+            },
+            // Quite slow animation:
+            animateDuration: 300,
+            // More extra space:
+            extraSpace: 40
+        });
+	},
 	loadReport: function (reportDate) {
 		var url = "/StatusReport/GetStatusReport?statusDate=" + reportDate;
 		$.ajax({
@@ -128,39 +146,11 @@ var statusReportVM = {
 			},
 			success: function (response) {
 				if (response != null) {
-					var sr = new statusReport()
-						.Caption(response.PeriodStart)
-						.PeriodStart(response.PeriodStart)
-						.Id(response.Id)
-						.NumberOfStatusItems(response.NumberOfStatusItems)
-						.StatusItemToAdd("")
-						.StatusItemDateToAdd(new Date())
-						.StatusItemMilestoneToAdd(0)
-						.StatusReportDates(response.StatusReportDates);
-					$.each(response.Items, function (x, item) {
-						var sri = new statusReportItem()
-							.LoadFromObject(item);
-
-						sr.loadStatusItem(sri);
-					});
-					statusReportVM.Report(sr);
-					
-                    $("#tabs").tabs();
-					// $(".datefield").datepicker({dateFormat:'yy-mm-dd',changeMonth:true,changeYear:true });
-					$('textarea input').autoResize({
-						// On resize:
-						onResize: function () {
-							$(this).css({ opacity: 0.8 });
-						},
-						// After resize:
-						animateCallback: function () {
-							$(this).css({ opacity: 1 });
-						},
-						// Quite slow animation:
-						animateDuration: 300,
-						// More extra space:
-						extraSpace: 40
-					});
+				    var sr = new statusReport()
+    				    .initData(response);
+				    statusReportVM.Report(sr);
+				    statusReportVM.initJQuery();
+       
 				} else {
 					alert(response.message);
 				}
@@ -195,8 +185,37 @@ function statusReport() {
 	this.ItemsByProject = ko.observableArray([]);
 	this.ItemsByTeam = ko.observableArray([]);
 	this.ItemsToRemove = ko.observableArray([]);
+	this.CanRollStatus = ko.observable(false);
+    this.RollStatusDate = ko.observable(null);
 
-	
+    this.RollStatusDateFormatted = ko.computed(function () {
+        if (self.RollStatusDate() != null) {
+            var d = parseJsonDateString(self.RollStatusDate());
+            var dt = new Date(d);
+            return dt.toString("MM-dd-yyyy");
+        }
+        return null;
+    } .bind(this));
+    this.initData = function (response) {
+
+        self.Caption(response.PeriodStart)
+            .PeriodStart(response.PeriodStart)
+            .Id(response.Id)
+            .NumberOfStatusItems(response.NumberOfStatusItems)
+            .StatusItemToAdd("")
+            .StatusItemDateToAdd(new Date())
+            .StatusItemMilestoneToAdd(0)
+            .StatusReportDates(response.StatusReportDates)
+            .CanRollStatus(response.CanRollStatus)
+            .RollStatusDate(response.RollStatusDate);
+        $.each(response.Items, function (x, item) {
+            var sri = new statusReportItem()
+                .LoadFromObject(item);
+
+            self.loadStatusItem(sri);
+        });
+        return self;
+    };
 	this.loadStatusItem = function (statusItem) {
 		// autocreates team and project if not found
 		console.log("loadStatusItem called: " + statusItem.Id() + " / " + statusItem.Caption());
@@ -243,7 +262,61 @@ function statusReport() {
 			item.reset();
 		});
 		self.ItemsToRemove.removeAll();
-	};
+};
+this.rollStatus = function () {
+    $("#dialog-confirm").dialog({
+        resizable: false,
+        height: 280,
+        modal: true,
+        buttons: {
+            "Roll": function () {
+                var url = "/StatusReport/RollStatus";
+                var miniReport = new statusReport();
+                miniReport.Id = self.Id();
+                console.log("About to roll status for " + miniReport.Id);
+
+                $.ajax({
+                    url: url,
+                    dataType: "json",
+                    data: ko.toJSON({ report: miniReport }),
+                    type: "post",
+                    contentType: "application/json",
+                    success: function (response) {
+                        if (response != null) {
+                            var sr = new statusReport()
+                                .initData(response);
+                            statusReportVM.Report(sr);
+                            this.initJQuery();
+
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function (xhr, status) {
+                        switch (status) {
+                            case 404:
+                                alert('File not found');
+                                break;
+                            case 500:
+                                alert('Server error');
+                                break;
+                            case 0:
+                                alert('Request aborted');
+                                break;
+                            default:
+                                alert('Unknown error ' + status);
+                        }
+                    }
+                });
+                $(this).dialog("close");
+            },
+            Cancel: function () {
+                $(this).dialog("close");
+            }
+        }
+    });
+    
+};
 	this.save = function () {
 		var url = "/StatusReport/Save";
 		var miniReport = new statusReport();
@@ -340,11 +413,12 @@ function statusReport() {
 	};
 
 	this.PeriodStartFormatted = ko.computed(function () {
-		if (self.PeriodStart()) {
-			var d = parseJsonDateString(self.PeriodStart());
-			return d.getMonth()+1 + "-" + d.getDate() + "-" + d.getFullYear();
-		}
-		return self.PeriodStart();
+	    if (self.PeriodStart()) {
+	        var d = parseJsonDateString(self.PeriodStart());
+	        var dt = new Date(d);
+	        return dt.toString("MM-dd-yyyy");
+	    }
+	    return self.PeriodStart();
 	} .bind(this));
 	
 	this.Name = ko.computed(function() {

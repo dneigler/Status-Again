@@ -5,6 +5,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Ninject;
 using Status.Model;
 using Status.BLL;
+using Status.Persistence.Tests;
+using Status.Repository;
 
 namespace Status.BLL.Tests
 {
@@ -16,6 +18,16 @@ namespace Status.BLL.Tests
     public class StatusReportManagerTest
     {
         private static IKernel _kernel = null;
+        private readonly static string _connString = "server=.\\SQLExpress;" +
+            "database=StatusAgain;" +
+            "Integrated Security=SSPI;";
+        private readonly static NHibernateUnitTestConfiguration _config = new NHibernateUnitTestConfiguration(_connString);
+        private IResourceRepository _resourceRepository;
+        private IProjectRepository _projectRepository;
+        private IStatusReportRepository _statusReportRepository;
+
+        private AuditInfo _auditInfo = null;
+
         /// <summary>
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
@@ -31,27 +43,70 @@ namespace Status.BLL.Tests
         [ClassInitialize()]
         public static void MyClassInitialize(TestContext testContext)
         {
-            _kernel = new StandardKernel(new DefaultStatusNinjectModule());
+            _kernel = new StandardKernel(new DefaultStatusNinjectModule(_connString));
+
         }
-        
+
         ///Use ClassCleanup to run code after all tests in a class have run
         [ClassCleanup()]
         public static void MyClassCleanup()
         {
         }
-        
+
         //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
+        [TestInitialize()]
+        public void MyTestInitialize()
+        {
+            _resourceRepository = _kernel.Get<IResourceRepository>();
+            _projectRepository = _kernel.Get<IProjectRepository>();
+            _statusReportRepository = _kernel.Get<IStatusReportRepository>();
+
+            var resource = _resourceRepository.GetResourceByEmail("test@test.com");
+            if (resource == null)
+            {
+                _resourceRepository.AddResource(new Resource()
+                {
+                    EmailAddress = "test@test.com",
+                    FirstName = "Test",
+                    LastName = "User"
+                });
+                resource = _resourceRepository.GetResourceByEmail("test@test.com");
+
+            }
+            _auditInfo = new AuditInfo(resource);
+
+        }
+
         //
         //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
+        [TestCleanup()]
+        public void MyTestCleanup()
+        {
+
+            using (var txn = _statusReportRepository.BeginTransaction())
+            {
+                try
+                {
+                    _statusReportRepository.DeleteStatusReport(new DateTime(2011, 1, 1));
+                }
+                catch (Exception)
+                {
+
+
+                }
+                try
+                {
+                    _statusReportRepository.DeleteStatusReport(new DateTime(2011, 1, 3));
+                }
+                catch (Exception)
+                {
+
+
+                }
+                txn.Commit();
+            }
+
+        }
 
         #endregion
 
@@ -76,6 +131,8 @@ namespace Status.BLL.Tests
             Mapper.CreateMap<StatusItem, StatusItem>();
             var target = _kernel.Get<StatusReportManager>();
             var items = new List<StatusItem>();
+            var proj = _projectRepository.GetAllProjects()[0];
+
             StatusItem si1 = new StatusItem()
                                  {
                                      Caption = "Test1",
@@ -86,7 +143,9 @@ namespace Status.BLL.Tests
                                                          Type = MilestoneTypes.Milestone
                                                      },
                                      Notes = new List<Note>(),
-                                     Topic = new Topic() { Caption = "test Topic 1" }
+                                     Topic = new Topic() { Caption = "test Topic 1" },
+                                     Project = proj,
+                                     AuditInfo = _auditInfo
                                  };
             StatusItem si2 = Mapper.Map<StatusItem, StatusItem>(si1);
             si2.Milestone.Date = new DateTime(2011, 1, 10);
@@ -96,19 +155,23 @@ namespace Status.BLL.Tests
             items.Add(si1);
             items.Add(si2);
             items.Add(si3);
+
             var report = new StatusReport
                              {
                                  Caption = "Test 1",
                                  PeriodStart = new DateTime(2011, 01, 01)
                              };
             items.ForEach(report.AddStatusItem);
-            StatusReport actual = target.RollStatusReport(report);
+
+            StatusReport actual = target.RollStatusReport(report, _auditInfo);
             Assert.AreEqual(report.Caption, actual.Caption);
             Assert.AreEqual(report.Items.Count, actual.Items.Count);
             Assert.AreEqual(report.Items[0], si1);
             Assert.AreEqual(report.Items[1], si2);
             Assert.AreEqual(report.Items[2], si3);
             Assert.AreEqual(new DateTime(2011, 01, 03), actual.PeriodStart);
+            // cleanup
+            _statusReportRepository.DeleteStatusReport(new DateTime(2011, 1, 3));
         }
 
         /// <summary>

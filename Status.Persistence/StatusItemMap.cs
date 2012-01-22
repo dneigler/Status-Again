@@ -14,7 +14,8 @@ namespace Status.Persistence
             Id(x => x.Id);
             Map(x => x.Caption);
             References(x => x.Topic)
-                .Not.Nullable();
+                .Not.Nullable()
+                .Cascade.SaveUpdate();
             Component(x => x.Milestone);
             Component(x => x.AuditInfo);
             HasMany(x => x.Notes)

@@ -22,26 +22,32 @@
 }
 <h2>@ViewBag.Message</h2>
 <form method="get" name="ChangeStatusDateForm" style="display: inline">
-<select id="statusDateSelect" name="statusDateSelect" data-bind="options: StatusReportDates, 
+    <select id="statusDateSelect" name="statusDateSelect" data-bind="options: StatusReportDates, 
     optionsCaption: 'Switch report',
     value: PeriodStart,
     optionsText: function(item) {
             var d = parseJsonDateString(item);
-			return d.getMonth()+1 + '-' + d.getDate() + '-' + d.getFullYear();}">
-</select>
-<input type="hidden" id="statusDate" name="statusDate" data-bind="value: PeriodStartFormatted" />
-<input type="submit" />
-@*<span data-bind="text: PeriodStartFormatted"></span>*@
+            var dt = new Date(d);
+            return dt.toString('MM-dd-yyyy');
+            }">
+    </select>
+    <input type="hidden" id="statusDate" name="statusDate" data-bind="value: PeriodStartFormatted" />
+    <input type="submit" />
+    @*<span data-bind="text: PeriodStartFormatted"></span>*@
 </form>
+<div id="dialog-confirm" style="display:none" title="Roll Status Report?">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This will create a new status report for <span data-bind="text: RollStatusDateFormatted"></span> with all items carried over from the current report. Are you sure?</p>
+</div>
 <div style="float: right;">
+    <button data-bind="visible: CanRollStatus, click: rollStatus, text: 'Roll Status to ' + RollStatusDateFormatted()"></button>
     <button data-bind="click: save, enable: PendingChangesCount() + PendingDeletionsCount() > 0">
         Save</button>
     <span class="updatesSection" style="border-right-width: 1px; border-color:lightslategray; border-right-style: dot-dash">Pending updates:
         <span class="changeCountSection" data-bind="text: PendingChangesCount, css: { hasUpdatesText: PendingChangesCount() > 0 }">
         </span></span>
-        <span class="updatesSection" style="border-right-width: 1px; border-right-style: dot-dash">Pending
-            deletions: <span class="changeCountSection" data-bind="text:PendingDeletionsCount, css: { hasDeletionsText: PendingDeletionsCount() > 0 }">
-            </span></span>
+    <span class="updatesSection" style="border-right-width: 1px; border-right-style: dot-dash">Pending
+        deletions: <span class="changeCountSection" data-bind="text:PendingDeletionsCount, css: { hasDeletionsText: PendingDeletionsCount() > 0 }">
+                   </span></span>
 </div>
 @*<a data-bind="click:LogItems()">Log</a>*@
 <fieldset>

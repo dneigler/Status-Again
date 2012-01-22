@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using AutoMapper;
+using Status.BLL;
 using Status.Model;
 using Status.Repository;
 using StatusMvc.Models;
@@ -16,13 +17,15 @@ namespace StatusMvc.Controllers
         private ITopicRepository _topicRepository;
         private IProjectRepository _projectRepository;
         private IResourceRepository _resourceRepository;
-        
-        public StatusReportController(IStatusReportRepository repository, ITopicRepository topicRepository, IProjectRepository projectRepository, IResourceRepository resourceRepository)
+        private IStatusReportManager _statusReportManager;
+
+        public StatusReportController(IStatusReportRepository repository, ITopicRepository topicRepository, IProjectRepository projectRepository, IResourceRepository resourceRepository, IStatusReportManager statusReportManager)
         {
             _repository = repository;
             _topicRepository = topicRepository;
             _projectRepository = projectRepository;
-            ResourceRepository = resourceRepository;
+            _resourceRepository = resourceRepository;
+            _statusReportManager = statusReportManager;
             Mapper.CreateMap<StatusReport, StatusReportViewModel>()
                 .ForMember(m => m.NumberOfStatusItems, opt => opt.ResolveUsing<NumberOfStatusItemsFormatter>());
             Mapper.CreateMap<StatusItem, StatusReportItemViewModel>();
@@ -51,7 +54,11 @@ namespace StatusMvc.Controllers
         public IResourceRepository ResourceRepository
         {
             get { return _resourceRepository; }
-            set { _resourceRepository = value; }
+        }
+
+        public IStatusReportManager StatusReportManager
+        {
+            get { return _statusReportManager; }
         }
 
         //
@@ -85,11 +92,23 @@ namespace StatusMvc.Controllers
         public JsonResult GetStatusReport(DateTime? statusDate)
         {
             var data = statusDate.HasValue ? StatusReportRepository.GetStatusReport(statusDate.Value) : StatusReportRepository.GetActiveStatusReport();
+            var vm = GetStatusReportViewModel(data);
+            return Json(vm, JsonRequestBehavior.AllowGet);
+        }
+
+        private StatusReportViewModel GetStatusReportViewModel(StatusReport data)
+        {
+            var statusReportDate = data.PeriodStart;
             var vm = Mapper.Map<StatusReport, StatusReportViewModel>(data);
             // populate the recent dates
             if (vm != null)
                 vm.StatusReportDates = this.StatusReportRepository.GetAllStatusReportDates();
-            return Json(vm, JsonRequestBehavior.AllowGet);
+            // determine whether we can roll status
+            this.StatusReportManager.RollStatusDateProcessor.GetStatusReportDate(statusReportDate);
+            DateTime statusRollDate;
+            vm.CanRollStatus = this.StatusReportManager.CanRollStatusReport(data, out statusRollDate);
+            if (vm.CanRollStatus) vm.RollStatusDate = statusRollDate;
+            return vm;
         }
 
         ////
@@ -99,6 +118,18 @@ namespace StatusMvc.Controllers
         //{
         //    return View();
         //}
+
+        [HttpPost]
+        public JsonResult RollStatus(StatusReportViewModel report)
+        {
+            // the following causes a problem - by reloading the status report from the database, we can't overwrite with 
+            // objects being posted back by the client.  Either client provides all details of statusreport, or we go 
+            // more manual on mapping back to actual objects.
+            StatusReport sr = this.StatusReportRepository.Get(report.Id);
+            var rolledReport = this.StatusReportManager.RollStatusReport(sr, GetAuditInfo());
+            var vm = GetStatusReportViewModel(rolledReport);
+            return Json(vm, JsonRequestBehavior.AllowGet);
+        }
 
         [HttpPost]
         public JsonResult Save(StatusReportViewModel report)
@@ -119,13 +150,11 @@ namespace StatusMvc.Controllers
                                                               (from srSourceItem in sr.Items
                                                                where srSourceItem.Id == r.Id
                                                                select srSourceItem).FirstOrDefault();
-                                                          
+
                                                           var sri = Mapper.Map<StatusReportItemViewModel, StatusItem>(r, srSource);
 
                                                           sri.AuditInfo =
-                                                              new AuditInfo(
-                                                                  this.ResourceRepository.GetOrCreateResourceByIIdentity
-                                                                      (User.Identity));
+                                                              GetAuditInfo();
                                                           // if topic doesn't exist yet, we should create
                                                           if (string.IsNullOrEmpty(sri.Caption))
                                                               throw new ArgumentNullException("Caption cannot be null!");
@@ -163,7 +192,14 @@ namespace StatusMvc.Controllers
             }
             return Json(report, JsonRequestBehavior.AllowGet);
         }
-        
+
+        private AuditInfo GetAuditInfo()
+        {
+            return new AuditInfo(
+                this.ResourceRepository.GetOrCreateResourceByIIdentity
+                    (User.Identity));
+        }
+
         ////
         //// GET: /StatusReport/Create
         [HttpPost]
@@ -174,7 +210,7 @@ namespace StatusMvc.Controllers
             if (sr == null)
                 throw new NullReferenceException(
                     "Unable to convert StatusReportViewModel to StatusReport - invalid data?");
-// ReSharper disable HeuristicUnreachableCode
+            // ReSharper disable HeuristicUnreachableCode
             // this is reachable as Mapper.Map will fill in sr
             if (sr.Id == 0)
                 // create
@@ -184,7 +220,7 @@ namespace StatusMvc.Controllers
             //do the persistence logic here
             var message = "Status Report: " + vm.PeriodStart + " Saved";
             return Json(message);
-// ReSharper restore HeuristicUnreachableCode
+            // ReSharper restore HeuristicUnreachableCode
 
         }
 

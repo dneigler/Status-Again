@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Status.Etl;
 using Status.Model;
@@ -29,23 +30,57 @@ namespace Status.BLL
         }
 
         /// <summary>
+        /// Checks whether there is already a status report in the database for the rolled date.  Rolling 
+        /// won't automatically delete an existing report.
+        /// </summary>
+        /// <param name="report"></param>
+        /// <param name="statusRollDate">Output parameter for the date this will be rolled to if valid.</param>
+        /// <returns></returns>
+        public bool CanRollStatusReport(StatusReport report, out DateTime statusRollDate)
+        {
+            statusRollDate = this.RollStatusDateProcessor.GetStatusReportDate(report.PeriodStart);
+            var sr = this.StatusReportRepository.GetStatusReport(statusRollDate);
+            bool canRoll = (sr == null);
+            _logger.Debug("CanRollStatusReport called for {0:yyyy-mm-dd} and returned {1}", statusRollDate, canRoll);
+            return canRoll;
+        }
+
+        /// <summary>
         /// Rolls the status report to the default date handled by the StatusRollProcessor
         /// </summary>
         /// <param name="report"></param>
-        public StatusReport RollStatusReport(StatusReport report)
+        /// <param name="auditInfo"> </param>
+        public StatusReport RollStatusReport(StatusReport report, AuditInfo auditInfo)
         {
+            DateTime statusRollDate;
+            if (!CanRollStatusReport(report, out statusRollDate)) throw new Exception("StatusReport already exists, cannot roll to that date");
             _logger.Debug("Rolling status report from {0:yyyy-mm-dd} started", report.PeriodStart);
             var rolledReport = new StatusReport
                                    {
                                        Caption = report.Caption,
-                                       PeriodStart = RollStatusDateProcessor.GetStatusReportDate(report.PeriodStart)
+                                       PeriodStart = statusRollDate,
+                                       AuditInfo = auditInfo
                                    };
             report.Items.ToList().ForEach(
                 si =>
-                    {
-                        var mappedItem = RollStatusProcessor.MapStatusItem(si, rolledReport.PeriodStart);
-                        if (mappedItem != null) rolledReport.Items.Add(mappedItem);
-                    });
+                {
+                    var mappedItem = RollStatusProcessor.MapStatusItem(si, rolledReport.PeriodStart);
+                    if (mappedItem != null) rolledReport.Items.Add(mappedItem);
+                });
+            using (var txn = this.StatusReportRepository.BeginTransaction())
+            {
+                try
+                {
+
+                    this.StatusReportRepository.Update(rolledReport);
+                    txn.Commit();
+                }
+                catch (Exception exc)
+                {
+                    _logger.ErrorException("RollStatusReport error", exc);
+                    txn.Rollback();
+                }
+            }
             _logger.Info("Rolled status report from {0:yyyy-mm-dd} to {1:yyyy-mm-dd}", report.PeriodStart, rolledReport.PeriodStart);
             return rolledReport;
         }
