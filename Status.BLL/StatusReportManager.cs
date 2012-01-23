@@ -61,17 +61,22 @@ namespace Status.BLL
                                        PeriodStart = statusRollDate,
                                        AuditInfo = auditInfo
                                    };
+
             report.Items.ToList().ForEach(
                 si =>
                 {
                     var mappedItem = RollStatusProcessor.MapStatusItem(si, rolledReport.PeriodStart);
+                    // somehow the topic (and project too?) is an issue when mapping this item and storing via 
+                    // nhibernate.  the statusreport needs to share the same session.
                     if (mappedItem != null) rolledReport.Items.Add(mappedItem);
                 });
+
+            // var sess = this.StatusReportRepository.Session;
+            
             using (var txn = this.StatusReportRepository.BeginTransaction())
             {
                 try
                 {
-
                     this.StatusReportRepository.Update(rolledReport);
                     txn.Commit();
                 }
@@ -79,6 +84,7 @@ namespace Status.BLL
                 {
                     _logger.ErrorException("RollStatusReport error", exc);
                     txn.Rollback();
+                    throw;
                 }
             }
             _logger.Info("Rolled status report from {0:yyyy-mm-dd} to {1:yyyy-mm-dd}", report.PeriodStart, rolledReport.PeriodStart);

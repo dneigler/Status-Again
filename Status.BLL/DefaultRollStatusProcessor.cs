@@ -6,6 +6,11 @@ namespace Status.BLL
 {
     public class DefaultRollStatusProcessor : IRollStatusProcessor
     {
+        public DefaultRollStatusProcessor()
+        {
+            Mapper.CreateMap<StatusItem, StatusItem>()
+                .ForMember(x => x.Id, y => { y.Ignore(); });
+        }
         #region IRollStatusProcessor Members
 
         public StatusItem MapStatusItem(StatusItem sourceStatusItem, DateTime statusReportDate)
@@ -13,7 +18,7 @@ namespace Status.BLL
             Mapper.CreateMap<StatusItem, StatusItem>();
             
             var si = new StatusItem();
-            Mapper.Map<StatusItem, StatusItem>(sourceStatusItem, si);
+            Mapper.Map(sourceStatusItem, si);
             // this is a good place for windows workflow to simplify management of transfering milestone types
             if (sourceStatusItem.Milestone.Date < statusReportDate.AddDays(-7))
                 return null;

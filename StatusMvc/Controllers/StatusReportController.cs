@@ -126,6 +126,7 @@ namespace StatusMvc.Controllers
             // objects being posted back by the client.  Either client provides all details of statusreport, or we go 
             // more manual on mapping back to actual objects.
             StatusReport sr = this.StatusReportRepository.Get(report.Id);
+            this.StatusReportManager.StatusReportRepository = this.StatusReportRepository;
             var rolledReport = this.StatusReportManager.RollStatusReport(sr, GetAuditInfo());
             var vm = GetStatusReportViewModel(rolledReport);
             return Json(vm, JsonRequestBehavior.AllowGet);
@@ -174,7 +175,7 @@ namespace StatusMvc.Controllers
 
                                                       });
                 }
-                if (report.ItemsToRemove != null)
+                if (report.ItemsToRemove != null)   
                 {
                     report.ItemsToRemove.ToList().ForEach(r =>
                                                               {

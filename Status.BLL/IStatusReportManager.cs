@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Status.Etl;
 using Status.Model;
+using Status.Repository;
 
 namespace Status.BLL
 {
@@ -12,6 +13,7 @@ namespace Status.BLL
         IRollStatusProcessor RollStatusProcessor { get; set; }
         IRollStatusDateProcessor RollStatusDateProcessor { get; set; }
         IStatusEtl StatusEtl { get; set; }
+        IStatusReportRepository StatusReportRepository { get; set; }
 
         /// <summary>
         /// Rolls the status report to the default date handled by the StatusRollProcessor

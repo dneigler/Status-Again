@@ -87,6 +87,15 @@ var parseJsonDateString = function (value) {
 	return value;
 };
 
+var getShortDate = function (dateValue) {
+	var val = ko.utils.unwrapObservable(dateValue);
+	if (val) {
+		var d = parseJsonDateString(val);
+		var dt = new Date(d);
+		return dt.toString("MM-dd-yyyy");
+	}
+	return val;
+};
 
 ko.bindingHandlers.datepicker = {
 	init: function (element, valueAccessor, allBindingsAccessor) {
@@ -117,22 +126,30 @@ ko.bindingHandlers.datepicker = {
 var statusReportVM = {
 	Report: ko.observable(new statusReport()),
 	initJQuery: function () {
-	    $("#tabs").tabs();
-        // $(".datefield").datepicker({dateFormat:'yy-mm-dd',changeMonth:true,changeYear:true });
-        $('textarea input').autoResize({
-        // On resize:
-            onResize: function() {
-                $(this).css({ opacity: 0.8 });
-            },
-            // After resize:
-            animateCallback: function() {
-                $(this).css({ opacity: 1 });
-            },
-            // Quite slow animation:
-            animateDuration: 300,
-            // More extra space:
-            extraSpace: 40
-        });
+		$("#tabs").tabs();
+		// $(".datefield").datepicker({dateFormat:'yy-mm-dd',changeMonth:true,changeYear:true });
+	    $('.statusCaptionText').autoResize({
+	        
+	    });
+//	    {
+//			// On resize:
+//			onResize: function () {
+//				$(this).css({ opacity: 0.8 });
+//			},
+//			// After resize:
+//			animateCallback: function () {
+//				$(this).css({ opacity: 1 });
+//			},
+//			// Quite slow animation:
+//			animateDuration: 300,
+//			// More extra space:
+//			extraSpace: 40
+//		});
+		$('#statusDateSelect').change(function () {
+			// alert('selected');
+			$('#ChangeStatusDateForm').submit();
+		}); 
+
 	},
 	loadReport: function (reportDate) {
 		var url = "/StatusReport/GetStatusReport?statusDate=" + reportDate;
@@ -146,11 +163,11 @@ var statusReportVM = {
 			},
 			success: function (response) {
 				if (response != null) {
-				    var sr = new statusReport()
-    				    .initData(response);
-				    statusReportVM.Report(sr);
-				    statusReportVM.initJQuery();
-       
+					var sr = new statusReport()
+						.initData(response);
+					statusReportVM.Report(sr);
+					statusReportVM.initJQuery();
+
 				} else {
 					alert(response.message);
 				}
@@ -186,36 +203,36 @@ function statusReport() {
 	this.ItemsByTeam = ko.observableArray([]);
 	this.ItemsToRemove = ko.observableArray([]);
 	this.CanRollStatus = ko.observable(false);
-    this.RollStatusDate = ko.observable(null);
+	this.RollStatusDate = ko.observable(null);
 
-    this.RollStatusDateFormatted = ko.computed(function () {
-        if (self.RollStatusDate() != null) {
-            var d = parseJsonDateString(self.RollStatusDate());
-            var dt = new Date(d);
-            return dt.toString("MM-dd-yyyy");
-        }
-        return null;
-    } .bind(this));
-    this.initData = function (response) {
+	this.RollStatusDateFormatted = ko.computed(function () {
+		if (self.RollStatusDate() != null) {
+			var d = parseJsonDateString(self.RollStatusDate());
+			var dt = new Date(d);
+			return dt.toString("MM-dd-yyyy");
+		}
+		return null;
+	} .bind(this));
+	this.initData = function (response) {
 
-        self.Caption(response.PeriodStart)
-            .PeriodStart(response.PeriodStart)
-            .Id(response.Id)
-            .NumberOfStatusItems(response.NumberOfStatusItems)
-            .StatusItemToAdd("")
-            .StatusItemDateToAdd(new Date())
-            .StatusItemMilestoneToAdd(0)
-            .StatusReportDates(response.StatusReportDates)
-            .CanRollStatus(response.CanRollStatus)
-            .RollStatusDate(response.RollStatusDate);
-        $.each(response.Items, function (x, item) {
-            var sri = new statusReportItem()
-                .LoadFromObject(item);
+		self.Caption(response.PeriodStart)
+			.PeriodStart(response.PeriodStart)
+			.Id(response.Id)
+			.NumberOfStatusItems(response.NumberOfStatusItems)
+			.StatusItemToAdd("")
+			.StatusItemDateToAdd(new Date())
+			.StatusItemMilestoneToAdd(0)
+			.StatusReportDates(response.StatusReportDates)
+			.CanRollStatus(response.CanRollStatus)
+			.RollStatusDate(response.RollStatusDate);
+		$.each(response.Items, function (x, item) {
+			var sri = new statusReportItem()
+				.LoadFromObject(item);
 
-            self.loadStatusItem(sri);
-        });
-        return self;
-    };
+			self.loadStatusItem(sri);
+		});
+		return self;
+	};
 	this.loadStatusItem = function (statusItem) {
 		// autocreates team and project if not found
 		console.log("loadStatusItem called: " + statusItem.Id() + " / " + statusItem.Caption());
@@ -262,61 +279,66 @@ function statusReport() {
 			item.reset();
 		});
 		self.ItemsToRemove.removeAll();
-};
-this.rollStatus = function () {
-    $("#dialog-confirm").dialog({
-        resizable: false,
-        height: 280,
-        modal: true,
-        buttons: {
-            "Roll": function () {
-                var url = "/StatusReport/RollStatus";
-                var miniReport = new statusReport();
-                miniReport.Id = self.Id();
-                console.log("About to roll status for " + miniReport.Id);
+	};
+	this.rollStatus = function () {
+		$("#dialog-confirm").dialog({
+			resizable: false,
+			height: 280,
+			modal: true,
+			buttons: {
+				"Roll": function () {
+					var url = "/StatusReport/RollStatus";
+					var miniReport = new statusReport();
+					miniReport.Id = self.Id();
+					console.log("About to roll status for " + miniReport.Id);
 
-                $.ajax({
-                    url: url,
-                    dataType: "json",
-                    data: ko.toJSON({ report: miniReport }),
-                    type: "post",
-                    contentType: "application/json",
-                    success: function (response) {
-                        if (response != null) {
-                            var sr = new statusReport()
-                                .initData(response);
-                            statusReportVM.Report(sr);
-                            this.initJQuery();
+					$.ajax({
+						url: url,
+						dataType: "json",
+						data: ko.toJSON({ report: miniReport }),
+						converters: {
+							"text json": function (data) {
+								return $.parseJSON(data, true);
+							}
+						},
+						type: "post",
+						contentType: "application/json",
+						success: function (response) {
+							if (response != null) {
+								var sr = new statusReport()
+									.initData(response);
+								statusReportVM.Report(sr);
+								statusReportVM.initJQuery();
 
-                        } else {
-                            alert(response.message);
-                        }
-                    },
-                    error: function (xhr, status) {
-                        switch (status) {
-                            case 404:
-                                alert('File not found');
-                                break;
-                            case 500:
-                                alert('Server error');
-                                break;
-                            case 0:
-                                alert('Request aborted');
-                                break;
-                            default:
-                                alert('Unknown error ' + status);
-                        }
-                    }
-                });
-                $(this).dialog("close");
-            },
-            Cancel: function () {
-                $(this).dialog("close");
-            }
-        }
-    });
-    
-};
+							} else {
+								alert(response.message);
+							}
+						},
+						error: function (xhr, status) {
+							switch (status) {
+								case 404:
+									alert('File not found');
+									break;
+								case 500:
+									alert('Server error');
+									break;
+								case 0:
+									alert('Request aborted');
+									break;
+								default:
+									alert('Unknown error ' + status);
+							}
+						}
+					});
+					$(this).dialog("close");
+				},
+				Cancel: function () {
+					$(this).dialog("close");
+				}
+			}
+		});
+	
+	};
 	this.save = function () {
 		var url = "/StatusReport/Save";
 		var miniReport = new statusReport();
@@ -334,6 +356,11 @@ this.rollStatus = function () {
 		$.ajax({
 			url: url,
 			dataType: "json",
+			converters: {
+				"text json": function (data) {
+					return $.parseJSON(data, true);
+				}
+			},
 			data: ko.toJSON({ report: miniReport }),
 			type: "post",
 			contentType: "application/json",
@@ -410,17 +437,24 @@ this.rollStatus = function () {
 		}
 		proj.addItem(statusItem);
 		return proj;
-	};
+};
 
-	this.PeriodStartFormatted = ko.computed(function () {
-	    if (self.PeriodStart()) {
-	        var d = parseJsonDateString(self.PeriodStart());
-	        var dt = new Date(d);
-	        return dt.toString("MM-dd-yyyy");
-	    }
-	    return self.PeriodStart();
-	} .bind(this));
+	this.SelectedStatusReport = ko.observable(null);
+
+	this.SelectedStatusReportFormatted = ko.computed(function () {
+		return getShortDate(self.SelectedStatusReport);
+	} .bind(self));
 	
+	this.PeriodStartFormatted = ko.computed(function () {
+		return getShortDate(self.PeriodStart);
+		if (self.PeriodStart()) {
+			var d = parseJsonDateString(self.PeriodStart());
+			var dt = new Date(d);
+			return dt.toString("MM-dd-yyyy");
+		}
+		return self.PeriodStart();
+	} .bind(self));
+
 	this.Name = ko.computed(function() {
 		return self.Caption() + " (" + self.PeriodStartFormatted() + ")";
 	}.bind(this));
@@ -445,9 +479,10 @@ this.rollStatus = function () {
 	};
 
 	self.removeStatusItem = function (itemToRemove) {
-		console.log("about to remove status item " + itemToRemove);
-		self.ItemsToRemove.push(itemToRemove);
-		self.Items.remove(itemToRemove);
+	    console.log("about to remove status item " + itemToRemove);
+	    if (ko.utils.unwrapObservable(itemToRemove.Id) != 0)
+	        self.ItemsToRemove.push(itemToRemove);
+	    self.Items.remove(itemToRemove);
 	};
 };
 

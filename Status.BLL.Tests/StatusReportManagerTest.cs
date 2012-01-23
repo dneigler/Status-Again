@@ -131,6 +131,7 @@ namespace Status.BLL.Tests
             Mapper.CreateMap<StatusItem, StatusItem>();
             var target = _kernel.Get<StatusReportManager>();
             var items = new List<StatusItem>();
+            target.StatusReportRepository = _statusReportRepository;
             var proj = _projectRepository.GetAllProjects()[0];
 
             StatusItem si1 = new StatusItem()
@@ -170,6 +171,9 @@ namespace Status.BLL.Tests
             Assert.AreEqual(report.Items[1], si2);
             Assert.AreEqual(report.Items[2], si3);
             Assert.AreEqual(new DateTime(2011, 01, 03), actual.PeriodStart);
+            Assert.AreEqual(0, report.Items[0].Id);
+            Assert.AreEqual(0, report.Items[1].Id);
+            Assert.AreEqual(0, report.Items[2].Id);
             // cleanup
             _statusReportRepository.DeleteStatusReport(new DateTime(2011, 1, 3));
         }

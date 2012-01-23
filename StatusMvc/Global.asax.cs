@@ -34,10 +34,39 @@ namespace StatusMvc
 
         }
 
+        /*
+    public static ISessionFactory SessionFactory = CreateSessionFactory();
+	
+	protected static ISessionFactory CreateSessionFactory()
+	{
+		return new Configuration()
+			.Configure(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "hibernate.cfg.xml"))
+			.BuildSessionFactory();
+	}
+	
+	public static ISession CurrentSession
+	{
+		get{ return (ISession)HttpContext.Current.Items["current.session"]; }
+		set { HttpContext.Current.Items["current.session"] = value; }
+	}
+	
+	protected void Global()
+	{
+		BeginRequest += delegate
+		{
+			CurrentSession = SessionFactory.OpenSession();
+		};
+		EndRequest += delegate
+		{
+			if(CurrentSession != null)
+				CurrentSession.Dispose();
+		};
+	}
+         * */
+
         protected override IKernel CreateKernel()
         {
             var kernel = new StandardKernel(new DefaultStatusAgainWebModule(ConfigurationManager.ConnectionStrings["StatusAgain"].ConnectionString));
-            // kernel.Load(Assembly.GetExecutingAssembly());
             return kernel;
         }
 

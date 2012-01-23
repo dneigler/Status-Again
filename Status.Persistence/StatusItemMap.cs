@@ -15,7 +15,7 @@ namespace Status.Persistence
             Map(x => x.Caption);
             References(x => x.Topic)
                 .Not.Nullable()
-                .Cascade.SaveUpdate();
+                ;
             Component(x => x.Milestone);
             Component(x => x.AuditInfo);
             HasMany(x => x.Notes)
