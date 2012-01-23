@@ -7,7 +7,7 @@
 @section HeadSection {
     <script src="@Url.Content("~/Scripts/core/StatusReport.js")" type="text/javascript"></script>
     <style type="text/css">
-        .statusCaptionText { width: 400px; padding: 3px; height: 25px; font-size: 7pt;font-family: tahoma; }
+        .statusCaptionText { width: 400px; padding: 3px; height: 25px;color: darkslategrey; }
         .projectNameHeader { font-weight: bold; font-size: 12pt; padding-top: 5px; }
         .statusItemSecondLine { margin-left: 10px; }
         .datefield { text-align: right;width: 85px; }
@@ -29,11 +29,13 @@
         return getShortDate(item);
             
             }"
-            >
+        >
     </select>
     <input type="hidden" id="statusDate" name="statusDate" data-bind="value: SelectedStatusReportFormatted" />
     <input type="submit" />
+    
 </form>
+<button id="ToggleAddNewBoxesButton" name="ToggleAddNewBoxesButton">Toggle Add New Boxes</button>
 <div id="dialog-confirm" style="display:none" title="Roll Status Report?">
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This will create a new status report for <span data-bind="text: RollStatusDateFormatted"></span> with all items carried over from the current report. Are you sure?</p>
 </div>
@@ -59,14 +61,14 @@
         <div data-bind='foreach: ItemsByTeam'>
             <div data-bind='attr: {id: "tabs-" + TeamId() }, foreach: ProjectItems'>
                 <div class="projectNameHeader">
-                    <span data-bind="text: ProjectName"></span><a href="#" data-bind="click: addItemFromTemplate">
-                        +</a>
+                    <span data-bind="text: ProjectName"></span>@*<a href="#" data-bind="click: addItemFromTemplate">
+                                                                   +</a>*@
                 </div>
-                <div>
+                <div class="addItemFromStubDiv">
                     <form data-bind="submit: addItemFromStubProperties">
-                    <input type="text" data-bind="value: NewStatusItemText" placeholder="New status item caption..." />
-                    <button type="submit" data-bind="enable: HasNewItem">
-                        Add</button>
+                        <input type="text" data-bind="value: NewStatusItemText" placeholder="New status item caption..." />
+                        <button type="submit" data-bind="enable: HasNewItem">
+                            Add</button>
                     </form>
                 </div>
                 <div data-bind='foreach: Items'>
@@ -82,6 +84,7 @@
         </div>
     </div>
 </fieldset>
+
 @*<fieldset>
     <legend>Status Report</legend>
     <p>
