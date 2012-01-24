@@ -75,6 +75,16 @@ namespace Status.Persistence
             }
         }
 
+        public IList<string> GetAllProjectNames()
+        {
+            var session = Session;
+            {
+                var projects = (from p in session.Query<Project>()
+                                select p.Name).ToList();
+                return projects;
+            }
+        }
+
         public void AddProject(Project project)
         {
             // double check that project doesn't exist

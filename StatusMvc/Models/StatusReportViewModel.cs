@@ -17,6 +17,7 @@ namespace StatusMvc.Models
         public int NumberOfStatusItems { get; set; }
         public IList<StatusReportItemViewModel> Items { get; set; }
         public IList<StatusReportItemViewModel> ItemsToRemove { get; set; }
+        public IList<string> ProjectNames { get; set; } 
         public bool CanRollStatus { get; set; }
         public DateTime RollStatusDate { get; set; }
     }

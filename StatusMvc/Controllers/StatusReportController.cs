@@ -108,6 +108,9 @@ namespace StatusMvc.Controllers
             DateTime statusRollDate;
             vm.CanRollStatus = this.StatusReportManager.CanRollStatusReport(data, out statusRollDate);
             if (vm.CanRollStatus) vm.RollStatusDate = statusRollDate;
+
+            // get project names
+            vm.ProjectNames = this.ProjectRepository.GetAllProjects().Select(p => p.Name).ToList();
             return vm;
         }
 

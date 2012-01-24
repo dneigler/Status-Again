@@ -17,40 +17,56 @@
         .hasDeletionsText { color: red;font-weight:bolder; }
         .hasUpdatesText { color: limegreen;font-weight: bolder; }
         .updatesSection { padding-left: 3px; padding-top: 1px;padding-bottom: 1px; }
+        .ui-menu { position: absolute; width: 100px; }
     </style>
 }
 @*<h2>@ViewBag.Message</h2>*@
-<h2>Status Report for <span data-bind="text: PeriodStartFormatted"></span></h2>
+<h2>
+    Status Report for <span data-bind="text: PeriodStartFormatted"></span>
+</h2>
 <form method="get" id="ChangeStatusDateForm" name="ChangeStatusDateForm" style="display: inline">
-    <select id="statusDateSelect" name="statusDateSelect" data-bind="options: StatusReportDates, 
+<select id="statusDateSelect" name="statusDateSelect" data-bind="options: StatusReportDates, 
     optionsCaption: 'Switch report',
     value: SelectedStatusReport,
     optionsText: function(item) {
         return getShortDate(item);
             
-            }"
-        >
-    </select>
-    <input type="hidden" id="statusDate" name="statusDate" data-bind="value: SelectedStatusReportFormatted" />
-    <input type="submit" />
-    
+            }">
+</select>
+<input type="hidden" id="statusDate" name="statusDate" data-bind="value: SelectedStatusReportFormatted" />
+<input type="submit" />
 </form>
-<button id="ToggleAddNewBoxesButton" name="ToggleAddNewBoxesButton">Toggle Add New Boxes</button>
-<div id="dialog-confirm" style="display:none" title="Roll Status Report?">
-	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This will create a new status report for <span data-bind="text: RollStatusDateFormatted"></span> with all items carried over from the current report. Are you sure?</p>
-</div>
-<div style="float: right;">
-    <button data-bind="visible: CanRollStatus, click: rollStatus, text: 'Roll Status to ' + RollStatusDateFormatted()"></button>
-    <button data-bind="click: save, enable: PendingChangesCount() + PendingDeletionsCount() > 0">
+<button id="ToggleAddNewBoxesButton" name="ToggleAddNewBoxesButton">
+    Toggle Add New Boxes</button>
+<span style="display: inline-block">
+    <button id="saveButton" data-bind="click: save, enable: PendingChangesCount() + PendingDeletionsCount() > 0">
         Save</button>
-    <span class="updatesSection" style="border-right-width: 1px; border-color:lightslategray; border-right-style: dot-dash">Pending updates:
-        <span class="changeCountSection" data-bind="text: PendingChangesCount, css: { hasUpdatesText: PendingChangesCount() > 0 }">
-        </span></span>
-    <span class="updatesSection" style="border-right-width: 1px; border-right-style: dot-dash">Pending
-        deletions: <span class="changeCountSection" data-bind="text:PendingDeletionsCount, css: { hasDeletionsText: PendingDeletionsCount() > 0 }">
-                   </span></span>
-</div>
-@*<a data-bind="click:LogItems()">Log</a>*@
+    <button id="select">
+        Select an action</button>
+</span>
+<ul>
+    <li><a data-bind="visible: CanRollStatus, click: rollStatus, text: 'Roll Status', title:'Roll status to ' + RollStatusDateFormatted()">
+    </a></li>
+    @*<li><a href="#">Save</a></li>
+		<li><a href="#">Delete</a></li>*@
+</ul>
+@*<button data-bind="visible: CanRollStatus, click: rollStatus, text: 'Roll Status to ' + RollStatusDateFormatted()"></button>
+    <button data-bind="click: save, enable: PendingChangesCount() + PendingDeletionsCount() > 0">
+        Save</button>*@ <span class="updatesSection" style="border-right-width: 1px; border-color: lightslategray;
+            border-right-style: dot-dash">Pending updates: <span class="changeCountSection" data-bind="text: PendingChangesCount, css: { hasUpdatesText: PendingChangesCount() > 0 }">
+            </span></span><span class="updatesSection" style="border-right-width: 1px; border-right-style: dot-dash">
+                Pending deletions: <span class="changeCountSection" data-bind="text:PendingDeletionsCount, css: { hasDeletionsText: PendingDeletionsCount() > 0 }">
+                                   </span></span>@*<a data-bind="click:LogItems()">Log</a>*@
+<fieldset>
+    <legend>Quick add</legend>
+    <form data-bind="submit: addItemViaQuickAdd">
+        <input type="text" id="QuickAddCaptionText" data-bind="value: QuickAddCaption" placeholder="New status item caption..." />
+        <input type="text" id="QuickAddProjectNameText" data-bind="value: QuickAddProjectName" placeholder="Project" />
+        <input type="text" id="QuickAddMilestoneDateText" data-bind="value: QuickAddMilestoneDate" placeholder="Milestone date" />
+        <button type="submit" data-bind="enable: HasNewQuickAddItem">Add</button>
+
+    </form>
+</fieldset>
 <fieldset>
     <legend>Teams</legend>
     <div id="tabs">
@@ -66,9 +82,9 @@
                 </div>
                 <div class="addItemFromStubDiv">
                     <form data-bind="submit: addItemFromStubProperties">
-                        <input type="text" data-bind="value: NewStatusItemText" placeholder="New status item caption..." />
-                        <button type="submit" data-bind="enable: HasNewItem">
-                            Add</button>
+                    <input type="text" data-bind="value: NewStatusItemText" placeholder="New status item caption..." />
+                    <button type="submit" data-bind="enable: HasNewItem">
+                        Add</button>
                     </form>
                 </div>
                 <div data-bind='foreach: Items'>
@@ -84,7 +100,12 @@
         </div>
     </div>
 </fieldset>
-
+<div id="dialog-confirm" style="display: none" title="Roll Status Report?">
+    <p>
+        <span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
+        This will create a new status report for <span data-bind="text: RollStatusDateFormatted">
+        </span>with all items carried over from the current report. Are you sure?</p>
+</div>
 @*<fieldset>
     <legend>Status Report</legend>
     <p>
@@ -109,8 +130,7 @@
     <button type="submit" data-bind="enable: StatusItemToAdd().length > 0, click: addStatusItem">
         Add</button>
 </fieldset>
-<input type="submit" value="Create" />*@
-@*</form>*@
+<input type="submit" value="Create" />*@ @*</form>*@
 <script type="text/javascript">
     $(function () {
         //activates KO

@@ -79,11 +79,81 @@
 
 })(jQuery);
 
-$(document).ready(function() {
-    $('#ToggleAddNewBoxesButton').click(function() {
-        $('.addItemFromStubDiv').toggle('highlight', { }, 400);
+function split(val) {
+    return val.split(/,\s*/);
+}
+function extractLast(term) {
+    return split(term).pop();
+}
+
+$(document).ready(function () {
+    $('#ToggleAddNewBoxesButton').click(function () {
+        $('.addItemFromStubDiv').toggle('highlight', {}, 400);
         // return false;
     });
+
+    $("#saveButton")
+			.button()
+    //			.click(function () {
+    //			    alert("Running the last action");
+    //			})
+			.next()
+				.button({
+				    text: false,
+				    icons: {
+				        primary: "ui-icon-triangle-1-s"
+				    }
+				})
+				.click(function () {
+				    var menu = $(this).parent().next().show().position({
+				        my: "left top",
+				        at: "left bottom",
+				        of: this
+				    });
+				    $(document).one("click", function () {
+				        menu.hide();
+				    });
+				    return false;
+				})
+				.parent()
+					.buttonset()
+					.next()
+						.hide()
+						.menu();
+
+    $("#QuickAddProjectNameText")
+    // don't navigate away from the field on tab when selecting an item
+			.bind("keydown", function (event) {
+			    if (event.keyCode === $.ui.keyCode.TAB &&
+						$(this).data("autocomplete").menu.active) {
+			        event.preventDefault();
+			    }
+			})
+			.autocomplete({
+			    minLength: 0,
+			    source: function (request, response) {
+			        // delegate back to autocomplete, but extract the last term
+			        response($.ui.autocomplete.filter(statusReportVM.Report().ProjectNames(),
+			            extractLast(request.term)));
+			    },
+			    focus: function () {
+			        // prevent value inserted on focus
+			        return false;
+			    },
+			    select: function (event, ui) {
+			        var terms = split(this.value);
+			        // remove the current input
+			        terms.pop();
+			        // add the selected item
+			        terms.push(ui.item.value);
+			        // add placeholder to get the comma-and-space at the end
+			        terms.push("");
+			        this.value = terms.join(", ");
+			        return false;
+			    }
+			})
+        ;
+			$('#QuickAddCaptionText').focus();
 });
  
  
@@ -215,6 +285,13 @@ function statusReport() {
 	this.CanRollStatus = ko.observable(false);
 	this.RollStatusDate = ko.observable(null);
 
+	this.ProjectNames = ko.observableArray([]);
+    
+	// quickadd
+	this.QuickAddCaption = ko.observable(null);
+    this.QuickAddProjectName = ko.observable(null);
+    this.QuickAddMilestoneDate = ko.observable(new Date());
+    
 	this.RollStatusDateFormatted = ko.computed(function () {
 		if (self.RollStatusDate() != null) {
 			var d = parseJsonDateString(self.RollStatusDate());
@@ -234,7 +311,8 @@ function statusReport() {
 			.StatusItemMilestoneToAdd(0)
 			.StatusReportDates(response.StatusReportDates)
 			.CanRollStatus(response.CanRollStatus)
-			.RollStatusDate(response.RollStatusDate);
+			.RollStatusDate(response.RollStatusDate)
+		    .ProjectNames(response.ProjectNames);
 		$.each(response.Items, function (x, item) {
 			var sri = new statusReportItem()
 				.LoadFromObject(item);
@@ -265,11 +343,9 @@ function statusReport() {
 		// debugging
 		ko.utils.arrayForEach(self.Items(), function(item) {
 			if (item.HasChanges())
-				console.log(ko.toJSON(item)); // item.Id() + " / " + item.Caption());
+				console.log(ko.toJSON(item));
 		});
-//	    $.each(arrCount, function (x, item) {
-//	        console.log(item.Id() + " / " + item.Caption());
-//	    });
+
 		return arrCount.length;
 	} .bind(this));
 	
@@ -289,7 +365,9 @@ function statusReport() {
 			item.reset();
 		});
 		self.ItemsToRemove.removeAll();
-	};
+};
+    
+    
 	this.rollStatus = function () {
 		$("#dialog-confirm").dialog({
 			resizable: false,
@@ -447,7 +525,7 @@ function statusReport() {
 		}
 		proj.addItem(statusItem);
 		return proj;
-};
+    };
 
 	this.SelectedStatusReport = ko.observable(null);
 
@@ -488,12 +566,42 @@ function statusReport() {
 		this.StatusItemDateToAdd(new Date());
 	};
 
-	self.removeStatusItem = function (itemToRemove) {
+	this.removeStatusItem = function (itemToRemove) {
 	    console.log("about to remove status item " + itemToRemove);
 	    if (ko.utils.unwrapObservable(itemToRemove.Id) != 0)
 	        self.ItemsToRemove.push(itemToRemove);
 	    self.Items.remove(itemToRemove);
 	};
+
+	this.addItemViaQuickAdd = function () {
+	    var statusItem = new statusReportItem()
+	    // .Report(self.Report)
+	    // in this case we don't know the project id, we may add later
+	    //.ProjectId(self.ProjectId())
+			.ProjectName(self.QuickAddProjectName())
+	    //.ProjectDepartmentName(self.ProjectDepartmentName())
+	    //.ProjectDepartmentManagerFullName(self.ProjectDepartmentManagerFullName())
+	    //.ProjectType(self.ProjectType())
+	    //.ProjectTeamId(self.ProjectTeamId())
+	    //.ProjectTeamName(self.ProjectTeamName())
+	    //.ProjectLeadFullName(self.ProjectLeadFullName())
+	    //.ProjectTeamLeadFullName(self.ProjectTeamLeadFullName())
+			.TopicCaption(self.QuickAddCaption())
+			.Caption(self.QuickAddCaption())
+			.MilestoneDate(self.QuickAddMilestoneDate())
+			.StatusReportId(self.Id());
+	    statusItem.ListenForChanges();
+	    // we'll need to find the original project and team for this or else it goes to ether in UI, won't save etc
+	    self.addStatusItem(statusItem);
+	    self.QuickAddCaption(null);
+	    self.QuickAddMilestoneDate(new Date());
+	    self.QuickAddProjectName(null);
+	    $('#QuickAddCaptionText').focus();
+	};
+
+	this.HasNewQuickAddItem = ko.computed(function () {
+	    return (self.QuickAddCaption() != '' && self.QuickAddCaption() != null && self.QuickAddProjectName != '' && self.QuickAddProjectName != null);
+	} .bind(this));
 };
 
 /**
@@ -680,7 +788,8 @@ function projectStatus() {
 		self.addItem(statusItem);
 		self.NewStatusItemText('');
 		self.NewStatusItemMilestoneDate(new Date());
-	};
+    };
+    
 };
 
 function teamStatus() {

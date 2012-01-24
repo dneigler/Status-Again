@@ -14,5 +14,6 @@ namespace Status.Repository
         IList<Project> GetAllProjects();
 
         void AddProject(Project project);
+        IList<string> GetAllProjectNames();
     }
 }
