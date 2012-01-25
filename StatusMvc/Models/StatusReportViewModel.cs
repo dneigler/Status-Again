@@ -17,9 +17,25 @@ namespace StatusMvc.Models
         public int NumberOfStatusItems { get; set; }
         public IList<StatusReportItemViewModel> Items { get; set; }
         public IList<StatusReportItemViewModel> ItemsToRemove { get; set; }
-        public IList<string> ProjectNames { get; set; } 
+        public IList<ProjectViewModel> Projects { get; set; } 
         public bool CanRollStatus { get; set; }
         public DateTime RollStatusDate { get; set; }
+    }
+
+    public class ProjectViewModel
+    {
+        public string Name { get; set; }
+        public int Id { get; set; }
+        public int ProjectTeamId { get; set; }
+        public int TeamId { get; set; }
+        public string TeamName { get; set; }
+        public string TeamLeadFullName { get; set; }
+        public int LeadId { get; set; }
+        public string LeadFullName { get; set; }
+        public string Caption { get; set; }
+        public string Description { get; set; }
+        public int TeamLeadId { get; set; }
+        public string TeamDepartmentName { get; set; }
     }
 
     public class StatusReportItemViewModel

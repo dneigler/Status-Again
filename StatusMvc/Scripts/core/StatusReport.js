@@ -9,81 +9,81 @@
 */
 (function ($) {
 
-    // JSON RegExp
-    var rvalidchars = /^[\],:{}\s]*$/;
-    var rvalidescape = /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g;
-    var rvalidtokens = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g;
-    var rvalidbraces = /(?:^|:|,)(?:\s*\[)+/g;
-    var dateISO = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[.,]\d+)?Z/i;
-    var dateNet = /\/Date\((\d+)(?:-\d+)?\)\//i;
+	// JSON RegExp
+	var rvalidchars = /^[\],:{}\s]*$/;
+	var rvalidescape = /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g;
+	var rvalidtokens = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g;
+	var rvalidbraces = /(?:^|:|,)(?:\s*\[)+/g;
+	var dateISO = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[.,]\d+)?Z/i;
+	var dateNet = /\/Date\((\d+)(?:-\d+)?\)\//i;
 
-    // replacer RegExp
-    var replaceISO = /"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:[.,](\d+))?Z"/i;
-    var replaceNet = /"\\\/Date\((\d+)(?:-\d+)?\)\\\/"/i;
+	// replacer RegExp
+	var replaceISO = /"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:[.,](\d+))?Z"/i;
+	var replaceNet = /"\\\/Date\((\d+)(?:-\d+)?\)\\\/"/i;
 
-    // determine JSON native support
-    var nativeJSON = (window.JSON && window.JSON.parse) ? true : false;
-    var extendedJSON = nativeJSON && window.JSON.parse('{"x":9}', function (k, v) { return "Y"; }) === "Y";
+	// determine JSON native support
+	var nativeJSON = (window.JSON && window.JSON.parse) ? true : false;
+	var extendedJSON = nativeJSON && window.JSON.parse('{"x":9}', function (k, v) { return "Y"; }) === "Y";
 
-    var jsonDateConverter = function (key, value) {
-        if (typeof (value) === "string") {
-            if (dateISO.test(value)) {
-                return new Date(value);
-            }
-            if (dateNet.test(value)) {
-                return new Date(parseInt(dateNet.exec(value)[1], 10));
-            }
-        }
-        return value;
-    };
+	var jsonDateConverter = function (key, value) {
+		if (typeof (value) === "string") {
+			if (dateISO.test(value)) {
+				return new Date(value);
+			}
+			if (dateNet.test(value)) {
+				return new Date(parseInt(dateNet.exec(value)[1], 10));
+			}
+		}
+		return value;
+	};
 
-    $.extend({
-        parseJSON: function (data, convertDates) {
-            /// <summary>Takes a well-formed JSON string and returns the resulting JavaScript object.</summary>
-            /// <param name="data" type="String">The JSON string to parse.</param>
-            /// <param name="convertDates" optional="true" type="Boolean">Set to true when you want ISO/Asp.net dates to be auto-converted to dates.</param>
+	$.extend({
+		parseJSON: function (data, convertDates) {
+			/// <summary>Takes a well-formed JSON string and returns the resulting JavaScript object.</summary>
+			/// <param name="data" type="String">The JSON string to parse.</param>
+			/// <param name="convertDates" optional="true" type="Boolean">Set to true when you want ISO/Asp.net dates to be auto-converted to dates.</param>
 
-            // convertDates = convertDates === false ? false : true;
+			// convertDates = convertDates === false ? false : true;
 
-            if (typeof data !== "string" || !data) {
-                return null;
-            }
+			if (typeof data !== "string" || !data) {
+				return null;
+			}
 
-            // Make sure leading/trailing whitespace is removed (IE can't handle it)
-            data = $.trim(data);
+			// Make sure leading/trailing whitespace is removed (IE can't handle it)
+			data = $.trim(data);
 
-            // Make sure the incoming data is actual JSON
-            // Logic borrowed from http://json.org/json2.js
-            if (rvalidchars.test(data
+			// Make sure the incoming data is actual JSON
+			// Logic borrowed from http://json.org/json2.js
+			if (rvalidchars.test(data
 				.replace(rvalidescape, "@")
 				.replace(rvalidtokens, "]")
 				.replace(rvalidbraces, ""))) {
-                // Try to use the native JSON parser
-                if (extendedJSON || (nativeJSON && convertDates !== true)) {
-                    return window.JSON.parse(data, convertDates === true ? jsonDateConverter : undefined);
-                }
-                else {
-                    data = convertDates === true ?
+				// Try to use the native JSON parser
+				if (extendedJSON || (nativeJSON && convertDates !== true)) {
+					return window.JSON.parse(data, convertDates === true ? jsonDateConverter : undefined);
+				}
+				else {
+					data = convertDates === true ?
 						data.replace(replaceISO, "new Date(parseInt('$1',10),parseInt('$2',10)-1,parseInt('$3',10),parseInt('$4',10),parseInt('$5',10),parseInt('$6',10),(function(s){return parseInt(s,10)||0;})('$7'))")
 							.replace(replaceNet, "new Date($1)") :
 						data;
-                    return (new Function("return " + data))();
-                }
-            } else {
-                $.error("Invalid JSON: " + data);
-            }
-        }
-    });
+					return (new Function("return " + data))();
+				}
+			} else {
+				$.error("Invalid JSON: " + data);
+			}
+		}
+	});
 
 
 
 })(jQuery);
 
 function split(val) {
-    return val.split(/,\s*/);
+	return val.split(/,\s*/);
 }
 function extractLast(term) {
-    return split(term).pop();
+	return split(term).pop();
 }
 
 $(document).ready(function () {
@@ -134,7 +134,7 @@ $(document).ready(function () {
 			    source: function (request, response) {
 			        // delegate back to autocomplete, but extract the last term
 			        response($.ui.autocomplete.filter(statusReportVM.Report().ProjectNames(),
-			            extractLast(request.term)));
+						extractLast(request.term)));
 			    },
 			    focus: function () {
 			        // prevent value inserted on focus
@@ -148,12 +148,12 @@ $(document).ready(function () {
 			        terms.push(ui.item.value);
 			        // add placeholder to get the comma-and-space at the end
 			        terms.push("");
-			        this.value = terms.join(", ");
+			        this.value = ui.item.value; // terms; // terms.join(", ");
 			        return false;
 			    }
 			})
-        ;
-			$('#QuickAddCaptionText').focus();
+		;
+    $('#QuickAddCaptionText').focus();
 });
  
  
@@ -208,9 +208,9 @@ var statusReportVM = {
 	initJQuery: function () {
 		$("#tabs").tabs();
 		// $(".datefield").datepicker({dateFormat:'yy-mm-dd',changeMonth:true,changeYear:true });
-	    $('.statusCaptionText').autoResize({
-	        
-	    });
+		$('.statusCaptionText').autoResize({
+			
+		});
 //	    {
 //			// On resize:
 //			onResize: function () {
@@ -285,13 +285,21 @@ function statusReport() {
 	this.CanRollStatus = ko.observable(false);
 	this.RollStatusDate = ko.observable(null);
 
-	this.ProjectNames = ko.observableArray([]);
-    
+	this.Projects = ko.observableArray([]);
+
+	this.ProjectNames = ko.computed(function () {
+		var arr = new Array();
+		ko.utils.arrayForEach(self.Projects(), function (item) {
+			arr.push(item.Name);
+		});
+		return arr;
+	} .bind(this));
+	
 	// quickadd
 	this.QuickAddCaption = ko.observable(null);
-    this.QuickAddProjectName = ko.observable(null);
-    this.QuickAddMilestoneDate = ko.observable(new Date());
-    
+	this.QuickAddProjectName = ko.observable(null);
+	this.QuickAddMilestoneDate = ko.observable(new Date());
+	
 	this.RollStatusDateFormatted = ko.computed(function () {
 		if (self.RollStatusDate() != null) {
 			var d = parseJsonDateString(self.RollStatusDate());
@@ -312,7 +320,7 @@ function statusReport() {
 			.StatusReportDates(response.StatusReportDates)
 			.CanRollStatus(response.CanRollStatus)
 			.RollStatusDate(response.RollStatusDate)
-		    .ProjectNames(response.ProjectNames);
+			.Projects(response.Projects);
 		$.each(response.Items, function (x, item) {
 			var sri = new statusReportItem()
 				.LoadFromObject(item);
@@ -366,8 +374,8 @@ function statusReport() {
 		});
 		self.ItemsToRemove.removeAll();
 };
-    
-    
+	
+	
 	this.rollStatus = function () {
 		$("#dialog-confirm").dialog({
 			resizable: false,
@@ -525,7 +533,7 @@ function statusReport() {
 		}
 		proj.addItem(statusItem);
 		return proj;
-    };
+	};
 
 	this.SelectedStatusReport = ko.observable(null);
 
@@ -567,40 +575,56 @@ function statusReport() {
 	};
 
 	this.removeStatusItem = function (itemToRemove) {
-	    console.log("about to remove status item " + itemToRemove);
-	    if (ko.utils.unwrapObservable(itemToRemove.Id) != 0)
-	        self.ItemsToRemove.push(itemToRemove);
-	    self.Items.remove(itemToRemove);
+		console.log("about to remove status item " + itemToRemove);
+		if (ko.utils.unwrapObservable(itemToRemove.Id) != 0)
+			self.ItemsToRemove.push(itemToRemove);
+		self.Items.remove(itemToRemove);
+	};
+
+	this.getProjectByName = function (name) {
+		var proj = ko.utils.arrayFilter(this.Projects(), function (item) {
+			return (item.Name == name);
+		});
+		return proj;
 	};
 
 	this.addItemViaQuickAdd = function () {
-	    var statusItem = new statusReportItem()
-	    // .Report(self.Report)
-	    // in this case we don't know the project id, we may add later
-	    //.ProjectId(self.ProjectId())
-			.ProjectName(self.QuickAddProjectName())
-	    //.ProjectDepartmentName(self.ProjectDepartmentName())
-	    //.ProjectDepartmentManagerFullName(self.ProjectDepartmentManagerFullName())
-	    //.ProjectType(self.ProjectType())
-	    //.ProjectTeamId(self.ProjectTeamId())
-	    //.ProjectTeamName(self.ProjectTeamName())
-	    //.ProjectLeadFullName(self.ProjectLeadFullName())
-	    //.ProjectTeamLeadFullName(self.ProjectTeamLeadFullName())
+		var proj = self.getProjectByName(self.QuickAddProjectName());
+		
+		var statusItem = new statusReportItem()
+		// .Report(self.Report)
+		// in this case we don't know the project id, we may add later
+			.ProjectId(proj.Id)
+			.ProjectName(proj.Name)
+			.ProjectTeamId(proj.TeamId)
+			.ProjectTeamName(proj.TeamName)
+		//.ProjectDepartmentName(self.ProjectDepartmentName())
+		//.ProjectDepartmentManagerFullName(self.ProjectDepartmentManagerFullName())
+		//.ProjectType(self.ProjectType())
+		//.ProjectTeamId(self.ProjectTeamId())
+		//.ProjectTeamName(self.ProjectTeamName())
+		//.ProjectLeadFullName(self.ProjectLeadFullName())
+		//.ProjectTeamLeadFullName(self.ProjectTeamLeadFullName())
+		
 			.TopicCaption(self.QuickAddCaption())
 			.Caption(self.QuickAddCaption())
 			.MilestoneDate(self.QuickAddMilestoneDate())
-			.StatusReportId(self.Id());
-	    statusItem.ListenForChanges();
-	    // we'll need to find the original project and team for this or else it goes to ether in UI, won't save etc
-	    self.addStatusItem(statusItem);
-	    self.QuickAddCaption(null);
-	    self.QuickAddMilestoneDate(new Date());
-	    self.QuickAddProjectName(null);
-	    $('#QuickAddCaptionText').focus();
+			.StatusReportId(self.Id())
+			//.ProjectTeamId(self.TeamId())
+			;
+
+		statusItem.ListenForChanges();
+		// we'll need to find the original project and team for this or else it goes to ether in UI, won't save etc
+		self.loadStatusItem(statusItem);
+		//self.addStatusItem(statusItem);
+		self.QuickAddCaption(null);
+		self.QuickAddMilestoneDate(new Date());
+		self.QuickAddProjectName(null);
+		$('#QuickAddCaptionText').focus();
 	};
 
 	this.HasNewQuickAddItem = ko.computed(function () {
-	    return (self.QuickAddCaption() != '' && self.QuickAddCaption() != null && self.QuickAddProjectName != '' && self.QuickAddProjectName != null);
+		return (self.QuickAddCaption() != '' && self.QuickAddCaption() != null && self.QuickAddProjectName != '' && self.QuickAddProjectName != null);
 	} .bind(this));
 };
 
@@ -749,7 +773,8 @@ function projectStatus() {
 		self.Items.push(statusItem);
 		self.Report().addStatusItem(statusItem);
 		$(".datefield").datepicker({ dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true });
-	};
+};
+	
 	self.addItemFromTemplate = function () {
 		var statusItem = new statusReportItem()
 		//.Report(self.Report)
@@ -788,8 +813,8 @@ function projectStatus() {
 		self.addItem(statusItem);
 		self.NewStatusItemText('');
 		self.NewStatusItemMilestoneDate(new Date());
-    };
-    
+	};
+	
 };
 
 function teamStatus() {

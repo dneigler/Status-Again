@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -30,6 +31,7 @@ namespace StatusMvc.Controllers
                 .ForMember(m => m.NumberOfStatusItems, opt => opt.ResolveUsing<NumberOfStatusItemsFormatter>());
             Mapper.CreateMap<StatusItem, StatusReportItemViewModel>();
             Mapper.CreateMap<StatusReportItemViewModel, StatusItem>();
+            Mapper.CreateMap<Project, ProjectViewModel>();
             //.ForMember(m => m.StatusReportId, opt => opt.M);
             //.ForMember(dest => dest.ProjectLeadFullName, opt => opt.MapFrom(src => src.Project.Lead.FullName))
             //.ForMember(dest => dest.ProjectTeamLeadFullName, opt => opt.MapFrom(src => src.Project.Team.Lead.FullName));
@@ -110,7 +112,10 @@ namespace StatusMvc.Controllers
             if (vm.CanRollStatus) vm.RollStatusDate = statusRollDate;
 
             // get project names
-            vm.ProjectNames = this.ProjectRepository.GetAllProjects().Select(p => p.Name).ToList();
+            IList<Project> projects = this.ProjectRepository.GetAllProjects();
+            vm.Projects = Mapper.Map<IList<Project>, IList<ProjectViewModel>>(projects);
+            //vm.Projects = this.ProjectRepository.GetAllProjects().Select(p => new {
+            //    Name = p.Name, Id = p.Id, TeamLeadId = p.Team.Lead.Id }).ToList();
             return vm;
         }
 
