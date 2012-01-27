@@ -62,7 +62,11 @@
 	<form data-bind="submit: addItemViaQuickAdd">
 		<input type="text" id="QuickAddCaptionText" data-bind="value: QuickAddCaption" placeholder="New status item caption..." />
 		<input type="text" id="QuickAddProjectNameText" data-bind="value: QuickAddProjectName" placeholder="Project" />
-		<input type="text" id="QuickAddMilestoneDateText" data-bind="value: QuickAddMilestoneDate" placeholder="Milestone date" />
+        
+        @*<input id="QuickAddProjectNameText" data-bind="autoComplete: Projects, value: QuickAddProjectName, optionsText: 'Name', optionsValue: 'Id', autoCompleteOptions: {autoFocus: false}" />*@
+        @*<input data-bind="jqAuto: { autoFocus: true }, jqAutoSource: ProjectsAC, jqAutoQuery: Projects, jqAutoValue: QuickAddProjectName, jqAutoSourceLabel: 'Name', jqAutoSourceInputValue: 'Id', jqAutoSourceValue: 'Id'" />
+        *@
+        <input type="text" id="QuickAddMilestoneDateText" data-bind="value: QuickAddMilestoneDate" placeholder="Milestone date" />
 		<button type="submit" data-bind="enable: HasNewQuickAddItem">Add</button>
 
 	</form>
