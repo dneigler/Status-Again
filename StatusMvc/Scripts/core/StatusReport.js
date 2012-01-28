@@ -3,7 +3,7 @@
 *
 * Version 1.0 (13 Jan 2011)
 *
-* Copyright (c) 2011 Robert Koritnik
+* Copyright (c) 2011 Robert Koritnik,
 * Licensed under the terms of the MIT license
 * http://www.opensource.org/licenses/mit-license.php
 */
@@ -857,7 +857,7 @@ function statusReport() {
 		var proj = ko.utils.arrayFilter(this.Projects(), function (item) {
 			return (item.Name == name);
 		});
-		return proj;
+		return proj[0];
 	};
 
 	this.addItemViaQuickAdd = function () {

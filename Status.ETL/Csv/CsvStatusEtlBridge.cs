@@ -110,13 +110,14 @@ namespace Status.ETL.Csv
                     if (p == null)
                     {
                         var pItem = projectG.First();
-                        // var pTeam = this.TeamRepository.GetTeamByName() // not going to work with this file format as team id is made up
+                        var pTeam = this.TeamRepository.GetTeamByName(pItem.TeamName); // not going to work with this file format as team id is made up
                         var pLead = this.ResourceRepository.GetResourcesByName(pItem.TeamLead)[0];
                         var project = new Project() { 
                             Name = pItem.Project, 
                             Caption = pItem.ProjectSummary, 
                             Lead=pLead as Employee,
-                            Department = department
+                            Department = department,
+                            Team = pTeam
                         };
                         this.ProjectRepository.AddProject(project);
                     }

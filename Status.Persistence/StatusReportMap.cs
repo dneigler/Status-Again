@@ -18,6 +18,7 @@ namespace Status.Persistence
             Component(x => x.AuditInfo);
 
             HasMany(x => x.Items)
+                .Inverse()
                 .Cascade.All();
         }
     }

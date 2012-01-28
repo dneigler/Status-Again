@@ -32,6 +32,7 @@ namespace StatusMvc.Controllers
             Mapper.CreateMap<StatusItem, StatusReportItemViewModel>();
             Mapper.CreateMap<StatusReportItemViewModel, StatusItem>();
             Mapper.CreateMap<Project, ProjectViewModel>();
+            
             //.ForMember(m => m.StatusReportId, opt => opt.M);
             //.ForMember(dest => dest.ProjectLeadFullName, opt => opt.MapFrom(src => src.Project.Lead.FullName))
             //.ForMember(dest => dest.ProjectTeamLeadFullName, opt => opt.MapFrom(src => src.Project.Team.Lead.FullName));
@@ -275,7 +276,7 @@ namespace StatusMvc.Controllers
         //    {
         //        return View();
         //    }
-        //}
+        //}F
 
         ////
         //// GET: /StatusReport/Delete/5
