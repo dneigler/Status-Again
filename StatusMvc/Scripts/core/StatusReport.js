@@ -406,30 +406,37 @@ $(document).ready(function () {
 			        statusReportVM.Report().QuickAddProjectName(ui.item.value);
 			        //console.log(this.value);
 			    }
-			    //				focus: function () {
-			    //					// prevent value inserted on focus
-			    //					return false;
-			    //				},
-			    //				select: function (event, ui) {
-			    ////					var terms = split(this.value);
-			    ////					// remove the current input
-			    ////					terms.pop();
-			    ////					// add the selected item
-			    ////					terms.push(ui.item.value);
-			    ////					// add placeholder to get the comma-and-space at the end
-			    ////					terms.push("");
-			    //					this.value = ui.item.value; // terms; // terms.join(", ");
-			    //					return false;
-			    //				}
 			})
 		;
     $('#QuickAddCaptionText').focus();
-    
+
+    $('#QuickAddMilestoneDateText').change(function () {
+        // figure out the new milestone date
+        var milestoneDate = $('#QuickAddMilestoneDateText').val();
+        var statusReportDate = statusReportVM.Report().PeriodStart();
+        var milestoneType = rollMilestone(statusReportDate, milestoneDate);
+        $('#QuickAddMilestoneTypes').val(milestoneType);
+    });
+
     // bind 's' key to save button click (for some reason, save function direct call shows no itemstoremove)
     $(document).bind('keydown', 's', function () { $('#saveButton').click(); });
 });
 
- 
+var rollMilestone = function (reportDate, itemDate) {
+    return 2; // always OpenItem for now as test
+    /*
+    0=LastWeek
+    1=ThisWeek
+    2=OpenItem
+    3=Milestone
+    if (sourceStatusItem.Milestone.Date < statusReportDate.AddDays(-7))
+    return null;
+    if (sourceStatusItem.Milestone.Date < statusReportDate)
+    si.Milestone.Type = MilestoneTypes.LastWeek;
+    else if (sourceStatusItem.Milestone.Date >= statusReportDate &&
+    sourceStatusItem.Milestone.Date < statusReportDate.AddDays(7))
+    si.Milestone.Type = MilestoneTypes.ThisWeek;*/
+};
  
 var jsonDateRE = /^\/Date\((-?\d+)(\+|-)?(\d+)?\)\/$/;
 
@@ -574,7 +581,8 @@ function statusReport() {
 	this.QuickAddCaption = ko.observable(null);
 	this.QuickAddProjectName = ko.observable(null);
 	this.QuickAddMilestoneDate = ko.observable(new Date());
-	
+	this.QuickAddMilestoneType = ko.observable('Milestone');
+
 	this.RollStatusDateFormatted = ko.computed(function () {
 		if (self.RollStatusDate() != null) {
 			var d = parseJsonDateString(self.RollStatusDate());
@@ -726,7 +734,7 @@ function statusReport() {
 	    miniReport.Caption = self.Caption();
 
 	    miniReport.Items = ko.utils.arrayFilter(self.Items(), function (item) {
-	        return item.HasChanges(); // ko.utils.stringStartsWith(item.name().toLowerCase(), filter);
+	        return item.HasChanges() || item.HasInsertion(); // ko.utils.stringStartsWith(item.name().toLowerCase(), filter);
 	    });
 	    miniReport.ItemsToRemove = self.ItemsToRemove();
 	    if (miniReport.Items.length == 0 && miniReport.ItemsToRemove.length == 0) {
@@ -902,6 +910,7 @@ function statusReport() {
 			.TopicCaption(self.QuickAddCaption())
 			.Caption(self.QuickAddCaption())
 			.MilestoneDate(self.QuickAddMilestoneDate())
+            .MilestoneType(self.QuickAddMilestoneType())
 			.StatusReportId(self.Id())
 			//.ProjectTeamId(self.TeamId())
 			;
@@ -1028,7 +1037,6 @@ function statusReportItem() {
 	};
 
 	this.reset = function () {
-	    self.ChangeLog.removeAll();
 	    // need to undo the value damage though
 	    $.each(self, function (x, item) {
 	        if (!self.isInternal(x, item)) {
@@ -1039,6 +1047,7 @@ function statusReportItem() {
 	        }
 
 	    });
+	    self.ChangeLog.removeAll();
 	    self.HasDeletion(false);
 	    self.HasInsertion(false);
 	};
@@ -1046,7 +1055,6 @@ function statusReportItem() {
     this.HasInsertion = ko.observable(false);
 
 	this.HasChanges = ko.computed(function () {
-		// console.log("HasChanges called for Id " + self.Id() + "  (" + self.Caption() + ") returning " + self.ChangeLog().length);
 		return self.ChangeLog().length > 0;
 	} .bind(this));
 

@@ -16,6 +16,7 @@
         .hasDeletionsStyle { border-left-color: red; }
 		.changeCountSection { font-size: 12pt;color: darkgrey;font-weight: bold; }
 		.hasDeletionsText { color: red;font-weight:bolder; }
+        .hasInsertionsStyle { border-left-color: #3399FF; }
 		.hasUpdatesText { color: limegreen;font-weight: bolder; }
 		.updatesSection { padding-left: 3px; padding-top: 1px;padding-bottom: 1px; }
 		.ui-menu { position: absolute; width: 100px; }
@@ -62,6 +63,8 @@
 		<input type="text" id="QuickAddCaptionText" data-bind="value: QuickAddCaption" placeholder="New status item caption..." />
 		<input type="text" id="QuickAddProjectNameText" data-bind="value: QuickAddProjectName" placeholder="Project" />
         <input type="text" id="QuickAddMilestoneDateText" class="datefield" data-bind="datepicker: QuickAddMilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" placeholder="Milestone date" />
+        @Html.DropDownList("QuickAddMilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
+						 new Dictionary<string, object> { { "data-bind", "value:QuickAddMilestoneType" } })
 		<button type="submit" data-bind="enable: HasNewQuickAddItem">Add</button>
 
 	</form>
@@ -90,7 +93,7 @@
 					</form>
 				</div>
 				<div data-bind='foreach: Items'>
-					<div data-bind="css: { hasChangesStyle: HasChanges(), hasDeletionsStyle: HasDeletion() }" class="statusItemDiv">
+					<div data-bind="css: { hasChangesStyle: HasChanges(), hasDeletionsStyle: HasDeletion(), hasInsertionsStyle: HasInsertion() }" class="statusItemDiv">
 						<textarea class="statusCaptionText" data-bind="value: Caption, uniqueName: true, enable: Editable"></textarea>
 						<input class="datefield" data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
 						@Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
