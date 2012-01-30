@@ -156,12 +156,22 @@ namespace StatusMvc.Controllers
                     report.Items.ToList().ForEach(r =>
                                                       {
                                                           // need to map this back to status report
-                                                          var srSource =
-                                                              (from srSourceItem in sr.Items
-                                                               where srSourceItem.Id == r.Id
-                                                               select srSourceItem).FirstOrDefault();
+                                                          StatusItem sri = null;
 
-                                                          var sri = Mapper.Map<StatusReportItemViewModel, StatusItem>(r, srSource);
+                                                          // using Id won't work with multiple new entries
+                                                          if (r.Id > 0)
+                                                          { // is new
+                                                              var srSource =
+                                                                  (from srSourceItem in sr.Items
+                                                                   where srSourceItem.Id == r.Id
+                                                                   select srSourceItem).FirstOrDefault();
+                                                              // map over the new item
+                                                              sri = Mapper.Map<StatusReportItemViewModel, StatusItem>(r, srSource);
+                                                          }
+                                                          else
+                                                          {
+                                                              sri = Mapper.Map<StatusReportItemViewModel, StatusItem>(r);
+                                                          }
 
                                                           sri.AuditInfo =
                                                               GetAuditInfo();
@@ -181,6 +191,8 @@ namespace StatusMvc.Controllers
                                                           sri.Milestone.Date = r.MilestoneDate;
 
                                                           sr.AddStatusItem(sri);
+                                                          sri.StatusReport = sr;
+                                                          //this.StatusReportRepository.Update(sr);// each item any better
 
                                                       });
                 }

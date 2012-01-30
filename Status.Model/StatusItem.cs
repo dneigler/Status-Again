@@ -32,6 +32,9 @@ namespace Status.Model
         public virtual Topic Topic { get; set; }
         public virtual Milestone Milestone { get; set; }
         public virtual AuditInfo AuditInfo { get; set; }
+
+        public virtual StatusReport StatusReport { get; set; }
+
         public virtual string Caption
         {
             get

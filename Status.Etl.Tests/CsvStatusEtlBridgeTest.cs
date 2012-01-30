@@ -44,8 +44,16 @@ namespace Status.Etl.Tests
             }
         }
         
+        
         #region Additional test attributes
+        [AssemblyInitialize()]
+        public static void AssemblyInit(TestContext context)
+        {
+            //System.Environment.CurrentDirectory = @"C:\";
+        }
+
         // 
+
         //You can use the following additional attributes as you write your tests:
         //
         //Use ClassInitialize to run code before running the first test in the class

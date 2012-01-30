@@ -11,15 +11,16 @@ namespace Status.Persistence
     {
         public StatusReportMap()
         {
-            Id(x => x.Id);
+            Id(x => x.Id)
+                .UnsavedValue(0);
             Map(x => x.Caption);
             Map(x => x.PeriodStart);
             Map(x => x.PeriodEnd);
             Component(x => x.AuditInfo);
 
             HasMany(x => x.Items)
-                .Inverse()
-                .Cascade.All();
+                //.Inverse()
+                .Cascade.AllDeleteOrphan();
         }
     }
 }

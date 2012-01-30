@@ -13,6 +13,7 @@
 		.datefield { text-align: right;width: 85px; }
 		.statusItemDiv {border-style: solid; border-left-width: 3px;border-top-width: 0px;border-right-width: 1px;border-bottom-width: 0px;padding-left: 2px;margin-bottom: 2px; border-color:whitesmoke; }
 		.hasChangesStyle { border-left-color: limegreen; }
+        .hasDeletionsStyle { border-left-color: red; }
 		.changeCountSection { font-size: 12pt;color: darkgrey;font-weight: bold; }
 		.hasDeletionsText { color: red;font-weight:bolder; }
 		.hasUpdatesText { color: limegreen;font-weight: bolder; }
@@ -50,9 +51,7 @@
 	@*<li><a href="#">Save</a></li>
 		<li><a href="#">Delete</a></li>*@
 </ul>
-@*<button data-bind="visible: CanRollStatus, click: rollStatus, text: 'Roll Status to ' + RollStatusDateFormatted()"></button>
-	<button data-bind="click: save, enable: PendingChangesCount() + PendingDeletionsCount() > 0">
-		Save</button>*@ <span class="updatesSection" style="border-right-width: 1px; border-color: lightslategray;
+<span class="updatesSection" style="border-right-width: 1px; border-color: lightslategray;
 			border-right-style: dot-dash">Pending updates: <span class="changeCountSection" data-bind="text: PendingChangesCount, css: { hasUpdatesText: PendingChangesCount() > 0 }">
 			</span></span><span class="updatesSection" style="border-right-width: 1px; border-right-style: dot-dash">
 				Pending deletions: <span class="changeCountSection" data-bind="text:PendingDeletionsCount, css: { hasDeletionsText: PendingDeletionsCount() > 0 }">
@@ -62,10 +61,6 @@
 	<form data-bind="submit: addItemViaQuickAdd">
 		<input type="text" id="QuickAddCaptionText" data-bind="value: QuickAddCaption" placeholder="New status item caption..." />
 		<input type="text" id="QuickAddProjectNameText" data-bind="value: QuickAddProjectName" placeholder="Project" />
-        
-        @*<input id="QuickAddProjectNameText" data-bind="autoComplete: Projects, value: QuickAddProjectName, optionsText: 'Name', optionsValue: 'Id', autoCompleteOptions: {autoFocus: false}" />*@
-        @*<input data-bind="jqAuto: { autoFocus: true }, jqAutoSource: ProjectsAC, jqAutoQuery: Projects, jqAutoValue: QuickAddProjectName, jqAutoSourceLabel: 'Name', jqAutoSourceInputValue: 'Id', jqAutoSourceValue: 'Id'" />
-        *@
         <input type="text" id="QuickAddMilestoneDateText" class="datefield" data-bind="datepicker: QuickAddMilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" placeholder="Milestone date" />
 		<button type="submit" data-bind="enable: HasNewQuickAddItem">Add</button>
 
@@ -76,13 +71,16 @@
 	<div id="tabs">
 		<ul data-bind='foreach: ItemsByTeam'>
 			<li><a data-bind="attr: {href:'#tabs-' + TeamId(), title: Name}, text: Name"></a>
+            <!-- ko if: HasChanges -->
+            *
+            <!-- /ko -->
 			</li>
 		</ul>
 		<div data-bind='foreach: ItemsByTeam'>
 			<div data-bind='attr: {id: "tabs-" + TeamId() }, foreach: ProjectItems'>
 				<div class="projectNameHeader">
-					<span data-bind="text: ProjectName"></span>@*<a href="#" data-bind="click: addItemFromTemplate">
-																   +</a>*@
+					<span data-bind="text: ProjectName"></span>
+                    <span class="hasChangesStyle" data-bind="visible: PendingChangesCount() > 0, text: PendingChangesCount">*</span>
 				</div>
 				<div class="addItemFromStubDiv">
 					<form data-bind="submit: addItemFromStubProperties">
@@ -92,12 +90,14 @@
 					</form>
 				</div>
 				<div data-bind='foreach: Items'>
-					<div data-bind="css: { hasChangesStyle: HasChanges()}" class="statusItemDiv">
-						<textarea class="statusCaptionText" data-bind="value: Caption, uniqueName: true"></textarea>
+					<div data-bind="css: { hasChangesStyle: HasChanges(), hasDeletionsStyle: HasDeletion() }" class="statusItemDiv">
+						<textarea class="statusCaptionText" data-bind="value: Caption, uniqueName: true, enable: Editable"></textarea>
 						<input class="datefield" data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
 						@Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
 						 new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
-						<a href="#" data-bind="click: $parent.removeStatusItem">Delete</a>
+						<a href="#" data-bind="click: $parent.removeStatusItem, visible: HasDeletion() == false">Delete</a>
+                        <a href="#" data-bind="click: $parent.resurrectStatusItem, visible: HasDeletion">Resurrect</a>
+                        <a href="#" data-bind="click: reset, visible: HasChanges() && !HasInsertion()">Reset</a>
 					</div>
 				</div>
 			</div>

@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Status.Etl.Tests", "Status.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Status.Repository", "Status.Repository\Status.Repository.csproj", "{C556F5FA-F524-4B6D-AE87-0C7C62F4FB0C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLog4NHibernate", "NLog4NHibernate\NLog4NHibernate.csproj", "{291F63C2-259B-4BDD-A0D4-D5E76A0E70A8}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = StatusAgain.vsmdi
@@ -84,6 +86,10 @@ Global
 		{C556F5FA-F524-4B6D-AE87-0C7C62F4FB0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C556F5FA-F524-4B6D-AE87-0C7C62F4FB0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C556F5FA-F524-4B6D-AE87-0C7C62F4FB0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{291F63C2-259B-4BDD-A0D4-D5E76A0E70A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{291F63C2-259B-4BDD-A0D4-D5E76A0E70A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{291F63C2-259B-4BDD-A0D4-D5E76A0E70A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{291F63C2-259B-4BDD-A0D4-D5E76A0E70A8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

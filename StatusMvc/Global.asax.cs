@@ -9,6 +9,7 @@ using System.Web.Routing;
 using Ninject;
 using Ninject.Web.Mvc;
 using StatusMvc.Modules;
+using NLog;
 
 namespace StatusMvc
 {
@@ -17,6 +18,8 @@ namespace StatusMvc
 
     public class MvcApplication : NinjectHttpApplication
     {
+        private readonly Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
@@ -66,7 +69,9 @@ namespace StatusMvc
 
         protected override IKernel CreateKernel()
         {
+
             var kernel = new StandardKernel(new DefaultStatusAgainWebModule(ConfigurationManager.ConnectionStrings["StatusAgain"].ConnectionString));
+            _logger.Info("Created kernel {0}", kernel.GetType());
             return kernel;
         }
 
@@ -77,6 +82,7 @@ namespace StatusMvc
             AreaRegistration.RegisterAllAreas();
             RegisterGlobalFilters(GlobalFilters.Filters);
             RegisterRoutes(RouteTable.Routes);
+            _logger.Info("Application Started");
         }
     }
 }

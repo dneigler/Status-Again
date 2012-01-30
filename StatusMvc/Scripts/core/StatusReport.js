@@ -394,7 +394,7 @@ $(document).ready(function () {
 
 			        //extractLast(request.term)));
 			    },
-                select: function (event, ui) {
+			    select: function (event, ui) {
 			        // this.value = ui.item.value;
 			        // update the binding directly?
 			        statusReportVM.Report().QuickAddProjectName(ui.item.value);
@@ -424,7 +424,11 @@ $(document).ready(function () {
 			})
 		;
     $('#QuickAddCaptionText').focus();
+    
+    // bind 's' key to save button click (for some reason, save function direct call shows no itemstoremove)
+    $(document).bind('keydown', 's', function () { $('#saveButton').click(); });
 });
+
  
  
 var jsonDateRE = /^\/Date\((-?\d+)(\+|-)?(\d+)?\)\/$/;
@@ -474,59 +478,59 @@ ko.bindingHandlers.datepicker = {
 
 
 var statusReportVM = {
-	Report: ko.observable(new statusReport()),
-	initJQuery: function () {
-		$("#tabs").tabs();
-		// $(".datefield").datepicker({dateFormat:'yy-mm-dd',changeMonth:true,changeYear:true });
-		$('.statusCaptionText').autoResize({
-			
-		});
-//	    {
-//			// On resize:
-//			onResize: function () {
-//				$(this).css({ opacity: 0.8 });
-//			},
-//			// After resize:
-//			animateCallback: function () {
-//				$(this).css({ opacity: 1 });
-//			},
-//			// Quite slow animation:
-//			animateDuration: 300,
-//			// More extra space:
-//			extraSpace: 40
-//		});
-		$('#statusDateSelect').change(function () {
-			// alert('selected');
-			$('#ChangeStatusDateForm').submit();
-		}); 
+    Report: ko.observable(new statusReport()),
+    initJQuery: function () {
+        $("#tabs").tabs({ spinner: 'Retrieving data...' });
+        // $(".datefield").datepicker({dateFormat:'yy-mm-dd',changeMonth:true,changeYear:true });
+        $('.statusCaptionText').autoResize({
 
-	},
-	loadReport: function (reportDate) {
-		var url = "/StatusReport/GetStatusReport?statusDate=" + reportDate;
-		$.ajax({
-			url: url,
-			dataType: "json",
-			converters: {
-				"text json": function (data) {
-					return $.parseJSON(data, true);
-				}
-			},
-			success: function (response) {
-				if (response != null) {
-					var sr = new statusReport()
+        });
+        //	    {
+        //			// On resize:
+        //			onResize: function () {
+        //				$(this).css({ opacity: 0.8 });
+        //			},
+        //			// After resize:
+        //			animateCallback: function () {
+        //				$(this).css({ opacity: 1 });
+        //			},
+        //			// Quite slow animation:
+        //			animateDuration: 300,
+        //			// More extra space:
+        //			extraSpace: 40
+        //		});
+        $('#statusDateSelect').change(function () {
+            // alert('selected');
+            $('#ChangeStatusDateForm').submit();
+        });
+
+    },
+    loadReport: function (reportDate) {
+        var url = "/StatusReport/GetStatusReport?statusDate=" + reportDate;
+        $.ajax({
+            url: url,
+            dataType: "json",
+            converters: {
+                "text json": function (data) {
+                    return $.parseJSON(data, true);
+                }
+            },
+            success: function (response) {
+                if (response != null) {
+                    var sr = new statusReport()
 						.initData(response);
-					statusReportVM.Report(sr);
-					statusReportVM.initJQuery();
+                    statusReportVM.Report(sr);
+                    statusReportVM.initJQuery();
 
-				} else {
-					alert(response.message);
-				}
-			},
-			error: function (response) {
-				alert("Failed to get report for date " + reportDate + "..." + response.responseText);
-			}
-		});
-	}
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (response) {
+                alert("Failed to get report for date " + reportDate + "..." + response.responseText);
+            }
+        });
+    }
 };
 
 RedirectToReport = function (statusDate) {
@@ -639,13 +643,20 @@ function statusReport() {
 //            console.log(ko.toJSON(item)); // item.Id() + " / " + item.Caption());
 //        });
 	};
-	
+
 	this.reset = function () {
-		ko.utils.arrayForEach(self.Items(), function(item) {
-			item.reset();
-		});
-		self.ItemsToRemove.removeAll();
-};
+	    // remove item from project
+	    ko.utils.arrayForEach(self.ItemsToRemove(), function (statusItemToRemove) {
+	        var projectWithItem = ko.utils.arrayFirst(self.ItemsByProject(), function (item) {
+	            return (item.ProjectId() == statusItemToRemove.ProjectId());
+	        });
+	        projectWithItem._destroyStatusItem(statusItemToRemove);
+	    });
+	    ko.utils.arrayForEach(self.Items(), function (item) {
+	        item.reset();
+	    });
+	    self.ItemsToRemove.removeAll();
+	};
 	
 	
 	this.rollStatus = function () {
@@ -708,50 +719,53 @@ function statusReport() {
 	
 	};
 	this.save = function () {
-		var url = "/StatusReport/Save";
-		var miniReport = new statusReport();
-		miniReport.PeriodStart = self.PeriodStart();
-		miniReport.Id = self.Id();
-		miniReport.Caption = self.Caption();
+	    var url = "/StatusReport/Save";
+	    var miniReport = new statusReport();
+	    miniReport.PeriodStart = self.PeriodStart();
+	    miniReport.Id = self.Id();
+	    miniReport.Caption = self.Caption();
 
-		miniReport.Items = ko.utils.arrayFilter(self.Items(), function (item) {
-			return item.HasChanges(); // ko.utils.stringStartsWith(item.name().toLowerCase(), filter);
-		});
-		miniReport.ItemsToRemove = self.ItemsToRemove();
+	    miniReport.Items = ko.utils.arrayFilter(self.Items(), function (item) {
+	        return item.HasChanges(); // ko.utils.stringStartsWith(item.name().toLowerCase(), filter);
+	    });
+	    miniReport.ItemsToRemove = self.ItemsToRemove();
+	    if (miniReport.Items.length == 0 && miniReport.ItemsToRemove.length == 0) {
+	        console.log("No items to change, aborting save.");
+	        return;
+	    }
+	    console.log("About to save self.Items = " + miniReport.Items.length);
 
-		console.log("About to save self.Items = " + miniReport.Items.length);
-
-		$.ajax({
-			url: url,
-			dataType: "json",
-			converters: {
-				"text json": function (data) {
-					return $.parseJSON(data, true);
-				}
-			},
-			data: ko.toJSON({ report: miniReport }),
-			type: "post",
-			contentType: "application/json",
-			success: function (result) {
-				// alert(result);
-				self.reset();
-			},
-			error: function (xhr, status) {
-				switch (status) {
-					case 404:
-						alert('File not found');
-						break;
-					case 500:
-						alert('Server error');
-						break;
-					case 0:
-						alert('Request aborted');
-						break;
-					default:
-						alert('Unknown error ' + status);
-				}
-			}
-		});
+	    $.ajax({
+	        url: url,
+	        dataType: "json",
+	        converters: {
+	            "text json": function (data) {
+	                return $.parseJSON(data, true);
+	            }
+	        },
+	        data: ko.toJSON({ report: miniReport }),
+	        type: "post",
+	        contentType: "application/json",
+	        success: function (result) {
+	            // alert(result);
+	            self.reset();
+	        },
+	        error: function (xhr, status) {
+	            switch (status) {
+	                case 404:
+	                    alert('File not found');
+	                    break;
+	                case 500:
+	                    alert('Server error');
+	                    break;
+	                case 0:
+	                    alert('Request aborted');
+	                    break;
+	                default:
+	                    alert('Unknown error ' + status);
+	            }
+	        }
+	    });
 	};
 	
 	
@@ -850,7 +864,12 @@ function statusReport() {
 		console.log("about to remove status item " + itemToRemove);
 		if (ko.utils.unwrapObservable(itemToRemove.Id) != 0)
 			self.ItemsToRemove.push(itemToRemove);
-		self.Items.remove(itemToRemove);
+		// self.Items.remove(itemToRemove);
+	};
+
+	this.resurrectStatusItem = function (itemToResurrect) {
+	    console.log("about to resurrect status item from StatusReport " + itemToResurrect);
+	    self.ItemsToRemove.remove(itemToResurrect);
 	};
 
 	this.getProjectByName = function (name) {
@@ -871,6 +890,7 @@ function statusReport() {
 			.ProjectTeamId(proj.TeamId)
 			.ProjectTeamName(proj.TeamName)
 			.ProjectLeadFullName(proj.LeadFullName)
+            .HasInsertion(true)
 		//.ProjectDepartmentName(self.ProjectDepartmentName())
 		//.ProjectDepartmentManagerFullName(self.ProjectDepartmentManagerFullName())
 		//.ProjectType(self.ProjectType())
@@ -988,7 +1008,7 @@ function statusReportItem() {
 	this.ListenForChanges = function () {
 		self.ClearSubscribers();
 		$.each(self, function (x, item) {
-			if (x != "ChangeLog" && x != "HasChanges" && ko.isObservable(item)) {
+			if (!self.isInternal(x, item)) {
 				var sub = item.subscribe(function (newValue) {
 					var currentlyChangeExists = ($.inArray(x, self.ChangeLog()) >= 0);
 					if (newValue != self.OriginalVersion[x] && !currentlyChangeExists) {
@@ -1003,13 +1023,38 @@ function statusReportItem() {
 		});
 	};
 
-	this.reset = function () {
-		self.ChangeLog.removeAll();
+	this.isInternal = function (x, item) {
+	    return !(x != "ChangeLog" && x != "HasChanges" && x != "HasDeletion" && x != "HasInsertion" && x != "Editable" && ko.isObservable(item));
 	};
+
+	this.reset = function () {
+	    self.ChangeLog.removeAll();
+	    // need to undo the value damage though
+	    $.each(self, function (x, item) {
+	        if (!self.isInternal(x, item)) {
+	            var currentlyChangeExists = ($.inArray(x, self.ChangeLog()) >= 0);
+	            if (currentlyChangeExists)
+	                item(self.OriginalVersion[x]);
+	            // self.Subscribers.push(sub);
+	        }
+
+	    });
+	    self.HasDeletion(false);
+	    self.HasInsertion(false);
+	};
+
+    this.HasInsertion = ko.observable(false);
+
 	this.HasChanges = ko.computed(function () {
 		// console.log("HasChanges called for Id " + self.Id() + "  (" + self.Caption() + ") returning " + self.ChangeLog().length);
 		return self.ChangeLog().length > 0;
 	} .bind(this));
+
+    this.HasDeletion = ko.observable(false);
+
+    this.Editable = ko.computed(function () {
+        return (self.HasDeletion() == false);
+    } .bind(this));
 
 	this.MilestoneDateString = ko.computed(function () {
 		return $.datepicker.formatDate('mm/dd/yy', self.MilestoneDate());
@@ -1031,15 +1076,39 @@ function projectStatus() {
 	self.Items = ko.observableArray([]);
 	self.NewStatusItemText = ko.observable();
 	self.NewStatusItemMilestoneDate = ko.observable(new Date());
+	self.ItemsToRemove = ko.observableArray([]);
 
 	this.HasNewItem = ko.computed(function () {
 		return (self.NewStatusItemText() != '' && self.NewStatusItemText() != null);
 	} .bind(this));
-	
+
+	self._destroyStatusItem = function (itemToRemove) {
+	    console.log("destroying item: " + itemToRemove.TopicCaption());
+	    self.Items.remove(itemToRemove);
+	};
+
 	self.removeStatusItem = function (itemToRemove) {
-		console.log("about to remove item via projectStatus " + itemToRemove.TopicCaption());
-		self.Items.remove(itemToRemove);
-		self.Report().removeStatusItem(itemToRemove);
+
+	    console.log("about to remove item via projectStatus " + itemToRemove.TopicCaption());
+	    if (itemToRemove.HasInsertion()) {
+	        itemToRemove.reset();
+	        self.Items.remove(itemToRemove);
+            self.Report().removeStatusItem(itemToRemove);
+	        
+	    } else {
+	        itemToRemove.reset();
+	        itemToRemove.HasDeletion(true);
+	        self.ItemsToRemove.push(itemToRemove);
+	        self.Report().removeStatusItem(itemToRemove);
+	    }
+	};
+
+	self.resurrectStatusItem = function (itemToResurrect) {
+	    console.log("about to resurrect status item " + itemToResurrect);
+	    self.ItemsToRemove.remove(itemToResurrect);
+	    itemToResurrect.HasDeletion(false);
+	    self.Report().resurrectStatusItem(itemToResurrect);
+	    // self.Items.remove(itemToRemove);
 	};
 
 	self.addItem = function (statusItem) {
@@ -1087,14 +1156,66 @@ function projectStatus() {
 		self.NewStatusItemText('');
 		self.NewStatusItemMilestoneDate(new Date());
 	};
-	
+
+    this.PendingChangesCount = ko.computed(function () {
+        var arrCount = ko.utils.arrayFilter(self.Items(), function (item) {
+            return item.HasChanges();
+        });
+
+        // debugging
+        ko.utils.arrayForEach(self.Items(), function (item) {
+            if (item.HasChanges())
+                console.log(ko.toJSON(item));
+        });
+
+        return arrCount.length;
+    } .bind(this));
+
+    this.PendingDeletionsCount = ko.computed(function () {
+        var arrCount = ko.utils.arrayFilter(self.Items(), function (item) {
+            return item.HasDeletion();
+        });
+
+        // debugging
+        ko.utils.arrayForEach(self.Items(), function (item) {
+            if (item.HasDeletion())
+                console.log(ko.toJSON(item));
+        });
+
+        return arrCount.length;
+    } .bind(this));
 };
 
 function teamStatus() {
+    var self = this;
 	this.Report = ko.observable(null);
 	this.TeamId = ko.observable(0);
 	this.Name = ko.observable('');
 	this.ProjectItems = ko.observableArray([]);
+
+	this.HasChanges = ko.computed(function () {
+	    if (!this.PendingChangesCount) return false;
+	    return (this.PendingChangesCount() > 0 || this.PendingDeletionsCount() > 0);
+	} .bind(this));
+
+	this.PendingChangesCount = ko.computed(function () {
+	    // debugging
+	    var count = 0;
+	    ko.utils.arrayForEach(self.ProjectItems(), function (item) {
+	        count += item.PendingChangesCount();
+	    });
+
+	    return count;
+	} .bind(this));
+
+	this.PendingDeletionsCount = ko.computed(function () {
+	    var count = 0;
+	    ko.utils.arrayForEach(self.ProjectItems(), function (item) {
+	        count += item.PendingDeletionsCount();
+	    });
+
+	    return count;
+	} .bind(this));
 
 	this.addProject = function (project) {
 		var projects = ($.grep(this.ProjectItems(), function (i) {

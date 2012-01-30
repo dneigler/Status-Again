@@ -187,7 +187,10 @@ namespace Status.ETL.Csv
                                                                                   Text = statusReportItem.Note
                                                                               });
                                                      if (statusItem.Topic != null)
+                                                     {
                                                          statusReport.AddStatusItem(statusItem);
+                                                         statusItem.StatusReport = statusReport;
+                                                     } 
                                                      else
                                                          _logger.Warn("Skilling statusitem {0} as no topic assigned", statusItem.Caption);
                                                  });
