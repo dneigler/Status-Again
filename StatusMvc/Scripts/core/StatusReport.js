@@ -418,12 +418,34 @@ $(document).ready(function () {
         $('#QuickAddMilestoneTypes').val(milestoneType);
     });
 
+//    $('#NewStatusItemMilestoneDateText').change(function () {
+//        // figure out the new milestone date
+//        var milestoneDate = $('#NewStatusItemMilestoneDateText').val();
+//        var statusReportDate = statusReportVM.Report().PeriodStart();
+//        var milestoneType = rollMilestone(statusReportDate, milestoneDate);
+//        $('#NewStatusItemMilestoneTypes').val(milestoneType);
+//    });
+
     // bind 's' key to save button click (for some reason, save function direct call shows no itemstoremove)
     $(document).bind('keydown', 's', function () { $('#saveButton').click(); });
 });
 
 var rollMilestone = function (reportDate, itemDate) {
-    return 2; // always OpenItem for now as test
+    var statusItemDate = new Date(itemDate);
+    var statusReportDate = new Date(reportDate);
+    var minDate = new Date(reportDate);
+    var maxDate = new Date(reportDate);
+    minDate.add(-7).days();
+    maxDate.add(7).days();
+
+    if (statusItemDate < minDate)
+        return 2;
+    else if (statusItemDate < statusReportDate)
+        return 0;
+    else if (statusItemDate >= statusReportDate && statusItemDate < maxDate)
+        return 1;
+
+    return 3; // always OpenItem for now as test
     /*
     0=LastWeek
     1=ThisWeek
@@ -581,7 +603,7 @@ function statusReport() {
 	this.QuickAddCaption = ko.observable(null);
 	this.QuickAddProjectName = ko.observable(null);
 	this.QuickAddMilestoneDate = ko.observable(new Date());
-	this.QuickAddMilestoneType = ko.observable('Milestone');
+	this.QuickAddMilestoneType = ko.observable(1);
 
 	this.RollStatusDateFormatted = ko.computed(function () {
 		if (self.RollStatusDate() != null) {
@@ -756,6 +778,13 @@ function statusReport() {
 	        contentType: "application/json",
 	        success: function (result) {
 	            // alert(result);
+	            // loop through the returned values and update items
+	            var counter = 0;
+	            ko.utils.arrayForEach(ko.utils.unwrapObservable(miniReport.Items), function (item) {
+	                var resultItem = result.Items[counter];
+	                item.LoadFromObject(resultItem);
+	                counter++;
+	            });
 	            self.reset();
 	        },
 	        error: function (xhr, status) {
@@ -1084,6 +1113,7 @@ function projectStatus() {
 	self.Items = ko.observableArray([]);
 	self.NewStatusItemText = ko.observable();
 	self.NewStatusItemMilestoneDate = ko.observable(new Date());
+    self.NewStatusItemMilestoneTypes = ko.observable(2);
 	self.ItemsToRemove = ko.observableArray([]);
 
 	this.HasNewItem = ko.computed(function () {
@@ -1158,6 +1188,7 @@ function projectStatus() {
 			.TopicCaption(self.NewStatusItemText())
 			.Caption(self.NewStatusItemText())
 			.MilestoneDate(self.NewStatusItemMilestoneDate())
+            .MilestoneType(self.NewStatusItemMilestoneTypes())
 			.StatusReportId(self.Report().Id());
 		statusItem.ListenForChanges();
 		self.addItem(statusItem);

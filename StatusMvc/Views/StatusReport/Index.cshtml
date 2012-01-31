@@ -20,6 +20,7 @@
 		.hasUpdatesText { color: limegreen;font-weight: bolder; }
 		.updatesSection { padding-left: 3px; padding-top: 1px;padding-bottom: 1px; }
 		.ui-menu { position: absolute; width: 100px; }
+        .addItemFromStubDiv { display:none; }
 	</style>
 }
 @*<h2>@ViewBag.Message</h2>*@
@@ -88,7 +89,10 @@
 				<div class="addItemFromStubDiv">
 					<form data-bind="submit: addItemFromStubProperties">
 					<input type="text" data-bind="value: NewStatusItemText" placeholder="New status item caption..." />
-					<button type="submit" data-bind="enable: HasNewItem">
+					<input type="text" id="NewStatusItemMilestoneDateText" class="datefield" data-bind="datepicker: NewStatusItemMilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" placeholder="Milestone date" />
+                    @Html.DropDownList("NewStatusItemMilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
+                                              new Dictionary<string, object> { { "data-bind", "value:NewStatusItemMilestoneTypes" } })
+		            <button type="submit" data-bind="enable: HasNewItem">
 						Add</button>
 					</form>
 				</div>

@@ -172,6 +172,7 @@ namespace StatusMvc.Controllers
                                                           {
                                                               sri = Mapper.Map<StatusReportItemViewModel, StatusItem>(r);
                                                           }
+                                                          sri.Milestone.Type = r.MilestoneType;
 
                                                           sri.AuditInfo =
                                                               GetAuditInfo();
