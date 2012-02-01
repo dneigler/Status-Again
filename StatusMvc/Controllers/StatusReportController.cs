@@ -29,8 +29,13 @@ namespace StatusMvc.Controllers
             _statusReportManager = statusReportManager;
             Mapper.CreateMap<StatusReport, StatusReportViewModel>()
                 .ForMember(m => m.NumberOfStatusItems, opt => opt.ResolveUsing<NumberOfStatusItemsFormatter>());
-            Mapper.CreateMap<StatusItem, StatusReportItemViewModel>();
+            Mapper.CreateMap<StatusItem, StatusReportItemViewModel>()
+                .ForMember(m => m.TagsString, opt => opt.MapFrom( src => 
+                    String.Join(",", (from tag in src.Tags
+                    select tag.Name))));
+                    
             Mapper.CreateMap<StatusReportItemViewModel, StatusItem>();
+                
             Mapper.CreateMap<Project, ProjectViewModel>();
             
             //.ForMember(m => m.StatusReportId, opt => opt.M);

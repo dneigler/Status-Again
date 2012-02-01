@@ -20,7 +20,10 @@ namespace Status.Persistence
             Component(x => x.AuditInfo);
             HasMany(x => x.Notes)
                 .Cascade
-                .All();
+                .AllDeleteOrphan();
+            HasMany(x => x.Tags)
+                .Cascade
+                .AllDeleteOrphan();
             References(x => x.Project)
                 .Not.Nullable();
         }

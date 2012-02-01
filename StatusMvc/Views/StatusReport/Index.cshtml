@@ -102,6 +102,7 @@
 						<input class="datefield" data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
 						@Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
 						 new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
+						<input class="statusTags" data-bind="value: TagsString" />
 						<a href="#" data-bind="click: $parent.removeStatusItem, visible: HasDeletion() == false">Delete</a>
                         <a href="#" data-bind="click: $parent.resurrectStatusItem, visible: HasDeletion">Resurrect</a>
                         <a href="#" data-bind="click: reset, visible: HasChanges() && !HasInsertion()">Reset</a>
@@ -117,31 +118,6 @@
 		This will create a new status report for <span data-bind="text: RollStatusDateFormatted">
 		</span>with all items carried over from the current report. Are you sure?</p>
 </div>
-@*<fieldset>
-	<legend>Status Report</legend>
-	<p>
-		Date:
-		<input type="text" data-bind="datepicker: PeriodStart" />
-	</p>
-	<p>
-		Caption:
-		<input type="text" data-bind="value: Caption" placeholder="Enter caption for status report" />
-	</p>
-	<p>
-		Items: <span data-bind="value: NumberOfStatusItems"></span>
-	</p>
-	<input type="button" click="statusReportVM.loadReport('@Request.QueryString["statusDate"]');" value="Reload"></input>
-</fieldset>
-<fieldset>
-	<legend>Items</legend>New Status Item:
-	<input type="text" data-bind='value: StatusItemToAdd, valueUpdate: "afterkeydown"' />
-	<input type="text" data-bind='value: StatusItemDateToAdd, valueUpdate: "afterkeydown"' />
-	@Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
-			new Dictionary<string, object> { { "data-bind", "value:StatusItemMilestoneToAdd" } })
-	<button type="submit" data-bind="enable: StatusItemToAdd().length > 0, click: addStatusItem">
-		Add</button>
-</fieldset>
-<input type="submit" value="Create" />*@ @*</form>*@
 <script type="text/javascript">
 	$(function () {
 		//activates KO

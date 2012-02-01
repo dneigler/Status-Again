@@ -61,6 +61,7 @@
     <Compile Include="ResourceAllocation.cs" />
     <Compile Include="StatusItem.cs" />
     <Compile Include="StatusReport.cs" />
+    <Compile Include="Tag.cs" />
     <Compile Include="Team.cs" />
     <Compile Include="Title.cs" />
     <Compile Include="Topic.cs" />

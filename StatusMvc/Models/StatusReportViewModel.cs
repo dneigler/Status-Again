@@ -58,7 +58,7 @@ namespace StatusMvc.Models
         public MilestoneConfidenceLevels MilestoneConfidenceLevel { get; set; }
 
         public string Caption { get; set; }
-
+        public string TagsString { get; set; }
         public IList<Note> Notes { get; set; }
         public int ProjectId { get; set; }
         public string ProjectName { get; set; }

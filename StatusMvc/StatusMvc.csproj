@@ -130,6 +130,8 @@
     <Content Include="Scripts\globalize.min.js" />
     <Content Include="Scripts\jquery.autoresize.js" />
     <Content Include="Scripts\jquery.hotkeys.js" />
+    <Content Include="Scripts\jquery.tagsinput.css" />
+    <Content Include="Scripts\jquery.tagsinput.min.js" />
     <Content Include="Scripts\jquery.tmpl.js" />
     <Content Include="Scripts\jquery.treeview.all-1.6.0.js" />
     <Content Include="Scripts\jquery.treeview.all-1.6.0.min.js" />

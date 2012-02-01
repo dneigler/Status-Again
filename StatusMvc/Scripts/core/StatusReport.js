@@ -418,6 +418,7 @@ $(document).ready(function () {
         $('#QuickAddMilestoneTypes').val(milestoneType);
     });
 
+    
 //    $('#NewStatusItemMilestoneDateText').change(function () {
 //        // figure out the new milestone date
 //        var milestoneDate = $('#NewStatusItemMilestoneDateText').val();
@@ -531,6 +532,10 @@ var statusReportVM = {
         $('#statusDateSelect').change(function () {
             // alert('selected');
             $('#ChangeStatusDateForm').submit();
+        });
+        $('.statusTags').tagsInput({
+            'defaultText': 'add a tag',
+            'placeholderColor': '#666666'
         });
 
     },
@@ -1004,6 +1009,7 @@ function statusReportItem() {
 	self.ProjectLeadFullName = ko.observable('');
 	self.ProjectTeamLeadFullName = ko.observable('');
 	self.StatusReportId = ko.observable(0);
+	self.TagsString = ko.observable('');
 
 	this.LoadFromObject = function (item) {
 		self.Id(item.Id)
@@ -1022,7 +1028,9 @@ function statusReportItem() {
 		.ProjectTeamId(item.ProjectTeamId)
 		.ProjectTeamName(item.ProjectTeamName)
 		.ProjectLeadFullName(item.ProjectLeadFullName)
-		.ProjectTeamLeadFullName(item.ProjectTeamLeadFullName);
+		.ProjectTeamLeadFullName(item.ProjectTeamLeadFullName)
+        .TagsString(item.TagsString);
+
 		self.OriginalVersion = getMembers(item);
 		self.ListenForChanges();
 		return self;
