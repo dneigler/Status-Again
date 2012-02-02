@@ -128,9 +128,16 @@
     <Content Include="Scripts\date.js" />
     <Content Include="Scripts\globalize.js" />
     <Content Include="Scripts\globalize.min.js" />
+    <Content Include="Scripts\jquery-1.7.1-vsdoc.js" />
+    <Content Include="Scripts\jquery-1.7.1.js" />
+    <Content Include="Scripts\jquery-1.7.1.min.js" />
+    <Content Include="Scripts\jquery-ui-1.8.16.js" />
+    <Content Include="Scripts\jquery-ui-1.8.16.min.js" />
     <Content Include="Scripts\jquery.autoresize.js" />
     <Content Include="Scripts\jquery.hotkeys.js" />
+    <Content Include="Scripts\jquery.tagit.css" />
     <Content Include="Scripts\jquery.tagsinput.css" />
+    <Content Include="Scripts\jquery.tagsinput.js" />
     <Content Include="Scripts\jquery.tagsinput.min.js" />
     <Content Include="Scripts\jquery.tmpl.js" />
     <Content Include="Scripts\jquery.treeview.all-1.6.0.js" />
@@ -142,6 +149,7 @@
     <Content Include="Scripts\knockout.mapping-1.0.debug.js" />
     <Content Include="Scripts\knockout.mapping-latest.debug.js" />
     <Content Include="Scripts\knockout.mapping-latest.js" />
+    <Content Include="Scripts\master.css" />
     <Content Include="Scripts\MvcControlToolkit.Bindings-1.6.0.js" />
     <Content Include="Scripts\MVCControlToolkit.Controls-1.6.0.js" />
     <Content Include="Scripts\MVCControlToolkit.Controls-1.6.0.min.js" />
@@ -153,6 +161,9 @@
     <Content Include="Scripts\MVCControlToolkit.Controls.Grid-1.6.0.min.js" />
     <Content Include="Scripts\MVCControlToolkit.Controls.Items-1.6.0.js" />
     <Content Include="Scripts\MVCControlToolkit.Controls.Items-1.6.0.min.js" />
+    <Content Include="Scripts\reset.css" />
+    <Content Include="Scripts\tag-it.js" />
+    <Content Include="Scripts\tagit.ui-zendesk.css" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

@@ -417,8 +417,16 @@ $(document).ready(function () {
         var milestoneType = rollMilestone(statusReportDate, milestoneDate);
         $('#QuickAddMilestoneTypes').val(milestoneType);
     });
+    var sampleTags = ['Alpha', 'Omega', 'Delta'];
 
-    
+    $('#singleFieldTags').tagit({
+        availableTags: sampleTags,
+        // This will make Tag-it submit a single form value, as a comma-delimited field.
+        singleField: true,
+        singleFieldNode: $('#QuickAddTagsText')
+    });
+
+    //$('#QuickAddTagsString').tagit();
 //    $('#NewStatusItemMilestoneDateText').change(function () {
 //        // figure out the new milestone date
 //        var milestoneDate = $('#NewStatusItemMilestoneDateText').val();
@@ -533,10 +541,22 @@ var statusReportVM = {
             // alert('selected');
             $('#ChangeStatusDateForm').submit();
         });
-        $('.statusTags').tagsInput({
-            'defaultText': 'add a tag',
-            'placeholderColor': '#666666'
+
+        $('.statusTagUL').each(function (index) {
+            var inp = $(this).next('input');
+            console.log(inp);
+            inp.tagit({
+                singleField: true,
+                singleFieldNode: $(this).next('input')
+            });
         });
+        //        .tagit({
+        //            //availableTags: sampleTags,
+        //            // This will make Tag-it submit a single form value, as a comma-delimited field.
+        //            singleField: true,
+        //            singleFieldNode: $(this).next('input')
+        //        });
+
 
     },
     loadReport: function (reportDate) {
@@ -609,6 +629,7 @@ function statusReport() {
 	this.QuickAddProjectName = ko.observable(null);
 	this.QuickAddMilestoneDate = ko.observable(new Date());
 	this.QuickAddMilestoneType = ko.observable(1);
+	this.QuickAddTagsString = ko.observable('');
 
 	this.RollStatusDateFormatted = ko.computed(function () {
 		if (self.RollStatusDate() != null) {
@@ -945,6 +966,7 @@ function statusReport() {
 			.Caption(self.QuickAddCaption())
 			.MilestoneDate(self.QuickAddMilestoneDate())
             .MilestoneType(self.QuickAddMilestoneType())
+            .TagsString(self.QuickAddTagsString())
 			.StatusReportId(self.Id())
 			//.ProjectTeamId(self.TeamId())
 			;

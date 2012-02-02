@@ -21,6 +21,10 @@
 		.updatesSection { padding-left: 3px; padding-top: 1px;padding-bottom: 1px; }
 		.ui-menu { position: absolute; width: 100px; }
         .addItemFromStubDiv { display:none; }
+        .tagsBox {
+            display: inline-block;
+            vertical-align: baseline;
+        }
 	</style>
 }
 @*<h2>@ViewBag.Message</h2>*@
@@ -66,6 +70,8 @@
         <input type="text" id="QuickAddMilestoneDateText" class="datefield" data-bind="datepicker: QuickAddMilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" placeholder="Milestone date" />
         @Html.DropDownList("QuickAddMilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
 						 new Dictionary<string, object> { { "data-bind", "value:QuickAddMilestoneType" } })
+        <ul id="singleFieldTags" class="tagsBox"></ul>
+		<input name="tags" id="QuickAddTagsText" data-bind="value: QuickAddTagsString" style="display:none" disabled="true"> <!-- only disabled for demonstration purposes -->
 		<button type="submit" data-bind="enable: HasNewQuickAddItem">Add</button>
 
 	</form>
@@ -102,7 +108,9 @@
 						<input class="datefield" data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
 						@Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
 						 new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
-						<input class="statusTags" data-bind="value: TagsString" />
+                         <ul class="statusTagUL"></ul>
+						<input type="text" disabled="true" class="statusTags" data-bind="value: TagsString" />
+                        <span data-bind="text: TagsString"></span>
 						<a href="#" data-bind="click: $parent.removeStatusItem, visible: HasDeletion() == false">Delete</a>
                         <a href="#" data-bind="click: $parent.resurrectStatusItem, visible: HasDeletion">Resurrect</a>
                         <a href="#" data-bind="click: reset, visible: HasChanges() && !HasInsertion()">Reset</a>
