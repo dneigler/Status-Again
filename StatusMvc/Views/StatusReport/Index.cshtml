@@ -109,8 +109,9 @@
 						@Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
 						 new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
                          <ul class="statusTagUL"></ul>
-						<input type="text" disabled="true" class="statusTags" data-bind="value: TagsString" />
-                        <span data-bind="text: TagsString"></span>
+						<input type="text" class="statusTags" data-bind="value:TagsString" />
+                        <input type="text" data-bind="value: TagsString" />
+                        TAGSSTRING: [<span data-bind="text: TagsString"></span>]
 						<a href="#" data-bind="click: $parent.removeStatusItem, visible: HasDeletion() == false">Delete</a>
                         <a href="#" data-bind="click: $parent.resurrectStatusItem, visible: HasDeletion">Resurrect</a>
                         <a href="#" data-bind="click: reset, visible: HasChanges() && !HasInsertion()">Reset</a>

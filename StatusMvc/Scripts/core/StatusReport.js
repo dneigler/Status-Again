@@ -541,15 +541,42 @@ var statusReportVM = {
             // alert('selected');
             $('#ChangeStatusDateForm').submit();
         });
+        var sampleTags = ['Alpha', 'Omega', 'Delta'];
+        $('.statusTags').tagit({
+            availableTags: sampleTags,
+            removeConfirmation: true,
+            allowSpaces: true
+//            //singleField: true,
+//            onTagAdded: function (evt, tag) {
+//                // workaround
+//                //$(this).change();
+//                //                var val = $(this).val();
+//                //                var n = $(this).next().next('input');
+//                //                n.val(val).change();
+//                //                console.log(n);
 
-        $('.statusTagUL').each(function (index) {
-            var inp = $(this).next('input');
-            console.log(inp);
-            inp.tagit({
-                singleField: true,
-                singleFieldNode: $(this).next('input')
-            });
+//            },
+//            onTagRemoved: function (evt, tag) {
+//                // explicit set?
+//                //$(this).val($(this).val()).change();
+//                // $(this).change();
+//                //                var val = $(this).val();
+//                //                var n = $(this).next().next('input');
+//                //                n.val(val).change();
+//                //                console.log(n);
+//                // update the knockout binding
+//                //alert('This tag is being removed: ' + eventTags.tagit('tagLabel', tag));
+//            }
         });
+
+        //        $('.statusTagUL').each(function (index) {
+        //            var inp = $(this).next('input');
+        //            console.log(inp);
+        //            inp.tagit({
+        //                singleField: true,
+        //                singleFieldNode: $(this).next('input')
+        //            });
+        //        });
         //        .tagit({
         //            //availableTags: sampleTags,
         //            // This will make Tag-it submit a single form value, as a comma-delimited field.
@@ -681,10 +708,10 @@ function statusReport() {
 		});
 		
 		// debugging
-		ko.utils.arrayForEach(self.Items(), function(item) {
-			if (item.HasChanges())
-				console.log(ko.toJSON(item));
-		});
+//		ko.utils.arrayForEach(self.Items(), function(item) {
+//			if (item.HasChanges())
+//				console.log(ko.toJSON(item));
+//		});
 
 		return arrCount.length;
 	} .bind(this));
@@ -1051,7 +1078,7 @@ function statusReportItem() {
 		.ProjectTeamName(item.ProjectTeamName)
 		.ProjectLeadFullName(item.ProjectLeadFullName)
 		.ProjectTeamLeadFullName(item.ProjectTeamLeadFullName)
-        .TagsString(item.TagsString);
+        .TagsString('test');//item.TagsString);
 
 		self.OriginalVersion = getMembers(item);
 		self.ListenForChanges();
