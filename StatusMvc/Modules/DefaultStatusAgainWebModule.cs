@@ -72,6 +72,8 @@ namespace StatusMvc.Modules
                     .WithConstructorArgument("connectionString", ConnString);
                 Bind<ITeamRepository>().To<TeamRepository>()
                     .WithConstructorArgument("connectionString", ConnString);
+                Bind<ITagRepository>().To<TagRepository>()
+                    .WithConstructorArgument("connectionString", ConnString);
 
             }
         }

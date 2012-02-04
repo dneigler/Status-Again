@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Status.Model;
 
-namespace Status.Persistence
+namespace Status.Repository
 {
     public interface ITagRepository
     {
@@ -13,5 +13,7 @@ namespace Status.Persistence
         IList<StatusItem> GetItemsByTag(Tag tag);
 
         IList<StatusItem> GetItemsByTagId(int id);
+
+        IList<Tag> GetAllTags();
     }
 }

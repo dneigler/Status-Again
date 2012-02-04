@@ -417,23 +417,13 @@ $(document).ready(function () {
         var milestoneType = rollMilestone(statusReportDate, milestoneDate);
         $('#QuickAddMilestoneTypes').val(milestoneType);
     });
-    var sampleTags = ['Alpha', 'Omega', 'Delta'];
+    // var sampleTags = ['Alpha', 'Omega', 'Delta'];
 
-    $('#singleFieldTags').tagit({
-        availableTags: sampleTags,
-        // This will make Tag-it submit a single form value, as a comma-delimited field.
-        singleField: true,
-        singleFieldNode: $('#QuickAddTagsText')
-    });
-
-    //$('#QuickAddTagsString').tagit();
-//    $('#NewStatusItemMilestoneDateText').change(function () {
-//        // figure out the new milestone date
-//        var milestoneDate = $('#NewStatusItemMilestoneDateText').val();
-//        var statusReportDate = statusReportVM.Report().PeriodStart();
-//        var milestoneType = rollMilestone(statusReportDate, milestoneDate);
-//        $('#NewStatusItemMilestoneTypes').val(milestoneType);
-//    });
+    $('#QuickAddTagsText').tagit({
+        availableTags: statusReportVM.Report().TagNames(),
+        removeConfirmation: true,
+        allowSpaces: true
+    }); 
 
     // bind 's' key to save button click (for some reason, save function direct call shows no itemstoremove)
     $(document).bind('keydown', 's', function () { $('#saveButton').click(); });
@@ -541,50 +531,11 @@ var statusReportVM = {
             // alert('selected');
             $('#ChangeStatusDateForm').submit();
         });
-        var sampleTags = ['Alpha', 'Omega', 'Delta'];
         $('.statusTags').tagit({
-            availableTags: sampleTags,
+            availableTags: statusReportVM.Report().TagNames(),
             removeConfirmation: true,
             allowSpaces: true
-//            //singleField: true,
-//            onTagAdded: function (evt, tag) {
-//                // workaround
-//                //$(this).change();
-//                //                var val = $(this).val();
-//                //                var n = $(this).next().next('input');
-//                //                n.val(val).change();
-//                //                console.log(n);
-
-//            },
-//            onTagRemoved: function (evt, tag) {
-//                // explicit set?
-//                //$(this).val($(this).val()).change();
-//                // $(this).change();
-//                //                var val = $(this).val();
-//                //                var n = $(this).next().next('input');
-//                //                n.val(val).change();
-//                //                console.log(n);
-//                // update the knockout binding
-//                //alert('This tag is being removed: ' + eventTags.tagit('tagLabel', tag));
-//            }
         });
-
-        //        $('.statusTagUL').each(function (index) {
-        //            var inp = $(this).next('input');
-        //            console.log(inp);
-        //            inp.tagit({
-        //                singleField: true,
-        //                singleFieldNode: $(this).next('input')
-        //            });
-        //        });
-        //        .tagit({
-        //            //availableTags: sampleTags,
-        //            // This will make Tag-it submit a single form value, as a comma-delimited field.
-        //            singleField: true,
-        //            singleFieldNode: $(this).next('input')
-        //        });
-
-
     },
     loadReport: function (reportDate) {
         var url = "/StatusReport/GetStatusReport?statusDate=" + reportDate;
@@ -640,17 +591,27 @@ function statusReport() {
 	this.CanRollStatus = ko.observable(false);
 	this.RollStatusDate = ko.observable(null);
 
+    // PROJECTS
 	this.Projects = ko.observableArray([]);
 	this.ProjectsAC = ko.observableArray([]);
 
-	this.ProjectNames = ko.computed(function () {
+    this.ProjectNames = ko.computed(function () {
 		var arr = new Array();
 		ko.utils.arrayForEach(self.Projects(), function (item) {
 			arr.push(item.Name);
 		});
 		return arr;
 	} .bind(this));
-	
+
+    // TAGS
+    this.Tags = ko.observableArray([]);
+    this.TagNames = ko.computed(function () {
+        var tags = ko.utils.arrayMap(this.Tags(), function (item) {
+            return item.Name;
+        });
+        return tags.sort();
+    } .bind(this));
+
 	// quickadd
 	this.QuickAddCaption = ko.observable(null);
 	this.QuickAddProjectName = ko.observable(null);
@@ -678,7 +639,8 @@ function statusReport() {
 			.StatusReportDates(response.StatusReportDates)
 			.CanRollStatus(response.CanRollStatus)
 			.RollStatusDate(response.RollStatusDate)
-			.Projects(response.Projects);
+			.Projects(response.Projects)
+            .Tags(response.Tags);
 		$.each(response.Items, function (x, item) {
 			var sri = new statusReportItem()
 				.LoadFromObject(item);
@@ -970,45 +932,47 @@ function statusReport() {
 	};
 
 	this.addItemViaQuickAdd = function () {
-		var proj = self.getProjectByName(self.QuickAddProjectName());
-		
-		var statusItem = new statusReportItem()
-		// .Report(self.Report)
-		// in this case we don't know the project id, we may add later
+	    var proj = self.getProjectByName(self.QuickAddProjectName());
+
+	    var statusItem = new statusReportItem()
+	    // .Report(self.Report)
+	    // in this case we don't know the project id, we may add later
 			.ProjectId(proj.Id)
 			.ProjectName(proj.Name)
 			.ProjectTeamId(proj.TeamId)
 			.ProjectTeamName(proj.TeamName)
 			.ProjectLeadFullName(proj.LeadFullName)
             .HasInsertion(true)
-		//.ProjectDepartmentName(self.ProjectDepartmentName())
-		//.ProjectDepartmentManagerFullName(self.ProjectDepartmentManagerFullName())
-		//.ProjectType(self.ProjectType())
-		//.ProjectTeamId(self.ProjectTeamId())
-		//.ProjectTeamName(self.ProjectTeamName())
-		//.ProjectLeadFullName(self.ProjectLeadFullName())
-		//.ProjectTeamLeadFullName(self.ProjectTeamLeadFullName())
-		
+	    //.ProjectDepartmentName(self.ProjectDepartmentName())
+	    //.ProjectDepartmentManagerFullName(self.ProjectDepartmentManagerFullName())
+	    //.ProjectType(self.ProjectType())
+	    //.ProjectTeamId(self.ProjectTeamId())
+	    //.ProjectTeamName(self.ProjectTeamName())
+	    //.ProjectLeadFullName(self.ProjectLeadFullName())
+	    //.ProjectTeamLeadFullName(self.ProjectTeamLeadFullName())
+
 			.TopicCaption(self.QuickAddCaption())
 			.Caption(self.QuickAddCaption())
 			.MilestoneDate(self.QuickAddMilestoneDate())
             .MilestoneType(self.QuickAddMilestoneType())
             .TagsString(self.QuickAddTagsString())
 			.StatusReportId(self.Id())
-			//.ProjectTeamId(self.TeamId())
+	    //.ProjectTeamId(self.TeamId())
 			;
 
-		statusItem.ListenForChanges();
-		// we'll need to find the original project and team for this or else it goes to ether in UI, won't save etc
-		self.loadStatusItem(statusItem);
-		//self.addStatusItem(statusItem);
-		self.QuickAddCaption(null);
-		self.QuickAddMilestoneDate(new Date());
-		self.QuickAddProjectName(null);
-		$('#QuickAddCaptionText').focus();
+	    statusItem.ListenForChanges();
+	    // we'll need to find the original project and team for this or else it goes to ether in UI, won't save etc
+	    self.loadStatusItem(statusItem);
+	    //self.addStatusItem(statusItem);
+	    self.QuickAddCaption(null);
+	    self.QuickAddMilestoneDate(new Date());
+	    self.QuickAddProjectName(null);
+	    self.QuickAddTagsString('');
+	    $('#QuickAddCaptionText').focus();
 	};
 
 	this.HasNewQuickAddItem = ko.computed(function () {
+        // only checking for captions and projects, milestone date and tags can be left blank
 		return (self.QuickAddCaption() != '' && self.QuickAddCaption() != null && self.QuickAddProjectName() != '' && self.QuickAddProjectName() != null);
 	} .bind(this));
 };
@@ -1078,7 +1042,7 @@ function statusReportItem() {
 		.ProjectTeamName(item.ProjectTeamName)
 		.ProjectLeadFullName(item.ProjectLeadFullName)
 		.ProjectTeamLeadFullName(item.ProjectTeamLeadFullName)
-        .TagsString('test');//item.TagsString);
+        .TagsString(item.TagsString);
 
 		self.OriginalVersion = getMembers(item);
 		self.ListenForChanges();

@@ -151,7 +151,7 @@
                     // Add existing tags from the input field.
                     var node = $(this.options.singleFieldNode);
                     var tags = node.val().split(this.options.singleFieldDelimiter);
-                    node.val('');
+                    node.val('').change();
                     $.each(tags, function(index, tag) {
                         that.createTag(tag);
                     });
@@ -346,7 +346,7 @@
             this._trigger('onTagAdded', null, tag);
 
             // Cleaning the input.
-            this._tagInput.val('');
+            this._tagInput.val('').change();
 
             // insert tag
             this._tagInput.parent().before(tag);

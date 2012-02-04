@@ -18,14 +18,16 @@ namespace StatusMvc.Controllers
         private ITopicRepository _topicRepository;
         private IProjectRepository _projectRepository;
         private IResourceRepository _resourceRepository;
+        private ITagRepository _tagRepository; 
         private IStatusReportManager _statusReportManager;
-
-        public StatusReportController(IStatusReportRepository repository, ITopicRepository topicRepository, IProjectRepository projectRepository, IResourceRepository resourceRepository, IStatusReportManager statusReportManager)
+        
+        public StatusReportController(IStatusReportRepository repository, ITopicRepository topicRepository, IProjectRepository projectRepository, IResourceRepository resourceRepository, IStatusReportManager statusReportManager, ITagRepository tagRepository)
         {
             _repository = repository;
             _topicRepository = topicRepository;
             _projectRepository = projectRepository;
             _resourceRepository = resourceRepository;
+            _tagRepository = tagRepository;
             _statusReportManager = statusReportManager;
             Mapper.CreateMap<StatusReport, StatusReportViewModel>()
                 .ForMember(m => m.NumberOfStatusItems, opt => opt.ResolveUsing<NumberOfStatusItemsFormatter>());
@@ -37,7 +39,8 @@ namespace StatusMvc.Controllers
             Mapper.CreateMap<StatusReportItemViewModel, StatusItem>();
                 
             Mapper.CreateMap<Project, ProjectViewModel>();
-            
+
+            Mapper.CreateMap<Tag, TagViewModel>();
             //.ForMember(m => m.StatusReportId, opt => opt.M);
             //.ForMember(dest => dest.ProjectLeadFullName, opt => opt.MapFrom(src => src.Project.Lead.FullName))
             //.ForMember(dest => dest.ProjectTeamLeadFullName, opt => opt.MapFrom(src => src.Project.Team.Lead.FullName));
@@ -67,6 +70,11 @@ namespace StatusMvc.Controllers
         public IStatusReportManager StatusReportManager
         {
             get { return _statusReportManager; }
+        }
+
+        public ITagRepository TagRepository
+        {
+            get { return _tagRepository; }
         }
 
         //
@@ -120,6 +128,8 @@ namespace StatusMvc.Controllers
             // get project names
             IList<Project> projects = this.ProjectRepository.GetAllProjects();
             vm.Projects = Mapper.Map<IList<Project>, IList<ProjectViewModel>>(projects);
+            IList<Tag> tags = this.TagRepository.GetAllTags();
+            vm.Tags = Mapper.Map<IList<Tag>, IList<TagViewModel>>(tags);
             //vm.Projects = this.ProjectRepository.GetAllProjects().Select(p => new {
             //    Name = p.Name, Id = p.Id, TeamLeadId = p.Team.Lead.Id }).ToList();
             return vm;

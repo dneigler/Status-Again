@@ -70,8 +70,7 @@
         <input type="text" id="QuickAddMilestoneDateText" class="datefield" data-bind="datepicker: QuickAddMilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" placeholder="Milestone date" />
         @Html.DropDownList("QuickAddMilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
 						 new Dictionary<string, object> { { "data-bind", "value:QuickAddMilestoneType" } })
-        <ul id="singleFieldTags" class="tagsBox"></ul>
-		<input name="tags" id="QuickAddTagsText" data-bind="value: QuickAddTagsString" style="display:none" disabled="true"> <!-- only disabled for demonstration purposes -->
+		<input name="QuickAddTagsText1" class="statusTags" type="text" id="QuickAddTagsText1" data-bind="value: QuickAddTagsString" />
 		<button type="submit" data-bind="enable: HasNewQuickAddItem">Add</button>
 
 	</form>
@@ -105,14 +104,11 @@
 				<div data-bind='foreach: Items'>
 					<div data-bind="css: { hasChangesStyle: HasChanges(), hasDeletionsStyle: HasDeletion(), hasInsertionsStyle: HasInsertion() }" class="statusItemDiv">
 						<textarea class="statusCaptionText" data-bind="value: Caption, uniqueName: true, enable: Editable"></textarea>
-						<input class="datefield" data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
+						<input class="datefield" placeholder="Milestone date" data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
 						@Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
 						 new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
-                         <ul class="statusTagUL"></ul>
-						<input type="text" class="statusTags" data-bind="value:TagsString" />
-                        <input type="text" data-bind="value: TagsString" />
-                        TAGSSTRING: [<span data-bind="text: TagsString"></span>]
-						<a href="#" data-bind="click: $parent.removeStatusItem, visible: HasDeletion() == false">Delete</a>
+                        <input type="text" class="statusTags" data-bind="value:TagsString" />
+                        <a href="#" data-bind="click: $parent.removeStatusItem, visible: HasDeletion() == false">Delete</a>
                         <a href="#" data-bind="click: $parent.resurrectStatusItem, visible: HasDeletion">Resurrect</a>
                         <a href="#" data-bind="click: reset, visible: HasChanges() && !HasInsertion()">Reset</a>
 					</div>
