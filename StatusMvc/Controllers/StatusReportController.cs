@@ -18,9 +18,9 @@ namespace StatusMvc.Controllers
         private ITopicRepository _topicRepository;
         private IProjectRepository _projectRepository;
         private IResourceRepository _resourceRepository;
-        private ITagRepository _tagRepository; 
+        private ITagRepository _tagRepository;
         private IStatusReportManager _statusReportManager;
-        
+
         public StatusReportController(IStatusReportRepository repository, ITopicRepository topicRepository, IProjectRepository projectRepository, IResourceRepository resourceRepository, IStatusReportManager statusReportManager, ITagRepository tagRepository)
         {
             _repository = repository;
@@ -32,12 +32,12 @@ namespace StatusMvc.Controllers
             Mapper.CreateMap<StatusReport, StatusReportViewModel>()
                 .ForMember(m => m.NumberOfStatusItems, opt => opt.ResolveUsing<NumberOfStatusItemsFormatter>());
             Mapper.CreateMap<StatusItem, StatusReportItemViewModel>()
-                .ForMember(m => m.TagsString, opt => opt.MapFrom( src => 
+                .ForMember(m => m.TagsString, opt => opt.MapFrom(src =>
                     String.Join(",", (from tag in src.Tags
-                    select tag.Name))));
-                    
+                                      select tag.Name))));
+
             Mapper.CreateMap<StatusReportItemViewModel, StatusItem>();
-                
+
             Mapper.CreateMap<Project, ProjectViewModel>();
 
             Mapper.CreateMap<Tag, TagViewModel>();
@@ -108,6 +108,12 @@ namespace StatusMvc.Controllers
         public JsonResult GetStatusReport(DateTime? statusDate)
         {
             var data = statusDate.HasValue ? StatusReportRepository.GetStatusReport(statusDate.Value) : StatusReportRepository.GetActiveStatusReport();
+            // trim data
+            //var lst = data.Items.ToList();
+            //int count = 3;
+            //lst.RemoveRange(count, data.Items.Count - count);
+            //data.Items = lst;
+
             var vm = GetStatusReportViewModel(data);
             return Json(vm, JsonRequestBehavior.AllowGet);
         }
@@ -208,6 +214,34 @@ namespace StatusMvc.Controllers
 
                                                           sr.AddStatusItem(sri);
                                                           sri.StatusReport = sr;
+
+                                                          // update the tags
+                                                          if (String.IsNullOrEmpty(r.TagsString))
+                                                          {
+                                                              sri.Tags.Clear();
+                                                          }
+                                                          else
+                                                          {
+                                                              var tagsList = r.TagsString.Split(',');
+                                                              var tagsL = tagsList.ToList();
+                                                              tagsL.ForEach(tag =>
+                                                              {
+                                                                  if (sri.Tags.FirstOrDefault(tagS => { return tagS.Name == tag; }) == null)
+                                                                  {
+                                                                      var t = this.TagRepository.GetOrAddTagByName(tag);
+                                                                      sri.Tags.Add(t);
+                                                                  }
+                                                              });
+                                                              // delete tags not found
+                                                              sri.Tags.ToList().ForEach(tag =>
+                                                              {
+                                                                  if (tagsL.FirstOrDefault(tagName =>
+                                                                  {
+                                                                      return tagName == tag.Name;
+                                                                  }) == null)
+                                                                      sri.Tags.Remove(tag);
+                                                              });
+                                                          }
                                                           //this.StatusReportRepository.Update(sr);// each item any better
 
                                                       });

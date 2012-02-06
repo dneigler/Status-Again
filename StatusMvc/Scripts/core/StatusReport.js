@@ -1065,21 +1065,27 @@ function statusReportItem() {
 
 	self.ChangeLog = ko.observableArray();
 	this.ListenForChanges = function () {
-		self.ClearSubscribers();
-		$.each(self, function (x, item) {
-			if (!self.isInternal(x, item)) {
-				var sub = item.subscribe(function (newValue) {
-					var currentlyChangeExists = ($.inArray(x, self.ChangeLog()) >= 0);
-					if (newValue != self.OriginalVersion[x] && !currentlyChangeExists) {
-						console.log("The new value for " + x + " is " + newValue + " from " + self.OriginalVersion[x]);
-						self.ChangeLog.push(x);
-					} else if (currentlyChangeExists) {
-						self.ChangeLog.pop(x);
-					}
-				});
-				self.Subscribers.push(sub);
-			}
-		});
+	    self.ClearSubscribers();
+	    $.each(self, function (x, item) {
+	        if (!self.isInternal(x, item)) {
+	            var sub = item.subscribe(function (newValue) {
+	                self._updateChangeTracking(x, newValue);
+
+	            });
+	            self.Subscribers.push(sub);
+	        }
+	    });
+	};
+
+	this._updateChangeTracking = function (propertyName, newValue) {
+	    var currentlyChangeExists = ($.inArray(propertyName, self.ChangeLog()) >= 0);
+	    var origValue = self.OriginalVersion[propertyName];
+	    if (newValue != origValue && !currentlyChangeExists) {
+	        console.log("The new value for " + propertyName + " is " + newValue + " from " + origValue);
+	        self.ChangeLog.push(propertyName);
+	    } else if (newValue == origValue && currentlyChangeExists) {
+	        self.ChangeLog.pop(propertyName);
+	    }
 	};
 
 	this.isInternal = function (x, item) {

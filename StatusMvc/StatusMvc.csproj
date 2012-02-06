@@ -124,47 +124,50 @@
     <Content Include="Content\jquery.treeview.css" />
     <Content Include="Content\license.txt" />
     <Content Include="Content\MenuStyle.css" />
+    <Content Include="Scripts\coverage-1.3.4-a.jar" />
     <Content Include="Global.asax" />
+    <Content Include="Scripts\JsTestDriver-1.3.4-a.jar" />
     <Content Include="Scripts\core\StatusReport.js" />
-    <Content Include="Scripts\date.js" />
-    <Content Include="Scripts\globalize.js" />
-    <Content Include="Scripts\globalize.min.js" />
-    <Content Include="Scripts\jquery-1.7.1-vsdoc.js" />
-    <Content Include="Scripts\jquery-1.7.1.js" />
-    <Content Include="Scripts\jquery-1.7.1.min.js" />
-    <Content Include="Scripts\jquery-ui-1.8.16.js" />
-    <Content Include="Scripts\jquery-ui-1.8.16.min.js" />
-    <Content Include="Scripts\jquery.autoresize.js" />
-    <Content Include="Scripts\jquery.hotkeys.js" />
-    <Content Include="Scripts\jquery.tagit.css" />
-    <Content Include="Scripts\jquery.tagsinput.css" />
-    <Content Include="Scripts\jquery.tagsinput.js" />
-    <Content Include="Scripts\jquery.tagsinput.min.js" />
-    <Content Include="Scripts\jquery.tmpl.js" />
-    <Content Include="Scripts\jquery.treeview.all-1.6.0.js" />
-    <Content Include="Scripts\jquery.treeview.all-1.6.0.min.js" />
-    <Content Include="Scripts\knockout-1.2.1.debug.js" />
-    <Content Include="Scripts\knockout-2.0.0.debug.js" />
-    <Content Include="Scripts\knockout-2.0.0.js" />
-    <Content Include="Scripts\knockout.all-1.6.0.min.js" />
-    <Content Include="Scripts\knockout.mapping-1.0.debug.js" />
-    <Content Include="Scripts\knockout.mapping-latest.debug.js" />
-    <Content Include="Scripts\knockout.mapping-latest.js" />
-    <Content Include="Scripts\master.css" />
-    <Content Include="Scripts\MvcControlToolkit.Bindings-1.6.0.js" />
-    <Content Include="Scripts\MVCControlToolkit.Controls-1.6.0.js" />
-    <Content Include="Scripts\MVCControlToolkit.Controls-1.6.0.min.js" />
-    <Content Include="Scripts\MVCControlToolkit.Controls.Core-1.6.0.js" />
-    <Content Include="Scripts\MVCControlToolkit.Controls.Core-1.6.0.min.js" />
-    <Content Include="Scripts\MVCControlToolkit.Controls.Datetime-1.6.0.js" />
-    <Content Include="Scripts\MVCControlToolkit.Controls.Datetime-1.6.0.min.js" />
-    <Content Include="Scripts\MVCControlToolkit.Controls.Grid-1.6.0.js" />
-    <Content Include="Scripts\MVCControlToolkit.Controls.Grid-1.6.0.min.js" />
-    <Content Include="Scripts\MVCControlToolkit.Controls.Items-1.6.0.js" />
-    <Content Include="Scripts\MVCControlToolkit.Controls.Items-1.6.0.min.js" />
-    <Content Include="Scripts\reset.css" />
-    <Content Include="Scripts\tag-it.js" />
-    <Content Include="Scripts\tagit.ui-zendesk.css" />
+    <Content Include="Scripts\api\date.js" />
+    <Content Include="Scripts\tests\StatusReport-Test.js" />
+    <Content Include="zScripts\api\globalize.js" />
+    <Content Include="zScripts\api\globalize.min.js" />
+    <Content Include="zScripts\api\jquery-1.7.1-vsdoc.js" />
+    <Content Include="zScripts\api\jquery-1.7.1.js" />
+    <Content Include="Scripts\api\jquery-1.7.1.min.js" />
+    <Content Include="zScripts\api\jquery-ui-1.8.16.js" />
+    <Content Include="Scripts\api\jquery-ui-1.8.16.min.js" />
+    <Content Include="Scripts\api\jquery.autoresize.js" />
+    <Content Include="Scripts\api\jquery.hotkeys.js" />
+    <Content Include="Scripts\api\jquery.tagit.css" />
+    <Content Include="zScripts\api\jquery.tagsinput.css" />
+    <Content Include="zScripts\api\jquery.tagsinput.js" />
+    <Content Include="zScripts\api\jquery.tagsinput.min.js" />
+    <Content Include="zScripts\api\jquery.tmpl.js" />
+    <Content Include="zScripts\api\jquery.treeview.all-1.6.0.js" />
+    <Content Include="zScripts\api\jquery.treeview.all-1.6.0.min.js" />
+    <Content Include="zScripts\api\knockout-1.2.1.debug.js" />
+    <Content Include="zScripts\api\knockout-2.0.0.debug.js" />
+    <Content Include="Scripts\api\knockout-2.0.0.js" />
+    <Content Include="zScripts\api\knockout.all-1.6.0.min.js" />
+    <Content Include="zScripts\api\knockout.mapping-1.0.debug.js" />
+    <Content Include="zScripts\api\knockout.mapping-latest.debug.js" />
+    <Content Include="Scripts\api\knockout.mapping-latest.js" />
+    <Content Include="Scripts\api\master.css" />
+    <Content Include="zScripts\api\MvcControlToolkit.Bindings-1.6.0.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls-1.6.0.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls-1.6.0.min.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls.Core-1.6.0.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls.Core-1.6.0.min.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls.Datetime-1.6.0.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls.Datetime-1.6.0.min.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls.Grid-1.6.0.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls.Grid-1.6.0.min.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls.Items-1.6.0.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls.Items-1.6.0.min.js" />
+    <Content Include="Scripts\api\reset.css" />
+    <Content Include="Scripts\api\tag-it.js" />
+    <Content Include="Scripts\api\tagit.ui-zendesk.css" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -189,24 +192,24 @@
     <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
     <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
     <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
-    <Content Include="Scripts\jquery-1.4.4.js" />
-    <Content Include="Scripts\jquery-1.4.4.min.js" />
-    <Content Include="Scripts\jquery-1.4.4-vsdoc.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
-    <Content Include="Scripts\jquery.validate.js" />
-    <Content Include="Scripts\jquery.validate.min.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="Scripts\jquery.validate-vsdoc.js" />
-    <Content Include="Scripts\jquery-ui.js" />
-    <Content Include="Scripts\jquery-ui.min.js" />
-    <Content Include="Scripts\MicrosoftAjax.js" />
-    <Content Include="Scripts\MicrosoftAjax.debug.js" />
-    <Content Include="Scripts\MicrosoftMvcAjax.js" />
-    <Content Include="Scripts\MicrosoftMvcAjax.debug.js" />
-    <Content Include="Scripts\MicrosoftMvcValidation.js" />
-    <Content Include="Scripts\MicrosoftMvcValidation.debug.js" />
+    <Content Include="zScripts\api\jquery-1.4.4.js" />
+    <Content Include="zScripts\api\jquery-1.4.4.min.js" />
+    <Content Include="zScripts\api\jquery-1.4.4-vsdoc.js" />
+    <Content Include="zScripts\api\jquery.unobtrusive-ajax.js" />
+    <Content Include="zScripts\api\jquery.unobtrusive-ajax.min.js" />
+    <Content Include="zScripts\api\jquery.validate.js" />
+    <Content Include="Scripts\api\jquery.validate.min.js" />
+    <Content Include="zScripts\api\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\api\jquery.validate.unobtrusive.min.js" />
+    <Content Include="zScripts\api\jquery.validate-vsdoc.js" />
+    <Content Include="zScripts\api\jquery-ui.js" />
+    <Content Include="zScripts\api\jquery-ui.min.js" />
+    <Content Include="zScripts\api\MicrosoftAjax.js" />
+    <Content Include="zScripts\api\MicrosoftAjax.debug.js" />
+    <Content Include="zScripts\api\MicrosoftMvcAjax.js" />
+    <Content Include="zScripts\api\MicrosoftMvcAjax.debug.js" />
+    <Content Include="zScripts\api\MicrosoftMvcValidation.js" />
+    <Content Include="zScripts\api\MicrosoftMvcValidation.debug.js" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Account\ChangePassword.cshtml" />
     <Content Include="Views\Account\ChangePasswordSuccess.cshtml" />
@@ -258,6 +261,9 @@
     <Content Include="Views\ResourceAllocation\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Scripts\jsTestDriver.conf" />
+    <None Include="Scripts\RunJsTests.bat" />
+    <None Include="Scripts\RunJsTestServer.bat" />
     <None Include="web.nlog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -294,4 +300,8 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <PropertyGroup>
+    <PreBuildEvent>@rem $(ProjectDir)Scripts\RunJsTestServer.bat
+</PreBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -14,6 +14,8 @@ namespace Status.Repository
 
         IList<StatusItem> GetItemsByTagId(int id);
 
+        Tag GetOrAddTagByName(string name);
+
         IList<Tag> GetAllTags();
     }
 }

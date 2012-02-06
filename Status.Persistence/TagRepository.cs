@@ -10,7 +10,7 @@ namespace Status.Persistence
 {
     public class TagRepository : RepositoryBase<Tag>, ITagRepository
     {
-        public TagRepository(string connectionString) : base(connectionString) {}
+        public TagRepository(string connectionString) : base(connectionString) { }
 
         public IList<StatusItem> GetItemsByTagName(string name)
         {
@@ -25,6 +25,20 @@ namespace Status.Persistence
         public IList<StatusItem> GetItemsByTagId(int id)
         {
             throw new NotImplementedException();
+        }
+
+        public Tag GetOrAddTagByName(string name)
+        {
+            var query = (from t in this.Session.Query<Tag>()
+                         where t.Name.Equals(name)
+                         select t).FirstOrDefault();
+            if (query == null) {
+                this.Add(new Tag() { Name = name });
+                query = (from t in this.Session.Query<Tag>()
+                         where t.Name.Equals(name)
+                         select t).First();
+            }
+            return query;
         }
 
         public IList<Tag> GetAllTags()

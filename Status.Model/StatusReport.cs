@@ -18,7 +18,7 @@ namespace Status.Model
         public virtual IList<StatusItem> Items
         {
             get { return _items ?? (_items = new List<StatusItem>()); }
-            protected internal set { _items = value; }
+            set { _items = value; }
         }
 
         public StatusReport()
