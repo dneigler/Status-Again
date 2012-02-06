@@ -2,11 +2,11 @@
 @using Status.Model
 @using StatusMvc.Extensions
 @{
-	ViewBag.Title = "Index";
+    ViewBag.Title = "Index";
 }
 @section HeadSection {
-	<script src="@Url.Content("~/Scripts/core/StatusReport.js")" type="text/javascript"></script>
-	<style type="text/css">
+    <script src="@Url.Content("~/Scripts/core/StatusReport.js")" type="text/javascript"></script>
+    <style type="text/css">
 		.statusCaptionText { width: 400px; padding: 3px; height: 25px;color: darkslategrey; }
 		.projectNameHeader { font-weight: bold; font-size: 12pt; padding-top: 5px; }
 		.statusItemSecondLine { margin-left: 10px; }
@@ -25,11 +25,14 @@
             display: inline-block;
             vertical-align: baseline;
         }
+        .tagit { 
+        margin-bottom: -11px; display: inline-block;
+         }
 	</style>
 }
 @*<h2>@ViewBag.Message</h2>*@
 <h2>
-	Status Report for <span data-bind="text: PeriodStartFormatted"></span>
+    Status Report for <span data-bind="text: PeriodStartFormatted"></span>
 </h2>
 <form method="get" id="ChangeStatusDateForm" name="ChangeStatusDateForm" style="display: inline">
 <select id="statusDateSelect" name="statusDateSelect" data-bind="options: StatusReportDates, 
@@ -44,89 +47,97 @@
 <input type="submit" />
 </form>
 <button id="ToggleAddNewBoxesButton" name="ToggleAddNewBoxesButton">
-	Toggle Add New Boxes</button>
+    Toggle Add New Boxes</button>
 <span style="display: inline-block">
-	<button id="saveButton" data-bind="click: save, enable: PendingChangesCount() + PendingDeletionsCount() > 0">
-		Save</button>
-	<button id="select">
-		Select an action</button>
+    <button id="saveButton" data-bind="click: save, enable: PendingChangesCount() + PendingDeletionsCount() > 0">
+        Save</button>
+    <button id="select">
+        Select an action</button>
 </span>
 <ul>
-	<li><a data-bind="visible: CanRollStatus, click: rollStatus, text: 'Roll Status', title:'Roll status to ' + RollStatusDateFormatted()">
-	</a></li>
-	@*<li><a href="#">Save</a></li>
+    <li><a data-bind="visible: CanRollStatus, click: rollStatus, text: 'Roll Status', title:'Roll status to ' + RollStatusDateFormatted()">
+    </a></li>
+    @*<li><a href="#">Save</a></li>
 		<li><a href="#">Delete</a></li>*@
 </ul>
 <span class="updatesSection" style="border-right-width: 1px; border-color: lightslategray;
-			border-right-style: dot-dash">Pending updates: <span class="changeCountSection" data-bind="text: PendingChangesCount, css: { hasUpdatesText: PendingChangesCount() > 0 }">
-			</span></span><span class="updatesSection" style="border-right-width: 1px; border-right-style: dot-dash">
-				Pending deletions: <span class="changeCountSection" data-bind="text:PendingDeletionsCount, css: { hasDeletionsText: PendingDeletionsCount() > 0 }">
-								   </span></span>@*<a data-bind="click:LogItems()">Log</a>*@
+    border-right-style: dot-dash">Pending updates: <span class="changeCountSection" data-bind="text: PendingChangesCount, css: { hasUpdatesText: PendingChangesCount() > 0 }">
+    </span></span><span class="updatesSection" style="border-right-width: 1px; border-right-style: dot-dash">
+        Pending deletions: <span class="changeCountSection" data-bind="text:PendingDeletionsCount, css: { hasDeletionsText: PendingDeletionsCount() > 0 }">
+        </span></span>@*<a data-bind="click:LogItems()">Log</a>*@
 <fieldset>
-	<legend>Quick add</legend>
-	<form data-bind="submit: addItemViaQuickAdd">
-		<input type="text" id="QuickAddCaptionText" data-bind="value: QuickAddCaption" placeholder="New status item caption..." />
-		<input type="text" id="QuickAddProjectNameText" data-bind="value: QuickAddProjectName" placeholder="Project" />
-        <input type="text" id="QuickAddMilestoneDateText" class="datefield" data-bind="datepicker: QuickAddMilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" placeholder="Milestone date" />
-        @Html.DropDownList("QuickAddMilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
-						 new Dictionary<string, object> { { "data-bind", "value:QuickAddMilestoneType" } })
-		<input name="QuickAddTagsText1" class="statusTags" type="text" id="QuickAddTagsText1" data-bind="value: QuickAddTagsString" />
-		<button type="submit" data-bind="enable: HasNewQuickAddItem">Add</button>
-
-	</form>
+    <legend>Quick add</legend>
+    <form data-bind="submit: addItemViaQuickAdd">
+    <input type="text" class="ui-widget ui-widget-content ui-corner-all" id="QuickAddCaptionText"
+        data-bind="value: QuickAddCaption" placeholder="New status item caption..." />
+    <input type="text" class="ui-widget ui-widget-content ui-corner-all" id="QuickAddProjectNameText"
+        data-bind="value: QuickAddProjectName" placeholder="Project" />
+    <input type="text" class="ui-widget ui-widget-content ui-corner-all" id="QuickAddMilestoneDateText"
+        class="datefield" data-bind="datepicker: QuickAddMilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }"
+        placeholder="Milestone date" />
+    @Html.DropDownList("QuickAddMilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
+                         new Dictionary<string, object> { { "data-bind", "value:QuickAddMilestoneType" } })
+    <input name="QuickAddTagsText1" class="statusTags" type="text" id="QuickAddTagsText1"
+        data-bind="value: QuickAddTagsString" />
+    <button type="submit" data-bind="enable: HasNewQuickAddItem">
+        Add</button>
+    </form>
 </fieldset>
 <fieldset>
-	<legend>Teams</legend>
-	<div id="tabs">
-		<ul data-bind='foreach: ItemsByTeam'>
-			<li><a data-bind="attr: {href:'#tabs-' + TeamId(), title: Name}, text: Name"></a>
-            <!-- ko if: HasChanges -->
-            *
-            <!-- /ko -->
-			</li>
-		</ul>
-		<div data-bind='foreach: ItemsByTeam'>
-			<div data-bind='attr: {id: "tabs-" + TeamId() }, foreach: ProjectItems'>
-				<div class="projectNameHeader">
-					<span data-bind="text: ProjectName"></span>
-                    <span class="hasChangesStyle" data-bind="visible: PendingChangesCount() > 0, text: PendingChangesCount">*</span>
-				</div>
-				<div class="addItemFromStubDiv">
-					<form data-bind="submit: addItemFromStubProperties">
-					<input type="text" data-bind="value: NewStatusItemText" placeholder="New status item caption..." />
-					<input type="text" id="NewStatusItemMilestoneDateText" class="datefield" data-bind="datepicker: NewStatusItemMilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" placeholder="Milestone date" />
+    <legend>Teams</legend>
+    <div id="tabs">
+        <ul data-bind='foreach: ItemsByTeam'>
+            <li><a data-bind="attr: {href:'#tabs-' + TeamId(), title: Name}, text: Name"></a>
+                <!-- ko if: HasChanges -->
+                *
+                <!-- /ko -->
+            </li>
+        </ul>
+        <div data-bind='foreach: ItemsByTeam'>
+            <div data-bind='attr: {id: "tabs-" + TeamId() }, foreach: ProjectItems'>
+                <div class="projectNameHeader">
+                    <span data-bind="text: ProjectName"></span><span class="hasChangesStyle" data-bind="visible: PendingChangesCount() > 0, text: PendingChangesCount">
+                        *</span>
+                </div>
+                <div class="addItemFromStubDiv">
+                    <form data-bind="submit: addItemFromStubProperties">
+                    <input type="text" data-bind="value: NewStatusItemText" placeholder="New status item caption..." />
+                    <input type="text" id="NewStatusItemMilestoneDateText" class="datefield" data-bind="datepicker: NewStatusItemMilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }"
+                        placeholder="Milestone date" />
                     @Html.DropDownList("NewStatusItemMilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
                                               new Dictionary<string, object> { { "data-bind", "value:NewStatusItemMilestoneTypes" } })
-		            <button type="submit" data-bind="enable: HasNewItem">
-						Add</button>
-					</form>
-				</div>
-				<div data-bind='foreach: Items'>
-					<div data-bind="css: { hasChangesStyle: HasChanges(), hasDeletionsStyle: HasDeletion(), hasInsertionsStyle: HasInsertion() }" class="statusItemDiv">
-						<textarea class="statusCaptionText" data-bind="value: Caption, uniqueName: true, enable: Editable"></textarea>
-						<input class="datefield" placeholder="Milestone date" data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
-						@Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
-						 new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
-                        <input type="text" class="statusTags" data-bind="value:TagsString" />
-                        <a href="#" data-bind="click: $parent.removeStatusItem, visible: HasDeletion() == false">Delete</a>
-                        <a href="#" data-bind="click: $parent.resurrectStatusItem, visible: HasDeletion">Resurrect</a>
-                        <a href="#" data-bind="click: reset, visible: HasChanges() && !HasInsertion()">Reset</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                    <button type="submit" data-bind="enable: HasNewItem">
+                        Add</button>
+                    </form>
+                </div>
+                <div data-bind='foreach: Items'>
+                    <div data-bind="css: { hasChangesStyle: HasChanges(), hasDeletionsStyle: HasDeletion(), hasInsertionsStyle: HasInsertion() }"
+                        class="statusItemDiv">
+                        <textarea class="statusCaptionText ui-widget ui-widget-content ui-corner-all" data-bind="value: Caption, uniqueName: true, enable: Editable"></textarea>
+                        <input class="datefield ui-widget ui-widget-content ui-corner-all" placeholder="Milestone date" data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
+                        @Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
+                         new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
+                        <input type="text" class="statusTags ui-widget ui-widget-content ui-corner-all" data-bind="value:TagsString" />
+                        <a href="#" data-bind="click: $parent.removeStatusItem, visible: HasDeletion() == false">
+                            Delete</a> <a href="#" data-bind="click: $parent.resurrectStatusItem, visible: HasDeletion">
+                                Resurrect</a> <a href="#" data-bind="click: reset, visible: HasChanges() && !HasInsertion()">
+                                    Reset</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </fieldset>
 <div id="dialog-confirm" style="display: none" title="Roll Status Report?">
-	<p>
-		<span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
-		This will create a new status report for <span data-bind="text: RollStatusDateFormatted">
-		</span>with all items carried over from the current report. Are you sure?</p>
+    <p>
+        <span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
+        This will create a new status report for <span data-bind="text: RollStatusDateFormatted">
+        </span>with all items carried over from the current report. Are you sure?</p>
 </div>
 <script type="text/javascript">
-	$(function () {
-		//activates KO
-		ko.applyBindings(statusReportVM.Report);
-		statusReportVM.loadReport('@Request.QueryString["statusDate"]');
-	});
+    $(function () {
+        //activates KO
+        ko.applyBindings(statusReportVM.Report);
+        statusReportVM.loadReport('@Request.QueryString["statusDate"]');
+    });
 </script>
