@@ -20,6 +20,7 @@ namespace Status.Model
                     LastName = WindowsIdentity.GetCurrent().Name
                 });
             this.Milestone = new Milestone() {ConfidenceLevel = MilestoneConfidenceLevels.High, Date = DateTime.Today.AddDays(14), Type = MilestoneTypes.Milestone};
+            this.Tags = new List<Tag>();
             this.Notes = new List<Note>();
         }
 

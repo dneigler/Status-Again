@@ -23,7 +23,7 @@ namespace Status.Persistence
                 .All();
             HasManyToMany(x => x.Tags)
                 .Cascade
-                .AllDeleteOrphan();
+                .SaveUpdate();
             References(x => x.Project)
                 .Not.Nullable();
         }

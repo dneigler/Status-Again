@@ -417,7 +417,6 @@ $(document).ready(function () {
         var milestoneType = rollMilestone(statusReportDate, milestoneDate);
         $('#QuickAddMilestoneTypes').val(milestoneType);
     });
-    // var sampleTags = ['Alpha', 'Omega', 'Delta'];
 
     $('#QuickAddTagsText').tagit({
         availableTags: statusReportVM.Report().TagNames(),
@@ -508,11 +507,43 @@ ko.bindingHandlers.datepicker = {
 var statusReportVM = {
     Report: ko.observable(new statusReport()),
     initJQuery: function () {
-        $("#tabs").tabs({ spinner: 'Retrieving data...' });
-        // $(".datefield").datepicker({dateFormat:'yy-mm-dd',changeMonth:true,changeYear:true });
-        $('.statusCaptionText').autoResize({
-
+        $("#tabs").tabs({ spinner: 'Retrieving data...',
+            select: function (event, ui) {
+                // $('.statusCaptionText').attr('cols',60);
+                //$('.statusCaptionText').autoGrow();
+            }
         });
+        // $(".datefield").datepicker({dateFormat:'yy-mm-dd',changeMonth:true,changeYear:true });
+
+        $('#statusDateSelect').change(function () {
+            // alert('selected');
+            $('#ChangeStatusDateForm').submit();
+        });
+        $('.statusTags').tagit({
+            availableTags: statusReportVM.Report().TagNames(),
+            removeConfirmation: true,
+            allowSpaces: true
+        });
+        //$('.statusCaptionText').autoGrow();
+
+        // issues with following error from autoresize after adding item: 
+        /*
+        Uncaught TypeError: Cannot call method 'remove' of undefined
+        AutoResizer.destroyjquery.autoresize.js:260
+        AutoResizerjquery.autoresize.js:69
+        (anonymous function)jquery.autoresize.js:61
+        e.extend.eachjquery-1.7.1.min.js:2
+        e.fn.e.eachjquery-1.7.1.min.js:2
+        autoResizejquery.autoresize.js:60
+        statusReportVM.initJQueryStatusReport.js:524
+        addItemViaQuickAddStatusReport.js:968
+        r.c.submit.initknockout-2.0.0.js:61
+        f.event.dispatchjquery-1.7.1.min.js:3
+        f.event.add.h.handle.i
+        */
+        //        $('.statusCaptionText').autoResize({
+
+        //        });
         //	    {
         //			// On resize:
         //			onResize: function () {
@@ -527,15 +558,6 @@ var statusReportVM = {
         //			// More extra space:
         //			extraSpace: 40
         //		});
-        $('#statusDateSelect').change(function () {
-            // alert('selected');
-            $('#ChangeStatusDateForm').submit();
-        });
-        $('.statusTags').tagit({
-            availableTags: statusReportVM.Report().TagNames(),
-            removeConfirmation: true,
-            allowSpaces: true
-        });
     },
     loadReport: function (reportDate) {
         var url = "/StatusReport/GetStatusReport?statusDate=" + reportDate;
@@ -963,6 +985,8 @@ function statusReport() {
 	    statusItem.ListenForChanges();
 	    // we'll need to find the original project and team for this or else it goes to ether in UI, won't save etc
 	    self.loadStatusItem(statusItem);
+	    statusReportVM.initJQuery();
+
 	    //self.addStatusItem(statusItem);
 	    self.QuickAddCaption(null);
 	    self.QuickAddMilestoneDate(new Date());
@@ -1093,6 +1117,7 @@ function statusReportItem() {
 	};
 
 	this.reset = function () {
+        // statusReportItem version
 	    // need to undo the value damage though
 	    $.each(self, function (x, item) {
 	        if (!self.isInternal(x, item)) {

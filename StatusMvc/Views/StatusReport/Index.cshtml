@@ -7,11 +7,14 @@
 @section HeadSection {
     <script src="@Url.Content("~/Scripts/core/StatusReport.js")" type="text/javascript"></script>
     <style type="text/css">
-		.statusCaptionText { width: 400px; padding: 3px; height: 25px;color: darkslategrey; }
+		.statusCaptionText { padding: 3px; color: darkslategrey; margin-bottom: -6px; }
 		.projectNameHeader { font-weight: bold; font-size: 12pt; padding-top: 5px; }
 		.statusItemSecondLine { margin-left: 10px; }
 		.datefield { text-align: right;width: 85px; }
-		.statusItemDiv {border-style: solid; border-left-width: 3px;border-top-width: 0px;border-right-width: 1px;border-bottom-width: 0px;padding-left: 2px;margin-bottom: 2px; border-color:whitesmoke; }
+		.statusItemDiv {border-style: solid; padding-left: 2px; padding-bottom: 0px; padding-top: 0px; 
+            border-left-width: 3px; border-top-width: 0px;border-right-width: 1px;border-bottom-width: 0px;
+            margin-bottom: 2px; border-color:whitesmoke; }
+
 		.hasChangesStyle { border-left-color: limegreen; }
         .hasDeletionsStyle { border-left-color: red; }
 		.changeCountSection { font-size: 12pt;color: darkgrey;font-weight: bold; }
@@ -28,6 +31,7 @@
         .tagit { 
         margin-bottom: -11px; display: inline-block;
          }
+         
 	</style>
 }
 @*<h2>@ViewBag.Message</h2>*@
@@ -68,8 +72,8 @@
 <fieldset>
     <legend>Quick add</legend>
     <form data-bind="submit: addItemViaQuickAdd">
-    <input type="text" class="ui-widget ui-widget-content ui-corner-all" id="QuickAddCaptionText"
-        data-bind="value: QuickAddCaption" placeholder="New status item caption..." />
+    <textarea type="text" cols="60" rows="1" class="ui-widget ui-widget-content ui-corner-all statusCaptionText" id="QuickAddCaptionText"
+        data-bind="value: QuickAddCaption" placeholder="New status item caption..."></textarea>
     <input type="text" class="ui-widget ui-widget-content ui-corner-all" id="QuickAddProjectNameText"
         data-bind="value: QuickAddProjectName" placeholder="Project" />
     <input type="text" class="ui-widget ui-widget-content ui-corner-all" id="QuickAddMilestoneDateText"
@@ -113,8 +117,9 @@
                 <div data-bind='foreach: Items'>
                     <div data-bind="css: { hasChangesStyle: HasChanges(), hasDeletionsStyle: HasDeletion(), hasInsertionsStyle: HasInsertion() }"
                         class="statusItemDiv">
-                        <textarea class="statusCaptionText ui-widget ui-widget-content ui-corner-all" data-bind="value: Caption, uniqueName: true, enable: Editable"></textarea>
-                        <input class="datefield ui-widget ui-widget-content ui-corner-all" placeholder="Milestone date" data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
+                        <textarea cols="60" rows="1" class="statusCaptionText ui-widget ui-widget-content ui-corner-all" data-bind="value: Caption, uniqueName: true, enable: Editable"></textarea>
+                        <input class="datefield ui-widget ui-widget-content ui-corner-all" placeholder="Milestone date"
+                            data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
                         @Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
                          new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
                         <input type="text" class="statusTags ui-widget ui-widget-content ui-corner-all" data-bind="value:TagsString" />

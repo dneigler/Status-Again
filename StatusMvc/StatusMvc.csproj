@@ -124,6 +124,7 @@
     <Content Include="Content\jquery.treeview.css" />
     <Content Include="Content\license.txt" />
     <Content Include="Content\MenuStyle.css" />
+    <Content Include="Scripts\api\jquery.autogrowtextarea.js" />
     <Content Include="Scripts\coverage-1.3.4-a.jar" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\JsTestDriver-1.3.4-a.jar" />
@@ -261,6 +262,7 @@
     <Content Include="Views\ResourceAllocation\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Scripts\.project" />
     <None Include="Scripts\jsTestDriver.conf" />
     <None Include="Scripts\RunJsTests.bat" />
     <None Include="Scripts\RunJsTestServer.bat" />
