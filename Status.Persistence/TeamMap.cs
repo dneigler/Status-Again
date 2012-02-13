@@ -15,6 +15,10 @@ namespace Status.Persistence
             Map(x => x.Name);
             References(x => x.Lead);
             References(x => x.Department);
+            HasMany(x => x.Members)
+                .LazyLoad()
+                .Inverse()
+                .AsSet();
         }
     }
 }

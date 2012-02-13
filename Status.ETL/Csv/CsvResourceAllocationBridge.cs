@@ -35,6 +35,8 @@ namespace Status.ETL.Csv
         {
             _logger.Info("UpsertStatus called for {0} items", items.Count);
 
+            // share the session - ugly
+            this.ResourceRepository.Session = this.ResourceAllocationRepository.Session = this.ProjectRepository.Session = this.DepartmentRepository.Session;
             ITransaction transaction = this.ResourceAllocationRepository.BeginTransaction();
             try
             {
@@ -57,7 +59,7 @@ namespace Status.ETL.Csv
                             var resource = this.ResourceRepository.GetResourcesByName(rm.Name).FirstOrDefault();
                             if (resource == null)
                             {
-                                this.ResourceRepository.AddResource(new Employee()
+                                resource = this.ResourceRepository.Add(new Employee()
                                                                         {
                                                                             FullName = firstEntry.Name,
                                                                             EmailAddress =
@@ -65,7 +67,9 @@ namespace Status.ETL.Csv
                                                                                               firstEntry.Name.Replace(" ",
                                                                                                                       "."))
                                                                         });
-                                resource = this.ResourceRepository.GetResourcesByName(firstEntry.Name).FirstOrDefault();
+                                ((Employee)resource).Team = this.TeamRepository.GetTeamByName(firstEntry.Team);
+                                this.ResourceRepository.Update(resource);
+                                // resource = this.ResourceRepository.GetResourcesByName(firstEntry.Name).FirstOrDefault();
                             }
                             this.ResourceAllocationRepository.DeleteByResourceMonth(resource, rm.Month);
 
@@ -88,8 +92,8 @@ namespace Status.ETL.Csv
                                                              if (department == null)
                                                              {
                                                                  department = new Department() { Name = "Department", Manager = pLead as Employee };
-                                                                 this.DepartmentRepository.Add(department);
-                                                                 department = this.DepartmentRepository.GetByName("Department");
+                                                                 department = this.DepartmentRepository.Add(department);
+                                                                 // department = this.DepartmentRepository.GetByName("Department");
                                                              }
 
                                                              project = new Project()
@@ -99,6 +103,7 @@ namespace Status.ETL.Csv
                                                                  Lead = pLead as Employee,
                                                                  Department = department
                                                              };
+
                                                              this.ProjectRepository.AddProject(project);
                                                              project = this.ProjectRepository.GetProjectByName(item.Project);
                                                          }

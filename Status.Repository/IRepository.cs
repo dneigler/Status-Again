@@ -19,7 +19,7 @@ namespace Status.Repository
         ISession Session { get; set; }
         T Get(int idValue);
         IList<T> GetAll();
-        void Add(T itemToAdd);
+        T Add(T itemToAdd);
         void Update(T itemToUpdate);
         void Delete(T itemToDelete);
     }

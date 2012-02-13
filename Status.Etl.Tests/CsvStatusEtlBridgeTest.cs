@@ -63,6 +63,7 @@ namespace Status.Etl.Tests
             _kernel = new StandardKernel(new DefaultEtlNinjectModule(_connString));
             _config.Configure();
         }
+
         //
         //Use ClassCleanup to run code after all tests in a class have run
         //[ClassCleanup()]

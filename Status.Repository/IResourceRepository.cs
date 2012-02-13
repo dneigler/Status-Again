@@ -7,7 +7,7 @@ using Status.Model;
 
 namespace Status.Repository
 {
-    public interface IResourceRepository
+    public interface IResourceRepository : IRepository<Resource>
     {
         IList<Resource> GetAllResources();
 

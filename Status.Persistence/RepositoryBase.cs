@@ -172,9 +172,10 @@ namespace Status.Persistence
             return query;
         }
 
-        public void Add(T itemToAdd)
+        public T Add(T itemToAdd)
         {
-            this.Session.Save(itemToAdd);
+            var id = this.Session.Save(itemToAdd);
+            return itemToAdd;
         }
 
         public void Update(T itemToUpdate)

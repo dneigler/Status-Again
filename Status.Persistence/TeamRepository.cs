@@ -60,5 +60,12 @@ namespace Status.Persistence
         {
             this.Session.Save(team);
         }
+
+        public IList<Team> GetAllTeamsDetail()
+        {
+            return (from t in this.Session.Query<Team>()
+                        where t.Members.Count() > 0
+                        select t).ToList();
+        }
     }
 }

@@ -14,6 +14,8 @@ namespace StatusMvc.Controllers
 {
     public class StatusReportController : Controller
     {
+        private readonly Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
         private IStatusReportRepository _repository;
         private ITopicRepository _topicRepository;
         private IProjectRepository _projectRepository;

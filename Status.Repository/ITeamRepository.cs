@@ -15,5 +15,7 @@ namespace Status.Repository
         Team GetTeamByName(string name);
 
         void AddTeam(Team team);
+
+        IList<Team> GetAllTeamsDetail();
     }
 }
