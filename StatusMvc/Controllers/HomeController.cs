@@ -22,8 +22,19 @@ namespace StatusMvc.Controllers
         public ActionResult Index()
         {
             Mapper.CreateMap<StatusReport, StatusReportViewModel>()
-                .ForMember(m => m.NumberOfStatusItems, opt => opt.ResolveUsing<NumberOfStatusItemsFormatter>());
-            Mapper.CreateMap<StatusItem, StatusReportItemViewModel>();
+                .ForMember(m => m.NumberOfStatusItems, opt => opt.ResolveUsing<NumberOfStatusItemsFormatter>())
+                .ForMember(m=>m.StatusReportDates, opt => opt.Ignore())
+                .ForMember(m => m.ItemsToRemove, opt => opt.Ignore())
+                .ForMember(m => m.Projects, opt => opt.Ignore())
+                .ForMember(m => m.Tags, opt => opt.Ignore())
+                .ForMember(m => m.CanRollStatus, opt => opt.Ignore())
+                .ForMember(m => m.RollStatusDate, opt => opt.Ignore());
+            Mapper.CreateMap<StatusItem, StatusReportItemViewModel>()
+                .ForMember(m => m.TagsString, opt => opt.Ignore());
+            Mapper.CreateMap<Project, ProjectViewModel>()
+                .ForMember(m => m.ProjectTeamId, opt => opt.Ignore())
+                ;
+            Mapper.AssertConfigurationIsValid();
                 //.ForMember(dest => dest.ProjectLeadFullName, opt => opt.MapFrom(src => src.Project.Lead.FullName))
                 //.ForMember(dest => dest.ProjectTeamLeadFullName, opt => opt.MapFrom(src => src.Project.Team.Lead.FullName));
 

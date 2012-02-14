@@ -9,6 +9,7 @@ using Status.BLL;
 using Status.Model;
 using Status.Repository;
 using StatusMvc.Models;
+using NLog;
 
 namespace StatusMvc.Controllers
 {
@@ -36,7 +37,8 @@ namespace StatusMvc.Controllers
             Mapper.CreateMap<StatusItem, StatusReportItemViewModel>()
                 .ForMember(m => m.TagsString, opt => opt.MapFrom(src =>
                     String.Join(",", (from tag in src.Tags
-                                      select tag.Name))));
+                                      select tag.Name))))
+                                     ;
 
             Mapper.CreateMap<StatusReportItemViewModel, StatusItem>();
 

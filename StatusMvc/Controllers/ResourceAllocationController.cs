@@ -5,6 +5,10 @@ using System.Web;
 using System.Web.Mvc;
 using Status.Repository;
 using Status.Model;
+using NLog;
+using Status.BLL;
+using AutoMapper;
+using StatusMvc.Models;
 
 namespace StatusMvc.Controllers
 {
@@ -108,13 +112,14 @@ namespace StatusMvc.Controllers
 
             // allocation -> user, then work back down?
             var resourceGroup = allocs.GroupBy(item => item.Resource as Employee);
-            
-            resourceGroup.ToList().ForEach(rg => {
+
+            resourceGroup.ToList().ForEach(rg =>
+            {
                 // each resource group by team?
-                
+
                 var emp = rg.Key;
-                emp.Team
-            })
+
+            });
             return View();
         }
 
