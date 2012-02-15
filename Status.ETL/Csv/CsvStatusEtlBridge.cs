@@ -95,9 +95,13 @@ namespace Status.ETL.Csv
                         // pull the details of team name / lead from first item
                         // lookup lead by eamil address?
                         var teamCsv = teamG.ToList()[0];
-                        var lead = this.ResourceRepository.GetResourcesByName(teamCsv.TeamLead).SingleOrDefault();
-                        var t = new Team() { Name = teamG.Key, Lead = (Employee)lead, Department = department};
-                        this.TeamRepository.AddTeam(t);
+
+                        var lead = this.ResourceRepository.GetResourcesByName(teamCsv.TeamLead).SingleOrDefault() as Employee;
+                        var t = new Team() { Name = teamG.Key, Lead = lead, Department = department};
+                        t.Members.Add(lead);
+                        t = this.TeamRepository.Add(t);
+                        lead.Team = t;
+                        this.ResourceRepository.Update(lead);
                     }
                 }
 

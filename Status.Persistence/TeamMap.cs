@@ -16,7 +16,7 @@ namespace Status.Persistence
             References(x => x.Lead);
             References(x => x.Department);
             HasMany(x => x.Members)
-                .AsList()
+                .AsBag()
                 .LazyLoad()
                 .Inverse()
                 ;

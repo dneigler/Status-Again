@@ -25,7 +25,8 @@ namespace Status.Persistence
             Map(x => x.SamAccountName);
             Map(x => x.UserPrincipalName);
             Map(x => x.VoiceTelephoneNumber);
-            References(x => x.Team);
+            References(x => x.Team)
+                .Cascade.All();
         }
     }
 }

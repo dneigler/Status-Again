@@ -12,5 +12,10 @@ namespace Status.Model
         public virtual Employee Lead { get; set; }
         public virtual Department Department { get; set; }
         public virtual IList<Employee> Members { get; set; }
+
+        public Team()
+        {
+            this.Members = new List<Employee>();
+        }
     }
 }

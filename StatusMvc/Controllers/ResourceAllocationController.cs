@@ -75,7 +75,7 @@ namespace StatusMvc.Controllers
             set { _resourceAllocationRepository = value; }
         }
 
-        public ResourceAllocationController(IStatusReportRepository repository, ITopicRepository topicRepository, IProjectRepository projectRepository, IResourceRepository resourceRepository, IStatusReportManager statusReportManager, ITeamRepository teamRepository, ITagRepository tagRepository)
+        public ResourceAllocationController(IStatusReportRepository repository, ITopicRepository topicRepository, IProjectRepository projectRepository, IResourceRepository resourceRepository, IStatusReportManager statusReportManager, ITeamRepository teamRepository, ITagRepository tagRepository, IResourceAllocationRepository resourceAllocationRepository)
         {
             _repository = repository;
             _topicRepository = topicRepository;
@@ -84,7 +84,7 @@ namespace StatusMvc.Controllers
             _tagRepository = tagRepository;
             _teamRepository = teamRepository;
             _statusReportManager = statusReportManager;
-
+            _resourceAllocationRepository = resourceAllocationRepository;
             
             Mapper.CreateMap<StatusReport, StatusReportViewModel>()
                 .ForMember(m => m.NumberOfStatusItems, opt => opt.ResolveUsing<NumberOfStatusItemsFormatter>());
@@ -106,6 +106,7 @@ namespace StatusMvc.Controllers
         public ActionResult Index()
         {
             var teams = this.TeamRepository.GetAllTeamsDetail();
+
             var allocs = this.ResourceAllocationRepository.GetAll();
             // reconstruct the allocations by team
             // or just use NHibernate to help here

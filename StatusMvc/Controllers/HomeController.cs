@@ -30,12 +30,32 @@ namespace StatusMvc.Controllers
                 .ForMember(m => m.CanRollStatus, opt => opt.Ignore())
                 .ForMember(m => m.RollStatusDate, opt => opt.Ignore());
             Mapper.CreateMap<StatusItem, StatusReportItemViewModel>()
-                .ForMember(m => m.TagsString, opt => opt.Ignore());
-            Mapper.CreateMap<Project, ProjectViewModel>()
-                .ForMember(m => m.ProjectTeamId, opt => opt.Ignore())
+                .ForMember(m => m.TagsString, opt => opt.Ignore())
                 ;
+                /*.ForMember(m => m.Topic, opt => opt.Ignore())
+                .ForMember(m => m.Milestone, opt => opt.Ignore())
+                .ForMember(m => m.AuditInfo, opt => opt.Ignore())
+                .ForMember(m => m.StatusReport, opt => opt.Ignore())
+                .ForMember(m => m.Tags, opt => opt.Ignore())
+                .ForMember(m => m.Project, opt => opt.Ignore());*/
+
+            Mapper.CreateMap<Project, ProjectViewModel>()
+                .ForMember(m => m.ProjectTeamId, opt => opt.Ignore());
+
             Mapper.AssertConfigurationIsValid();
-                //.ForMember(dest => dest.ProjectLeadFullName, opt => opt.MapFrom(src => src.Project.Lead.FullName))
+            
+            /*
+             * The following 6 properties on Status.Model.StatusItem are not mapped: 
+	Topic
+	Milestone
+	AuditInfo
+	StatusReport
+	Tags
+	Project
+Add a custom mapping expression, ignore, or rename the property on StatusMvc.Models.StatusReportItemViewModel.
+             * */
+
+            //.ForMember(dest => dest.ProjectLeadFullName, opt => opt.MapFrom(src => src.Project.Lead.FullName))
                 //.ForMember(dest => dest.ProjectTeamLeadFullName, opt => opt.MapFrom(src => src.Project.Team.Lead.FullName));
 
             var data = _repository.GetAllStatusReports();
