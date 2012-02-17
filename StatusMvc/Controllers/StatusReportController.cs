@@ -35,10 +35,14 @@ namespace StatusMvc.Controllers
             Mapper.CreateMap<StatusReport, StatusReportViewModel>()
                 .ForMember(m => m.NumberOfStatusItems, opt => opt.ResolveUsing<NumberOfStatusItemsFormatter>());
             Mapper.CreateMap<StatusItem, StatusReportItemViewModel>()
-                .ForMember(m => m.TagsString, opt => opt.MapFrom(src =>
-                    String.Join(",", (from tag in src.Tags
-                                      select tag.Name))))
-                                     ;
+                .ForMember(m => m.TagsString, opt =>
+                {
+                    opt.MapFrom(src =>
+                        String.Join(",", (from tag in src.Tags
+                                          select tag.Name)));
+                    opt.NullSubstitute(String.Empty);
+                }
+                                      );
 
             Mapper.CreateMap<StatusReportItemViewModel, StatusItem>();
 
