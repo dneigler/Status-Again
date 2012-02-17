@@ -114,6 +114,8 @@ namespace Status.Etl.Tests
 
                 var sr = (from r in reports.ToList() where r.PeriodStart == new DateTime(2011, 11, 7) select r).Single();
                 Assert.AreEqual(95, sr.Items.Count);
+                // ensure notes go in caption field
+                Assert.AreEqual("Pluralsight web-based training - quote for 20 licenses to be submitted for processing", sr.Items[0].Caption);
 
                 sr = (from r in reports.ToList() where r.PeriodStart == new DateTime(2011, 11, 14) select r).Single();
                 Assert.AreEqual(96, sr.Items.Count);

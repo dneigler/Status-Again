@@ -105,23 +105,33 @@ namespace StatusMvc.Controllers
         
         public ActionResult Index()
         {
-            var teams = this.TeamRepository.GetAllTeamsDetail();
+            
+            //var allocs = this.ResourceAllocationRepository.GetAll();
+            //// reconstruct the allocations by team
+            //// or just use NHibernate to help here
 
-            var allocs = this.ResourceAllocationRepository.GetAll();
-            // reconstruct the allocations by team
-            // or just use NHibernate to help here
+            //// allocation -> user, then work back down?
+            //var resourceGroup = allocs.GroupBy(item => item.Resource as Employee);
 
-            // allocation -> user, then work back down?
-            var resourceGroup = allocs.GroupBy(item => item.Resource as Employee);
+            //resourceGroup.ToList().ForEach(rg =>
+            //{
+            //    // each resource group by team?
 
-            resourceGroup.ToList().ForEach(rg =>
-            {
-                // each resource group by team?
+            //    var emp = rg.Key;
 
-                var emp = rg.Key;
-
-            });
+            //});
             return View();
+        }
+
+        /// <summary>
+        /// Gets all resource allocations
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetResourceAllocations()
+        {
+            var teams = this.TeamRepository.GetAllTeamsDetail();
+            var data = Mapper.Map<IList<Team>, IList<TeamViewModel>>(teams);
+            return Json(data, JsonRequestBehavior.AllowGet);
         }
 
         //

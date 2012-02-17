@@ -184,7 +184,7 @@ namespace Status.ETL.Csv
                                                          Date = statusReportItem.MilestoneDate,
                                                          Type = statusReportItem.StatusType
                                                      };
-                                                     statusItem.Caption = statusReportItem.Caption;
+                                                     statusItem.Caption = statusReportItem.Note; //.Caption;
                                                      statusItem.Notes.Add(new Note()
                                                                               {
                                                                                   AuditInfo = new AuditInfo(dummyResource),
