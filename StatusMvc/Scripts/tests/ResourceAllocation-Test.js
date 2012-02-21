@@ -12,6 +12,6 @@
 ResourceAllocationTest = TestCase("ResourceAllocationTest");
 
 ResourceAllocationTest.prototype.testGreet = function () {
-    var sr = new statusReport();
+    var sr = new allocationTree();
     assertEquals(0, sr.Tags().length);
 };

@@ -10,8 +10,18 @@ namespace Status.Model
 {
     public class Employee : Resource
     {
+        private IList<Project> _projects = null;
+
+        public virtual IList<Project> Projects
+        {
+            get { return _projects; }
+            set { _projects = value; }
+        }
+
         public Employee()
         {
+            _projects = new List<Project>();
+
             WindowsPrincipal principal = Thread.CurrentPrincipal as WindowsPrincipal;
             if (principal != null)
             {
@@ -67,5 +77,6 @@ namespace Status.Model
         public virtual Team Team { get; set; }
         public virtual Title Title { get; set; }
         public virtual string WindowsLogin { get; set; }
+
     }
 }

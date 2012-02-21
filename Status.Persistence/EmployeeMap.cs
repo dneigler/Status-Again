@@ -27,6 +27,10 @@ namespace Status.Persistence
             Map(x => x.VoiceTelephoneNumber);
             References(x => x.Team)
                 .Cascade.All();
+            HasMany(x => x.Projects)
+                .AsBag()
+                .LazyLoad()
+                .Inverse();
         }
     }
 }

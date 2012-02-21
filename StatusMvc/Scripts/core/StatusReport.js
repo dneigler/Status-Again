@@ -124,50 +124,6 @@ var rollMilestone = function (reportDate, itemDate) {
     si.Milestone.Type = MilestoneTypes.ThisWeek;*/
 };
  
-var jsonDateRE = /^\/Date\((-?\d+)(\+|-)?(\d+)?\)\/$/;
-
-var parseJsonDateString = function (value) {
-	var arr = value && jsonDateRE.exec(value);
-	if (arr) {
-		return new Date(parseInt(arr[1]));
-	}
-	return value;
-};
-
-var getShortDate = function (dateValue) {
-	var val = ko.utils.unwrapObservable(dateValue);
-	if (val) {
-		var d = parseJsonDateString(val);
-		var dt = new Date(d);
-		return dt.toString("MM-dd-yyyy");
-	}
-	return val;
-};
-
-ko.bindingHandlers.datepicker = {
-	init: function (element, valueAccessor, allBindingsAccessor) {
-		//initialize datepicker with some optional options
-		var options = allBindingsAccessor().datepickerOptions || {};
-		$(element).datepicker(options);
-
-		//handle the field changing
-		ko.utils.registerEventHandler(element, "change", function () {
-			var observable = valueAccessor();
-			observable($(element).datepicker("getDate"));
-		});
-
-		//handle disposal (if KO removes by the template binding)
-		ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
-			$(element).datepicker("destroy");
-		});
-
-	},
-	update: function (element, valueAccessor) {
-		var value = ko.utils.unwrapObservable(valueAccessor());
-		//console.log("value", value);
-		$(element).datepicker("setDate", value);
-	}
-};
 
 
 var statusReportVM = {
@@ -190,40 +146,7 @@ var statusReportVM = {
             removeConfirmation: true,
             allowSpaces: true
         });
-        //$('.statusCaptionText').autoGrow();
-
-        // issues with following error from autoresize after adding item: 
-        /*
-        Uncaught TypeError: Cannot call method 'remove' of undefined
-        AutoResizer.destroyjquery.autoresize.js:260
-        AutoResizerjquery.autoresize.js:69
-        (anonymous function)jquery.autoresize.js:61
-        e.extend.eachjquery-1.7.1.min.js:2
-        e.fn.e.eachjquery-1.7.1.min.js:2
-        autoResizejquery.autoresize.js:60
-        statusReportVM.initJQueryStatusReport.js:524
-        addItemViaQuickAddStatusReport.js:968
-        r.c.submit.initknockout-2.0.0.js:61
-        f.event.dispatchjquery-1.7.1.min.js:3
-        f.event.add.h.handle.i
-        */
-        //        $('.statusCaptionText').autoResize({
-
-        //        });
-        //	    {
-        //			// On resize:
-        //			onResize: function () {
-        //				$(this).css({ opacity: 0.8 });
-        //			},
-        //			// After resize:
-        //			animateCallback: function () {
-        //				$(this).css({ opacity: 1 });
-        //			},
-        //			// Quite slow animation:
-        //			animateDuration: 300,
-        //			// More extra space:
-        //			extraSpace: 40
-        //		});
+        
     },
     loadReport: function (reportDate) {
         var url = "/StatusReport/GetStatusReport?statusDate=" + reportDate;

@@ -14,6 +14,7 @@ namespace StatusMvc.Controllers
 {
     public class ResourceAllocationController : Controller
     {
+        private DateTime startDate, endDate;
         private readonly Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         private IStatusReportRepository _repository;
@@ -75,8 +76,10 @@ namespace StatusMvc.Controllers
             set { _resourceAllocationRepository = value; }
         }
 
+        
         public ResourceAllocationController(IStatusReportRepository repository, ITopicRepository topicRepository, IProjectRepository projectRepository, IResourceRepository resourceRepository, IStatusReportManager statusReportManager, ITeamRepository teamRepository, ITagRepository tagRepository, IResourceAllocationRepository resourceAllocationRepository)
         {
+            
             _repository = repository;
             _topicRepository = topicRepository;
             _projectRepository = projectRepository;
@@ -86,18 +89,10 @@ namespace StatusMvc.Controllers
             _statusReportManager = statusReportManager;
             _resourceAllocationRepository = resourceAllocationRepository;
             
-            Mapper.CreateMap<StatusReport, StatusReportViewModel>()
-                .ForMember(m => m.NumberOfStatusItems, opt => opt.ResolveUsing<NumberOfStatusItemsFormatter>());
-            Mapper.CreateMap<StatusItem, StatusReportItemViewModel>()
-                .ForMember(m => m.TagsString, opt => opt.MapFrom(src =>
-                    String.Join(",", (from tag in src.Tags
-                                      select tag.Name))));
+            Mapper.CreateMap<Project, StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM.ProjectRAVM>();
 
-            Mapper.CreateMap<StatusReportItemViewModel, StatusItem>();
-
-            Mapper.CreateMap<Project, ProjectViewModel>();
-
-            Mapper.CreateMap<Tag, TagViewModel>();
+            
+            Mapper.CreateMap<Team, StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM>();
         }
 
         //
@@ -129,8 +124,47 @@ namespace StatusMvc.Controllers
         /// <returns></returns>
         public JsonResult GetResourceAllocations()
         {
+            if (!DateTime.TryParse(Request.QueryString["startDate"], out startDate))
+                startDate = new DateTime(2011, 1, 1);
+            if (!DateTime.TryParse(Request.QueryString["endDate"], out endDate))
+                endDate = new DateTime(2011, 1, 1);
+            
+            // in order to load ahead, pull all allocs in date range and pass them to the VM resolver
+            var allocs = this.ResourceAllocationRepository.GetResourceAllocationsByDateRange(startDate, endDate);
+
+            //Mapper.CreateMap<Employee, StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM.UserRAVM>()
+            //    .ForMember(userRAVM => userRAVM.Projects,
+            //        opt =>
+            //        {
+            //            opt.ResolveUsing<StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM.ProjectRAVMResolver>()
+            //                .ConstructedBy(() => new StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM.ProjectRAVMResolver(allocs))
+            //                .FromMember(r => r.Id);
+            //        });
+
             var teams = this.TeamRepository.GetAllTeamsDetail();
-            var data = Mapper.Map<IList<Team>, IList<TeamViewModel>>(teams);
+            var data = Mapper.Map<IList<Team>, IList<StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM>>(teams);
+            // data needs the projecs filled in
+            data.ToList().ForEach(team =>
+            {
+                team.Members.ToList().ForEach(member =>
+                {
+                    // pull all projects 
+                    member.Projects.ToList().ForEach(project =>
+                    {
+                        // group the allocs by month
+                        //project.MonthlyAllocations.Clear();
+                        var subAllocs = allocs.Where(alloc => alloc.Project.Id == project.Id && alloc.Resource.Id == member.Id);
+
+                        // no need to group as allocs should only have single
+                        subAllocs.OrderBy(sa => sa.Month).ToList().ForEach(mg =>
+                        {
+                            project.MonthlyAllocations.Add(Mapper.Map<ResourceAllocation, ResourceAllocationViewModel.TeamAllocationRAVM.MonthRAVM>(mg));
+
+                        });
+                    });
+                });
+
+            });
             return Json(data, JsonRequestBehavior.AllowGet);
         }
 

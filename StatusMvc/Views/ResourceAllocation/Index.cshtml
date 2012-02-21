@@ -19,11 +19,18 @@
 <fieldset>
 <legend>Teams</legend>
 <div id="tabs">
-	<ul data-bind='foreach: ItemsByTeam'>
+	@*<ul data-bind='foreach: ItemsByTeam'>
 		<li><a data-bind='attr: {id: "tabs-" + TeamId() }, foreach: ProjectItems'></a></li>
 	</ul>
 	<div data-bind="foreach: ItemsByTeam">
 		
-	</div>
+	</div>*@
 </div>
 </fieldset>
+<script type="text/javascript">
+    $(function () {
+        //activates KO
+        ko.applyBindings(resourceAllocationVM.AllocationTree);
+        resourceAllocationVM.loadAllocationTree('@Request.QueryString["startDate"]', '@Request.QueryString["endDate"]');
+    });
+</script>

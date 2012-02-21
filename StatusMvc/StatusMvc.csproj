@@ -126,11 +126,14 @@
     <Content Include="Content\license.txt" />
     <Content Include="Content\MenuStyle.css" />
     <Content Include="Scripts\api\jquery.autogrowtextarea.js" />
+    <Content Include="Scripts\core\JqueryExt.js" />
+    <Content Include="Scripts\core\ResourceAllocation.js" />
     <Content Include="Scripts\coverage-1.3.4-a.jar" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\JsTestDriver-1.3.4-a.jar" />
     <Content Include="Scripts\core\StatusReport.js" />
     <Content Include="Scripts\api\date.js" />
+    <Content Include="Scripts\tests\ResourceAllocation-Test.js" />
     <Content Include="Scripts\tests\StatusReport-Test.js" />
     <Content Include="zScripts\api\globalize.js" />
     <Content Include="zScripts\api\globalize.min.js" />
