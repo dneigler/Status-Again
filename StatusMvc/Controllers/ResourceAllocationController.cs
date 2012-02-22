@@ -94,6 +94,8 @@ namespace StatusMvc.Controllers
             
             Mapper.CreateMap<Team, StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM>()
                 .ForMember(t => t.Members, opt => opt.Ignore());
+
+            Mapper.CreateMap<ResourceAllocation, ResourceAllocationViewModel.TeamAllocationRAVM.MonthRAVM>();
         }
 
         //
@@ -154,11 +156,14 @@ namespace StatusMvc.Controllers
                 {
                     // pull all projects 
                     Employee employee = (Employee)member.Key;
-                    employee.Projects.ToList().ForEach(project1 =>
+                    // project grouping
+                    var projectGrouping = allocs.GroupBy(a => a.Project);
+                    projectGrouping.ToList().ForEach(pg =>
                     {
+                        var project1 = pg.Key;
                         var project = Mapper.Map<Project, StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM.ProjectRAVM>(project1);
                         // group the allocs by month
-                        var subAllocs = allocs.Where(alloc => alloc.Project.Id == project.Id && alloc.Employee.Id == employee.Id);
+                        var subAllocs = pg.Where(alloc => alloc.Employee.Id == employee.Id);
 
                         // no need to group as allocs should only have single
                         subAllocs.OrderBy(sa => sa.Month).ToList().ForEach(mg =>
