@@ -92,7 +92,8 @@ namespace StatusMvc.Controllers
             Mapper.CreateMap<Project, StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM.ProjectRAVM>();
 
             
-            Mapper.CreateMap<Team, StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM>();
+            Mapper.CreateMap<Team, StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM>()
+                .ForMember(t => t.Members, opt => opt.Ignore());
         }
 
         //
@@ -127,7 +128,7 @@ namespace StatusMvc.Controllers
             if (!DateTime.TryParse(Request.QueryString["startDate"], out startDate))
                 startDate = new DateTime(2011, 1, 1);
             if (!DateTime.TryParse(Request.QueryString["endDate"], out endDate))
-                endDate = new DateTime(2011, 1, 1);
+                endDate = DateTime.Today;
             
             // in order to load ahead, pull all allocs in date range and pass them to the VM resolver
             var allocs = this.ResourceAllocationRepository.GetResourceAllocationsByDateRange(startDate, endDate);
@@ -146,14 +147,18 @@ namespace StatusMvc.Controllers
             // data needs the projecs filled in
             data.ToList().ForEach(team =>
             {
-                team.Members.ToList().ForEach(member =>
+                // we skipped members, so use allocs to get there
+                var memberAllocs = allocs.GroupBy(a => a.Employee);
+                // team.Members
+                memberAllocs.ToList().ForEach(member =>
                 {
                     // pull all projects 
-                    member.Projects.ToList().ForEach(project =>
+                    Employee employee = (Employee)member.Key;
+                    employee.Projects.ToList().ForEach(project1 =>
                     {
+                        var project = Mapper.Map<Project, StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM.ProjectRAVM>(project1);
                         // group the allocs by month
-                        //project.MonthlyAllocations.Clear();
-                        var subAllocs = allocs.Where(alloc => alloc.Project.Id == project.Id && alloc.Resource.Id == member.Id);
+                        var subAllocs = allocs.Where(alloc => alloc.Project.Id == project.Id && alloc.Employee.Id == employee.Id);
 
                         // no need to group as allocs should only have single
                         subAllocs.OrderBy(sa => sa.Month).ToList().ForEach(mg =>

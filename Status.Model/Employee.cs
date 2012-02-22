@@ -52,13 +52,6 @@ namespace Status.Model
                 this.FirstName = WindowsIdentity.GetCurrent().Name;
                 this.LastName = WindowsIdentity.GetCurrent().Name;
                 this.EmailAddress = String.Format("{0}@test.com", this.FirstName);
-                //GenericPrincipal gp = Thread.CurrentPrincipal as GenericPrincipal;
-                //if (gp != null)
-                //{
-                //    this.FirstName = gp.Identity.Name;
-                //    this.LastName = gp.Identity.Name;
-                //    this.EmailAddress = gp.Identity.Name;
-                //}
             }
 
         }

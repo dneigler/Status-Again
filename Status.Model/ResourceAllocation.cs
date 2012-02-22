@@ -9,7 +9,7 @@ namespace Status.Model
     {
         public virtual int Id { get; set; }
 
-        public virtual Resource Resource { get; set; }
+        public virtual Employee Employee { get; set; }
 
         public virtual DateTime Month { get; set; }
 

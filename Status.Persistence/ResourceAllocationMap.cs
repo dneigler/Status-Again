@@ -15,7 +15,7 @@ namespace Status.Persistence
             Map(x => x.Allocation);
             Map(x => x.Month);
             References(x => x.Project);
-            References(x => x.Resource);
+            References(x => x.Employee);
         }
     }
 }

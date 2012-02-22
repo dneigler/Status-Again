@@ -65,6 +65,7 @@
     <Compile Include="DefaultEtlNinjectModule.cs" />
     <Compile Include="NHibernateUnitTestConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResourceAllocationRepositoryTest.cs" />
     <Compile Include="TeamRepositoryTest.cs" />
     <Compile Include="UnitTest1.cs" />
   </ItemGroup>

@@ -27,6 +27,12 @@ namespace Status.Persistence
             Map(x => x.VoiceTelephoneNumber);
             References(x => x.Team)
                 .Cascade.All();
+            // following maybe shouldn't be direct mapping - instead it can be driven off of allocations or other logic
+            //HasManyToMany(x => x.Projects)
+            //    .AsBag()
+            //    .LazyLoad()
+            //    .Inverse();
+
             HasMany(x => x.Projects)
                 .AsBag()
                 .LazyLoad()

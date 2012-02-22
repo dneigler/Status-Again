@@ -73,7 +73,7 @@ namespace StatusMvc.Models
                     // use repository to load this
 
                     var allocs = (from ra in _resourceAllocations
-                            where ra.Resource.Id == userId
+                            where ra.Employee.Id == userId
                             select ra);
                     // need to map
                     var projectAllocs = allocs.GroupBy(ra => ra.Project);

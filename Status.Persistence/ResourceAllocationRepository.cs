@@ -56,7 +56,7 @@ namespace Status.Persistence
         {
             var query = (from ra in this.Session.Query<ResourceAllocation>()
                          where ra.Month == @month &&
-                               ra.Resource == resource
+                               ra.Employee == resource
                          select ra);
             query.ForEach(ra => this.Session.Delete(ra));
         }

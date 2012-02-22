@@ -36,7 +36,7 @@ namespace Status.ETL.Csv
             _logger.Info("UpsertStatus called for {0} items", items.Count);
 
             // share the session - ugly
-            this.ResourceRepository.Session = this.ResourceAllocationRepository.Session = this.ProjectRepository.Session = this.DepartmentRepository.Session;
+            this.TeamRepository.Session = this.ResourceRepository.Session = this.ResourceAllocationRepository.Session = this.ProjectRepository.Session = this.DepartmentRepository.Session;
             ITransaction transaction = this.ResourceAllocationRepository.BeginTransaction();
             try
             {
@@ -56,7 +56,7 @@ namespace Status.ETL.Csv
 
                             var firstEntry = grm.First();
                             // lookup resource id by external id
-                            var resource = this.ResourceRepository.GetResourcesByName(rm.Name).FirstOrDefault();
+                            Employee resource = this.ResourceRepository.GetResourcesByName(rm.Name).FirstOrDefault() as Employee;
                             if (resource == null)
                             {
                                 resource = this.ResourceRepository.Add(new Employee()
@@ -66,7 +66,7 @@ namespace Status.ETL.Csv
                                                                                 String.Format("{0}@test.com",
                                                                                               firstEntry.Name.Replace(" ",
                                                                                                                       "."))
-                                                                        });
+                                                                        }) as Employee;
                                 ((Employee)resource).Team = this.TeamRepository.GetTeamByName(firstEntry.Team);
                                 this.ResourceRepository.Update(resource);
                                 // resource = this.ResourceRepository.GetResourcesByName(firstEntry.Name).FirstOrDefault();
@@ -85,7 +85,14 @@ namespace Status.ETL.Csv
                                                          {
                                                              var pItem = firstEntry;
                                                              // var pTeam = this.TeamRepository.GetTeamByName() // not going to work with this file format as team id is made up
-                                                             var pLead = this.ResourceRepository.GetResourcesByName(pItem.ResourceTeamLead)[0];
+
+                                                             var pLead = this.ResourceRepository.GetResourcesByName(pItem.ResourceTeamLead).FirstOrDefault();
+                                                             if (pLead == null)
+                                                             {
+                                                                 // create dummy resource
+                                                                 Employee e = new Employee() { FullName = pItem.ResourceTeamLead };
+                                                                 this.ResourceRepository.Add(e);
+                                                             }
 
                                                              // create dummy department
                                                              var department = this.DepartmentRepository.GetByName("Department");
@@ -111,7 +118,7 @@ namespace Status.ETL.Csv
                                                                               {
                                                                                   Month = item.Month,
                                                                                   Project = project,
-                                                                                  Resource = resource,
+                                                                                  Employee = resource,
                                                                                   Allocation = item.AllocationPercentage
                                                                               };
                                                          this.ResourceAllocationRepository.Add(allocation);
