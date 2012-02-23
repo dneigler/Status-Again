@@ -96,6 +96,8 @@ namespace StatusMvc.Controllers
                 .ForMember(t => t.Members, opt => opt.Ignore());
 
             Mapper.CreateMap<ResourceAllocation, ResourceAllocationViewModel.TeamAllocationRAVM.MonthRAVM>();
+
+            Mapper.CreateMap<Employee, StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM.UserRAVM>();
         }
 
         //
@@ -156,6 +158,7 @@ namespace StatusMvc.Controllers
                 {
                     // pull all projects 
                     Employee employee = (Employee)member.Key;
+                    ResourceAllocationViewModel.TeamAllocationRAVM.UserRAVM uVM = Mapper.Map<Employee, StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM.UserRAVM>(employee);
                     // project grouping
                     var projectGrouping = allocs.GroupBy(a => a.Project);
                     projectGrouping.ToList().ForEach(pg =>
@@ -171,7 +174,12 @@ namespace StatusMvc.Controllers
                             project.MonthlyAllocations.Add(Mapper.Map<ResourceAllocation, ResourceAllocationViewModel.TeamAllocationRAVM.MonthRAVM>(mg));
 
                         });
+                        // StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM.ProjectRAVM pVM = Mapper.Map<Project, StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM.ProjectRAVM>(project);
+                        uVM.Projects.Add(project);
                     });
+
+                    team.Members.Add(uVM);
+                    
                 });
 
             });
