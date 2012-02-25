@@ -126,6 +126,8 @@ namespace Status.Etl.Tests
                 sr = (from r in reports.ToList() where r.PeriodStart == new DateTime(2011, 11, 28) select r).Single();
                 Assert.AreEqual(93, sr.Items.Count);
             }
+
+            
         }
 
         /// <summary>

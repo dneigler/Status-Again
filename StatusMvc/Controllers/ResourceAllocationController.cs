@@ -135,7 +135,7 @@ namespace StatusMvc.Controllers
                 endDate = DateTime.Today;
             
             // in order to load ahead, pull all allocs in date range and pass them to the VM resolver
-            var allocs = this.ResourceAllocationRepository.GetResourceAllocationsByDateRange(startDate, endDate);
+            // var allocs = this.ResourceAllocationRepository.GetResourceAllocationsByDateRange(startDate, endDate);
 
             //Mapper.CreateMap<Employee, StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM.UserRAVM>()
             //    .ForMember(userRAVM => userRAVM.Projects,
@@ -152,15 +152,19 @@ namespace StatusMvc.Controllers
             data.ToList().ForEach(team =>
             {
                 // we skipped members, so use allocs to get there
+                //.Where(alloc => alloc.Project.Team.Id == team.Id)
+                // next step is to filter the allocs by current team and user to avoid duplicates
+                var allocs = this.ResourceAllocationRepository.GetResourceAllocationsByTeamDateRange(team.Id, startDate, endDate);
+
                 var memberAllocs = allocs.GroupBy(a => a.Employee);
-                // team.Members
+                
                 memberAllocs.ToList().ForEach(member =>
                 {
                     // pull all projects 
                     Employee employee = (Employee)member.Key;
                     ResourceAllocationViewModel.TeamAllocationRAVM.UserRAVM uVM = Mapper.Map<Employee, StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM.UserRAVM>(employee);
                     // project grouping
-                    var projectGrouping = allocs.GroupBy(a => a.Project);
+                    var projectGrouping = allocs.Where(alloc => alloc.Employee.Id == employee.Id).GroupBy(a => a.Project);
                     projectGrouping.ToList().ForEach(pg =>
                     {
                         var project1 = pg.Key;

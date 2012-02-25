@@ -38,7 +38,7 @@ namespace Status.Persistence
         {
             var query = (from ra in this.Session.Query<ResourceAllocation>()
                          where
-                            ra.Project.Team.Id.Equals(teamId) &&
+                            ra.Employee.Team.Id == teamId &&
                             (ra.Month >= @from && ra.Month <= (to ?? DateTime.Today))
                          select ra);
             return query.ToList();

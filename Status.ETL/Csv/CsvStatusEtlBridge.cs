@@ -47,9 +47,13 @@ namespace Status.ETL.Csv
             ITransaction transaction = this.StatusReportRepository.BeginTransaction();
 
             // share the session - ugly
-            this.ProjectRepository.Session = this.TopicRepository.Session = this.StatusReportRepository.Session;
+            this.ResourceRepository.Session = this.ProjectRepository.Session = this.DepartmentRepository.Session = this.TeamRepository.Session = this.TopicRepository.Session = this.StatusReportRepository.Session;
             try
             {
+                Resource dummyResource;
+                Department department;
+                InitializeHelper(out dummyResource, out department);
+
                 // create all resources
                 // ensure all resources are in place
                 // for now, we put a stub resource in this
@@ -57,52 +61,36 @@ namespace Status.ETL.Csv
                 foreach (var resourceG in grpResources)
                 {
                     var resources = this.ResourceRepository.GetResourcesByName(resourceG.Key);
-                    var res = resourceG.ToList().First();
-                    if (resources.Count == 0)
-                        this.ResourceRepository.AddResource(new Employee() {FullName = res.TeamLead, EmailAddress = String.Format("{0}@test.com", resourceG.Key.Replace(" ", ".")) });
-                }
 
-                var windowsIdentity = WindowsIdentity.GetCurrent();
-                Resource dummyResource = null;
-                if (windowsIdentity != null)
-                {
-                    var login = windowsIdentity.Name;
-                    dummyResource = new Employee()
-                                        {
-                                            WindowsLogin = login,
-                                            EmailAddress = String.Format("{0}@test.com", login),
-                                            FullName = "First Last"
-                                        };
-                } else
-                    dummyResource = new Resource() { EmailAddress = "t@t.com", FirstName = "FN", LastName = "LN" };
-                this.ResourceRepository.AddResource(dummyResource);
+                    var resEmp = resourceG.First();
 
-                // create dummy department
-                var department = this.DepartmentRepository.GetByName("Department");
-                if (department == null)
-                {
-                    department = new Department() { Name = "Department", Manager = dummyResource as Employee };
-                    this.DepartmentRepository.Add(department);
-                }
+                    var emp = new Employee() { FullName = resEmp.TeamLead, EmailAddress = String.Format("{0}@test.com", resourceG.Key.Replace(" ", ".")) };
 
-                // create all teams
-                var grpTeams = items.GroupBy(item => item.TeamName);
-                foreach (var teamG in grpTeams)
-                {
-                    var team = this.TeamRepository.GetTeamByName(teamG.Key);
-                    if (team == null)
+                    // group by team for resource
+                    var resByTeam = resourceG.GroupBy(rg => rg.TeamName);
+                    resByTeam.ToList().ForEach(rbt =>
                     {
-                        // pull the details of team name / lead from first item
-                        // lookup lead by eamil address?
-                        var teamCsv = teamG.ToList()[0];
+                        // while grouping by team, we don't care for the key, it can be pulled from alloc entry
+                        var res = rbt.First(); // resourceG.ToList().First();
 
-                        var lead = this.ResourceRepository.GetResourcesByName(teamCsv.TeamLead).SingleOrDefault() as Employee;
-                        var t = new Team() { Name = teamG.Key, Lead = lead, Department = department};
-                        t.Members.Add(lead);
-                        t = this.TeamRepository.Add(t);
-                        lead.Team = t;
-                        this.ResourceRepository.Update(lead);
-                    }
+                        
+                        var team = this.TeamRepository.GetTeamByName(res.TeamName);
+                        if (team == null)
+                        {
+                            // pull the details of team name / lead from first item
+                            // lookup lead by eamil address?
+                            var t = new Team() { Name = res.TeamName, Lead = emp, Department = department };
+                            t.Members.Add(emp);
+                            team = this.TeamRepository.Add(t);
+                            if (emp.Team == null)
+                                emp.Team = team;
+                            // this.ResourceRepository.Update(rmp);
+                        }
+
+                        if (resources.Count == 0)
+                            this.ResourceRepository.AddResource(emp);
+                    });
+                    
                 }
 
                 // things to check
@@ -113,16 +101,19 @@ namespace Status.ETL.Csv
                     var p = this.ProjectRepository.GetProjectByName(projectG.Key);
                     if (p == null)
                     {
-                        var pItem = projectG.First();
+                        var pItem = projectG.First(); // is it possible to miss anything this way?
                         var pTeam = this.TeamRepository.GetTeamByName(pItem.TeamName); // not going to work with this file format as team id is made up
-                        var pLead = this.ResourceRepository.GetResourcesByName(pItem.TeamLead)[0];
+                        var pLead = this.ResourceRepository.GetResourcesByName(pItem.TeamLead).First();
                         var project = new Project() { 
                             Name = pItem.Project, 
-                            Caption = pItem.ProjectSummary, 
+                            Caption = pItem.Project, // ProjectSummary appears to be the budget 
                             Lead=pLead as Employee,
                             Department = department,
                             Team = pTeam
                         };
+                        decimal b;
+                        if (Decimal.TryParse(pItem.ProjectSummary, out b))
+                            project.Budget = b;
                         this.ProjectRepository.AddProject(project);
                     }
                 }
@@ -212,6 +203,33 @@ namespace Status.ETL.Csv
             }
             finally
             {
+            }
+        }
+
+        private void InitializeHelper(out Resource dummyResource, out Department department)
+        {
+            var windowsIdentity = WindowsIdentity.GetCurrent();
+            dummyResource = null;
+            if (windowsIdentity != null)
+            {
+                var login = windowsIdentity.Name;
+                dummyResource = new Employee()
+                {
+                    WindowsLogin = login,
+                    EmailAddress = String.Format("{0}@test.com", login),
+                    FullName = "First Last"
+                };
+            }
+            else
+                dummyResource = new Resource() { EmailAddress = "t@t.com", FirstName = "FN", LastName = "LN" };
+            this.ResourceRepository.AddResource(dummyResource);
+
+            // create dummy department
+            department = this.DepartmentRepository.GetByName("Department");
+            if (department == null)
+            {
+                department = new Department() { Name = "Department", Manager = dummyResource as Employee };
+                this.DepartmentRepository.Add(department);
             }
         }
     }

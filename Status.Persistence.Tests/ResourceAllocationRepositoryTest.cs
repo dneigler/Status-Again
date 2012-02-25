@@ -85,6 +85,7 @@ namespace Status.Persistence.Tests
         public void GetResourceAllocationsByDateRangeTest()
         {
             IResourceAllocationRepository target = _kernel.Get<IResourceAllocationRepository>(); // new ResourceAllocationRepository(session); // TODO: Initialize to an appropriate value
+            
             DateTime from = new DateTime(2011, 01, 01); // TODO: Initialize to an appropriate value
             Nullable<DateTime> to = new Nullable<DateTime>(); // TODO: Initialize to an appropriate value
             IList<ResourceAllocation> actual;

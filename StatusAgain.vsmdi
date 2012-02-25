@@ -42,4 +42,12 @@
       <TestLink id="f5c9bdf2-4782-f643-2461-9e931305aea8" name="GetStatusReportDateTestOnSaturday" storage="status.bll.tests\bin\debug\status.bll.tests.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     </TestLinks>
   </TestList>
+  <TestList name="Bridge Tests" id="e03b17f1-a751-487c-9a2e-9c24ac752866" parentListId="8c43106b-9dc1-4907-a29f-aa66a61bf5b6">
+    <Description>Tests that prime the database from source files.
+</Description>
+    <TestLinks>
+      <TestLink id="a3217c8f-8991-09d7-f93a-4a5a9c329636" name="UpsertStatusTest" storage="status.etl.tests\bin\debug\status.etl.tests.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+      <TestLink id="1ac22f21-f888-f6e4-489d-25ab5c698d2b" name="UpsertResourceAllocationsTest" storage="status.etl.tests\bin\debug\status.etl.tests.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    </TestLinks>
+  </TestList>
 </TestLists>

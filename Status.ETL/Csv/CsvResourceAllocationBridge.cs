@@ -67,7 +67,20 @@ namespace Status.ETL.Csv
                                                                                               firstEntry.Name.Replace(" ",
                                                                                                                       "."))
                                                                         }) as Employee;
-                                ((Employee)resource).Team = this.TeamRepository.GetTeamByName(firstEntry.Team);
+                                var tm = this.TeamRepository.GetTeamByName(firstEntry.ResourceTeam);
+                                //if (tm == null)
+                                //{
+                                //    var department = this.DepartmentRepository.GetByName("Department");
+                                //    if (department == null)
+                                //    {
+                                //        department = new Department() { Name = "Department", Manager = dummyResource as Employee };
+                                //        this.DepartmentRepository.Add(department);
+                                //    }
+                                //    var lead = this.ResourceRepository.GetResourcesByName(firstEntry.ResourceTeamLead).SingleOrDefault() as Employee;
+                                //    var t = new Team() { Name = firstEntry.Team, Lead = lead, Department = department};
+                                //    this.TeamRepository.Add(t);
+                                //}
+                                ((Employee)resource).Team = tm;
                                 this.ResourceRepository.Update(resource);
                                 // resource = this.ResourceRepository.GetResourcesByName(firstEntry.Name).FirstOrDefault();
                             }
@@ -103,12 +116,19 @@ namespace Status.ETL.Csv
                                                                  // department = this.DepartmentRepository.GetByName("Department");
                                                              }
 
+                                                             var team = this.TeamRepository.GetTeamByName(item.Team);
+                                                             if (team == null)
+                                                             {
+                                                                 team = new Team() { Name = firstEntry.Team, Lead = (Employee)pLead, Department = department};
+                                                                 team = this.TeamRepository.Add(team);
+                                                             }
                                                              project = new Project()
                                                              {
                                                                  Name = item.Project,
                                                                  Caption = item.ProjectType,
                                                                  Lead = pLead as Employee,
-                                                                 Department = department
+                                                                 Department = department,
+                                                                 Team = team
                                                              };
 
                                                              this.ProjectRepository.AddProject(project);
