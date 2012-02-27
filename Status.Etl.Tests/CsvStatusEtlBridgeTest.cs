@@ -127,7 +127,11 @@ namespace Status.Etl.Tests
                 Assert.AreEqual(93, sr.Items.Count);
             }
 
-            
+            // can we run the other bridge tests here
+            CsvResourceAllocationBridgeTest test = new CsvResourceAllocationBridgeTest();
+            test.TestContext = this.TestContext;
+            CsvResourceAllocationBridgeTest.Kernel = CsvStatusEtlBridgeTest._kernel;
+            test.UpsertResourceAllocationsTest();
         }
 
         /// <summary>

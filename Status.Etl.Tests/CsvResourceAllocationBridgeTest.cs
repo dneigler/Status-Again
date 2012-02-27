@@ -24,6 +24,13 @@ namespace Status.Etl.Tests
 
         private TestContext testContextInstance;
         private static StandardKernel _kernel;
+
+        public static StandardKernel Kernel
+        {
+            get { return CsvResourceAllocationBridgeTest._kernel; }
+            set { CsvResourceAllocationBridgeTest._kernel = value; }
+        }
+
         private readonly static string _connString = "server=.\\SQLExpress;" +
             "database=StatusAgain;" +
             "Integrated Security=SSPI;";

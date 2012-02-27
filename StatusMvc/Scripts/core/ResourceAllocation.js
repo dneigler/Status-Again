@@ -23,8 +23,8 @@ var resourceAllocationVM = {
             },
             success: function(response) {
                 if (response != null) {
-                    var at = new allocationTree()
-                        .initData(response);
+                    var at = new allocationTree();
+                    at.initData(response);
                     resourceAllocationVM.AllocationTree(at);
                     resourceAllocationVM.initJQuery();
                 } else {
@@ -41,6 +41,6 @@ var resourceAllocationVM = {
 function allocationTree() {
     var self = this;
 
-    var initData = function () {
+    var initData = function (response) {
     };
 }
