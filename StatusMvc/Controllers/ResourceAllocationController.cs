@@ -124,6 +124,26 @@ namespace StatusMvc.Controllers
         }
 
         /// <summary>
+        /// Returns a list of each month starting with from date.  Always gives the first of each month.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public IList<DateTime> GetMonthsFromRange(DateTime from, DateTime to)
+        {
+            IList<DateTime> months = new List<DateTime>();
+            months.Add(from);
+            var first = new DateTime(from.Year, from.Month, 1);
+            var next = first.AddMonths(1);
+            while (next <= to)
+            {
+                months.Add(next);
+                next = next.AddMonths(1);
+            } 
+            return months;
+        }
+
+        /// <summary>
         /// Gets all resource allocations
         /// </summary>
         /// <returns></returns>
@@ -133,7 +153,8 @@ namespace StatusMvc.Controllers
                 startDate = new DateTime(2011, 1, 1);
             if (!DateTime.TryParse(Request.QueryString["endDate"], out endDate))
                 endDate = DateTime.Today;
-            
+            var months = GetMonthsFromRange(startDate, endDate);
+                        
             // in order to load ahead, pull all allocs in date range and pass them to the VM resolver
             // var allocs = this.ResourceAllocationRepository.GetResourceAllocationsByDateRange(startDate, endDate);
 
@@ -172,12 +193,22 @@ namespace StatusMvc.Controllers
                         // group the allocs by month
                         var subAllocs = pg.Where(alloc => alloc.Employee.Id == employee.Id);
 
-                        // no need to group as allocs should only have single
-                        subAllocs.OrderBy(sa => sa.Month).ToList().ForEach(mg =>
+                        var subWithMonths = from month in months
+                                            join subA in subAllocs on month equals subA.Month into ga
+                                            from subM in ga.DefaultIfEmpty()
+                                            select new { Id=(subM == null ? 0 : subM.Id), Allocation = (subM == null ? 0 : subM.Allocation), Employee = (subM == null ? employee : subM.Employee), Month = month };
+                        subWithMonths.OrderBy(swm => swm.Month).ToList().ForEach(mg =>
                         {
-                            project.MonthlyAllocations.Add(Mapper.Map<ResourceAllocation, ResourceAllocationViewModel.TeamAllocationRAVM.MonthRAVM>(mg));
+                            project.MonthlyAllocations.Add(new ResourceAllocationViewModel.TeamAllocationRAVM.MonthRAVM() { Allocation=mg.Allocation, Month=mg.Month, Id=mg.Id});
 
                         });
+                        // no need to group as allocs should only have single
+                        //subAllocs.OrderBy(sa => sa.Month).ToList().ForEach(mg =>
+                        //{
+                        //    project.MonthlyAllocations.Add(Mapper.Map<ResourceAllocation, ResourceAllocationViewModel.TeamAllocationRAVM.MonthRAVM>(mg));
+                        //    // fill in the blanks
+                        //});
+
                         // StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM.ProjectRAVM pVM = Mapper.Map<Project, StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM.ProjectRAVM>(project);
                         uVM.Projects.Add(project);
                     });

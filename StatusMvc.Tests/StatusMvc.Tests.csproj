@@ -51,6 +51,7 @@
     </Reference>
     <Reference Include="Ninject, Version=2.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL" />
     <Reference Include="Ninject.Web.Mvc, Version=2.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL" />
+    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -79,11 +80,20 @@
     <Compile Include="Controllers\HomeControllerTest.cs" />
     <Compile Include="Controllers\AccountControllerTest.cs" />
     <Compile Include="Controllers\StatusReportControllerTest.cs" />
+    <Compile Include="ResourceAllocationControllerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NLog4NHibernate\NLog4NHibernate.csproj">
+      <Project>{291F63C2-259B-4BDD-A0D4-D5E76A0E70A8}</Project>
+      <Name>NLog4NHibernate</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Status.BLL.Tests\Status.Bll.Tests.csproj">
+      <Project>{CAD75803-8636-433A-B2F9-B610E66B8F80}</Project>
+      <Name>Status.Bll.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Status.BLL\Status.Bll.csproj">
       <Project>{97C2732B-463D-41A7-895C-219B7EDA05CB}</Project>
       <Name>Status.Bll</Name>
