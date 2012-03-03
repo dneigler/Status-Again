@@ -10,6 +10,19 @@ namespace StatusMvc.Models
 {
     public class ResourceAllocationViewModel
     {
+        public class AllocationRAVM
+        {
+            public IList<TeamAllocationRAVM> Teams { get; set; }
+
+            public IList<DateTime> Months { get; set; }
+
+            public AllocationRAVM()
+            {
+                this.Teams = new List<TeamAllocationRAVM>();
+                this.Months = new List<DateTime>();
+            }
+        }
+
         public class TeamAllocationRAVM
         {
             public TeamAllocationRAVM()

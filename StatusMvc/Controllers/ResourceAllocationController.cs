@@ -166,9 +166,15 @@ namespace StatusMvc.Controllers
             //                .ConstructedBy(() => new StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM.ProjectRAVMResolver(allocs))
             //                .FromMember(r => r.Id);
             //        });
+            var allocVM = new StatusMvc.Models.ResourceAllocationViewModel.AllocationRAVM();
+            allocVM.Months = months;
 
             var teams = this.TeamRepository.GetAllTeamsDetail();
-            var data = Mapper.Map<IList<Team>, IList<StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM>>(teams);
+
+            allocVM.Teams = Mapper.Map<IList<Team>, IList<StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM>>(teams);
+
+            var data = allocVM.Teams;
+
             // data needs the projecs filled in
             data.ToList().ForEach(team =>
             {
@@ -218,7 +224,7 @@ namespace StatusMvc.Controllers
                 });
 
             });
-            return Json(data, JsonRequestBehavior.AllowGet);
+            return Json(allocVM, JsonRequestBehavior.AllowGet);
         }
 
         //
