@@ -2,11 +2,11 @@
 @using Status.Model
 @using StatusMvc.Extensions
 @{
-	ViewBag.Title = "ResourceAllocation";
+    ViewBag.Title = "ResourceAllocation";
 }
 @section HeadSection {
-	<script src="@Url.Content("~/Scripts/core/ResourceAllocation.js")" type="text/javascript"></script>
-	<style type="text/css">
+    <script src="@Url.Content("~/Scripts/core/ResourceAllocation.js")" type="text/javascript"></script>
+    <style type="text/css">
 			.statusCaptionText { width: 400px; font-size: 8pt; }
 			.projectNameHeader { font-weight: bold; font-size: 12pt; padding-top: 5px; }
 			.statusItemSecondLine { margin-left: 10px; }
@@ -17,15 +17,51 @@
 <h2>@ViewBag.Message</h2>
 @*<form data-bind="submit: addReport">*@
 <fieldset>
-<legend>Teams</legend>
-<div id="tabs">
-	@*<ul data-bind='foreach: ItemsByTeam'>
-		<li><a data-bind='attr: {id: "tabs-" + TeamId() }, foreach: ProjectItems'></a></li>
-	</ul>
-	<div data-bind="foreach: ItemsByTeam">
-		
-	</div>*@
-</div>
+    <legend>Teams</legend>
+    <div id="tabs">
+        <ul data-bind='foreach: ItemsByTeam'>
+            <li><a data-bind="attr: {href:'#tabs-' + TeamId(), title: Name}, text: Name"></a>
+                <!-- ko if: HasChanges -->
+                *
+                <!-- /ko -->
+            </li>
+        </ul>
+        <div data-bind='foreach: Teams'>
+            <div data-bind='attr: {id: "tabs-" + TeamId() }, foreach: ProjectItems'>
+                <div class="projectNameHeader">
+                    <span data-bind="text: ProjectName"></span><span class="hasChangesStyle" data-bind="visible: PendingChangesCount() > 0, text: PendingChangesCount">
+                        *</span>
+                </div>
+                <div class="addItemFromStubDiv">
+                    <form data-bind="submit: addItemFromStubProperties">
+                    <input type="text" data-bind="value: NewStatusItemText" placeholder="New status item caption..." />
+                    <input type="text" id="NewStatusItemMilestoneDateText" class="datefield" data-bind="datepicker: NewStatusItemMilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }"
+                        placeholder="Milestone date" />
+                    @Html.DropDownList("NewStatusItemMilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
+                                              new Dictionary<string, object> { { "data-bind", "value:NewStatusItemMilestoneTypes" } })
+                    <button type="submit" data-bind="enable: HasNewItem">
+                        Add</button>
+                    </form>
+                </div>
+                <div data-bind='foreach: Items'>
+                    <div data-bind="css: { hasChangesStyle: HasChanges(), hasDeletionsStyle: HasDeletion(), hasInsertionsStyle: HasInsertion() }"
+                        class="statusItemDiv">
+                        <textarea cols="60" rows="1" class="statusCaptionText ui-widget ui-widget-content ui-corner-all"
+                            data-bind="value: Caption, uniqueName: true, enable: Editable"></textarea>
+                        <input class="datefield ui-widget ui-widget-content ui-corner-all" placeholder="Milestone date"
+                            data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
+                        @Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
+                         new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
+                        <input type="text" class="statusTags ui-widget ui-widget-content ui-corner-all" data-bind="value:TagsString" />
+                        <a href="#" data-bind="click: $parent.removeStatusItem, visible: HasDeletion() == false">
+                            Delete</a> <a href="#" data-bind="click: $parent.resurrectStatusItem, visible: HasDeletion">
+                                Resurrect</a> <a href="#" data-bind="click: reset, visible: HasChanges() && !HasInsertion()">
+                                    Reset</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </fieldset>
 <script type="text/javascript">
     $(function () {
