@@ -16,36 +16,6 @@ function extend(subClass, superClass) {
     if (superClass.prototype.constructor == Object.prototype.constructor) {
         superClass.prototype.constructor = superClass;
     }
-}
-
-var resourceAllocationVM = {
-	AllocationTree: ko.observable(new allocationTree()),
-	initJQuery: function() {
-		
-	},
-	loadAllocationTree: function(startDate, endDate) {
-		var url = "/ResourceAllocation/GetResourceAllocations?startDate=" + startDate + "&endDate=" + endDate;
-		$.ajax({
-			url: url,
-			dataType: "json",
-			converters: {
-				"text json": function (data) {  return $.parseJSON(data, true); }
-			},
-			success: function(response) {
-				if (response != null) {
-					var at = new allocationTree();
-					at.initData(response);
-					resourceAllocationVM.AllocationTree(at);
-					resourceAllocationVM.initJQuery();
-				} else {
-					alert(response.message);
-				}
-			},
-			error: function (response) {
-				alert("Failed to get allocations for date range " + startDate + " to " + endDate);
-			}
-		});
-	}
 };
 
 function entityObject() {
@@ -53,7 +23,6 @@ function entityObject() {
     // to the same instance.
     this.Id = ko.observable(0);
 };
-
 entityObject.prototype.Id = ko.observable(0);
 
 entityObject.prototype.Exists = function (collection, objId) {
@@ -64,29 +33,31 @@ entityObject.prototype.Exists = function (collection, objId) {
 };
 
 function allocationTree() {
-	var self = this;
-
-	this.Months = ko.observableArray([]);
+    allocationTree.superclass.constructor.call(this);
+    this.Months = ko.observableArray([]);
     this.Teams = ko.observableArray([]);
+};
+extend(allocationTree, entityObject);
 
-    var initData = function (response) {
-        this.Months(response.Months);
-        $.each(response.Teams, function (x, item) {
-            var sri = new team()
-				.LoadFromObject(item);
-            self.LoadTeam(sri);
-        });
+allocationTree.prototype.Months = ko.observableArray([]);
+allocationTree.prototype.Teams = ko.observableArray([]);
 
-        return self;
-    };
+allocationTree.prototype.LoadFromObject = function (response) {
+    var self = this;
+    this.Months(response.Months);
+    $.each(response.Teams, function (x, item) {
+        var t = new team()
+			.LoadFromObject(item);
+        self.LoadTeam(t);
+    });
 
-    this.LoadTeam = function (obj) {
-        var matchingItem = ko.utils.arrayFilter(self.Teams(), function (item) {
-            return item.Id() == obj.Id();
-        });
-        if (!matchingItem)
-            self.Teams.push(obj);
-    };
+    return this;
+};
+
+allocationTree.prototype.LoadTeam = function (obj) {
+    var matchingItem = this.Exists(self.Teams, obj.Id());
+    if (!matchingItem)
+        this.Teams.push(obj);
 };
 
 function team() {
@@ -98,7 +69,6 @@ function team() {
 };
 extend(team, entityObject);
 
-// team.prototype.Id = ko.observable(0);
 team.prototype.Name = ko.observable('');
 team.prototype.LeadFullName = ko.observable('');
 team.prototype.LeadId = ko.observable(0);
@@ -216,6 +186,40 @@ monthlyAllocation.prototype.LoadFromObject = function (obj) {
     this.Id(obj.Id)
         .Month(obj.Month)
         .Allocation(obj.Allocation);
-
     return this;
+};
+
+
+var resourceAllocationVM = {
+    AllocationTree: ko.observable(new allocationTree()),
+    initJQuery: function () {
+
+    },
+    loadAllocationTree: function (startDate, endDate) {
+
+        var sd = ($.isEmptyObject(startDate) ? '1/1/2011' : startDate);
+        var ed = ($.isEmptyObject(endDate) ? Date.today() : endDate);
+        var url = "/ResourceAllocation/GetResourceAllocations?startDate=" + sd + "&endDate=" + ed;
+        alert(url);
+        $.ajax({
+            url: url,
+            dataType: "json",
+            converters: {
+                "text json": function (data) { return $.parseJSON(data, true); }
+            },
+            success: function (response) {
+                if (response != null) {
+                    var at = new allocationTree();
+                    at.LoadFromObject(response);
+                    resourceAllocationVM.AllocationTree(at);
+                    resourceAllocationVM.initJQuery();
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (response) {
+                alert("Failed to get allocations for date range " + startDate + " to " + endDate);
+            }
+        });
+    }
 };

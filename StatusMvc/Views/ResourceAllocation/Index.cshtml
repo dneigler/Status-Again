@@ -19,15 +19,15 @@
 <fieldset>
     <legend>Teams</legend>
     <div id="tabs">
-        <ul data-bind='foreach: ItemsByTeam'>
-            <li><a data-bind="attr: {href:'#tabs-' + TeamId(), title: Name}, text: Name"></a>
+        <ul data-bind='foreach: Teams'>
+            <li><a data-bind="attr: {href:'#tabs-' + Id(), title: Name}, text: Name"></a>
                 <!-- ko if: HasChanges -->
                 *
                 <!-- /ko -->
             </li>
         </ul>
         <div data-bind='foreach: Teams'>
-            <div data-bind='attr: {id: "tabs-" + TeamId() }, foreach: ProjectItems'>
+            <div data-bind='attr: {id: "tabs-" + Id() }, foreach: Members'>
                 <div class="projectNameHeader">
                     <span data-bind="text: ProjectName"></span><span class="hasChangesStyle" data-bind="visible: PendingChangesCount() > 0, text: PendingChangesCount">
                         *</span>
@@ -64,7 +64,7 @@
     </div>
 </fieldset>
 <script type="text/javascript">
-    $(function () {
+    $(document).ready(function () {
         //activates KO
         ko.applyBindings(resourceAllocationVM.AllocationTree);
         resourceAllocationVM.loadAllocationTree('@Request.QueryString["startDate"]', '@Request.QueryString["endDate"]');
