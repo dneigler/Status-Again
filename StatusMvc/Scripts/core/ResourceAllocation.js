@@ -198,9 +198,11 @@ var resourceAllocationVM = {
     loadAllocationTree: function (startDate, endDate) {
 
         var sd = ($.isEmptyObject(startDate) ? '1/1/2011' : startDate);
-        var ed = ($.isEmptyObject(endDate) ? Date.today() : endDate);
+        var todayString = Date.today();
+        todayString = todayString.toString('MM/dd/yyyy');
+        var ed = ($.isEmptyObject(endDate) ? todayString : endDate);
         var url = "/ResourceAllocation/GetResourceAllocations?startDate=" + sd + "&endDate=" + ed;
-        alert(url);
+        
         $.ajax({
             url: url,
             dataType: "json",
