@@ -22,6 +22,15 @@ function entityObject() {
     // this is required, otherwise the prototype for Id method will always refer
     // to the same instance.
     this.Id = ko.observable(0);
+    this.HasInsertion = ko.observable(false);
+    this.ChangeLog = ko.observableArray([]);
+    this.HasDeletion = ko.observable(false);
+    this.HasChanges =  ko.computed(function () {
+        return this.ChangeLog().length > 0;
+    } .bind(this));
+    this.Editable = ko.computed(function () {
+        return (this.HasDeletion() == false);
+    }.bind(this));
 };
 entityObject.prototype.Id = ko.observable(0);
 
@@ -31,6 +40,69 @@ entityObject.prototype.Exists = function (collection, objId) {
     });
     return (item1.length > 0);
 };
+
+entityObject.prototype.isInternal = function (x, item) {
+    return !(x != "ChangeLog" && x != "HasChanges" && x != "HasDeletion" && x != "HasInsertion" && x != "Editable" && ko.isObservable(item));
+};
+
+entityObject.prototype.HasInsertion = ko.observable(false);
+entityObject.prototype.ChangeLog = ko.observableArray([]);
+entityObject.prototype.HasDeletion = ko.observable(false);
+
+entityObject.prototype.reset = function () {
+    // statusReportItem version
+    // need to undo the value damage though
+    var self = this;
+    $.each(self, function (x, item) {
+        if (!self.isInternal(x, item)) {
+            var currentlyChangeExists = ($.inArray(x, self.ChangeLog()) >= 0);
+            if (currentlyChangeExists)
+                item(self.OriginalVersion[x]);
+            // self.Subscribers.push(sub);
+        }
+
+    });
+    self.ChangeLog.removeAll();
+    self.HasDeletion(false);
+    self.HasInsertion(false);
+};
+
+entityObject.prototype.ListenForChanges = function () {
+    var self = this;
+    self.ClearSubscribers();
+    $.each(self, function (x, item) {
+        if (!self.isInternal(x, item)) {
+            var sub = item.subscribe(function (newValue) {
+                self._updateChangeTracking(x, newValue);
+
+            });
+            self.Subscribers.push(sub);
+        }
+    });
+};
+
+entityObject.prototype._updateChangeTracking = function (propertyName, newValue) {
+    var self = this;
+    var currentlyChangeExists = ($.inArray(propertyName, self.ChangeLog()) >= 0);
+    var origValue = self.OriginalVersion[propertyName];
+    if (newValue != origValue && !currentlyChangeExists) {
+        console.log("The new value for " + propertyName + " is " + newValue + " from " + origValue);
+        self.ChangeLog.push(propertyName);
+    } else if (newValue == origValue && currentlyChangeExists) {
+        self.ChangeLog.pop(propertyName);
+    }
+};
+
+//entityObject.prototype.HasChanges = ko.computed(function () {
+//    var self = this;
+//    return self.ChangeLog().length > 0;
+//});// .bind(this));
+
+
+//entityObject.prototype.Editable = ko.computed(function () {
+//    var self = this;
+//    return (self.HasDeletion() == false);
+//});// .bind(this));
 
 function allocationTree() {
     allocationTree.superclass.constructor.call(this);
@@ -189,9 +261,33 @@ monthlyAllocation.prototype.LoadFromObject = function (obj) {
     return this;
 };
 
-
+var _initAllocationTree = { "Teams":
+            [{ "Id": 1,
+                "Name": "Management",
+                "Members": [
+            { "Id": 2, "FullName": "David Neigler",
+                "Projects": [
+                    { "Id": 39, "Name": "Management",
+                        "MonthlyAllocations": [
+                            { "Month": "\/Date(1293858000000)\/", "Id": 997, "Allocation": 1.00000 }
+                        ]
+                    },
+                    { "Id": 40, "Name": "Project 2",
+                        "MonthlyAllocations": [
+                            { "Month": "\/Date(1293858000000)\/", "Id": 999, "Allocation": 1.00000 }
+                        ]
+                    }
+                ]
+            }],
+                "LeadFullName": "David Neigler",
+                "LeadId": "2"
+            }],
+    "Months": ["\/Date(1293858000000)\/", "\/Date(1296536400000)\/", "\/Date(1298955600000)\/", "\/Date(1301630400000)\/", "\/Date(1304222400000)\/", "\/Date(1306900800000)\/", "\/Date(1309492800000)\/", "\/Date(1312171200000)\/", "\/Date(1314849600000)\/", "\/Date(1317441600000)\/", "\/Date(1320120000000)\/", "\/Date(1322715600000)\/", "\/Date(1325394000000)\/", "\/Date(1328072400000)\/"]
+};
+    
 var resourceAllocationVM = {
-    AllocationTree: ko.observable(new allocationTree()),
+    AllocationTree: ko.observable(new allocationTree()
+    .LoadFromObject(_initAllocationTree)),
     initJQuery: function () {
 
     },
