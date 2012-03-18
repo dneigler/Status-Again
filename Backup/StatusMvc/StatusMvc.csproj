@@ -1,0 +1,313 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0BCA5FF3-CA40-435E-8DA3-326870F4918D}</ProjectGuid>
+    <ProjectTypeGuids>{E53F8FEA-EAE0-44A6-8774-FFD645390401};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>StatusMvc</RootNamespace>
+    <AssemblyName>StatusMvc</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper">
+      <HintPath>..\packages\AutoMapper.2.0.0\lib\net40-client\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentNHibernate">
+      <HintPath>..\packages\FluentNHibernate.1.3.0.717\lib\FluentNHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="Iesi.Collections">
+      <HintPath>..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="MVC3ControlsToolkit">
+      <HintPath>..\packages\MVC3ControlsToolkit.1.6.0\lib\MVC3ControlsToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate">
+      <HintPath>..\packages\NHibernate.3.2.0.4000\lib\Net35\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject">
+      <HintPath>..\packages\Ninject.2.2.1.4\lib\net40-Full\Ninject.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject.Web.Mvc">
+      <HintPath>..\packages\Ninject.MVC3.2.2.2.0\lib\net40-Full\Ninject.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.WebPages" />
+    <Reference Include="System.Web.Helpers" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="WebActivator">
+      <HintPath>..\packages\WebActivator.1.4.4\lib\net40\WebActivator.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\MySuperPackage.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ResourceAllocationController.cs" />
+    <Compile Include="Controllers\StatusReportController.cs" />
+    <Compile Include="Extensions\SelectListExtension.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Models\ResourceAllocationViewModel.cs" />
+    <Compile Include="Models\StatusReportViewModel.cs" />
+    <Compile Include="Models\TagViewModel.cs" />
+    <Compile Include="Modules\DefaultStatusAgainWebModule.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\images\ajax-loader.gif" />
+    <Content Include="Content\images\file.gif" />
+    <Content Include="Content\images\folder-closed.gif" />
+    <Content Include="Content\images\folder.gif" />
+    <Content Include="Content\images\minus.gif" />
+    <Content Include="Content\images\plus.gif" />
+    <Content Include="Content\images\treeview-black-line.gif" />
+    <Content Include="Content\images\treeview-black.gif" />
+    <Content Include="Content\images\treeview-default-line.gif" />
+    <Content Include="Content\images\treeview-default.gif" />
+    <Content Include="Content\images\treeview-famfamfam-line.gif" />
+    <Content Include="Content\images\treeview-famfamfam.gif" />
+    <Content Include="Content\images\treeview-gray-line.gif" />
+    <Content Include="Content\images\treeview-gray.gif" />
+    <Content Include="Content\images\treeview-red-line.gif" />
+    <Content Include="Content\images\treeview-red.gif" />
+    <Content Include="Content\jquery.treeview.css" />
+    <Content Include="Content\license.txt" />
+    <Content Include="Content\MenuStyle.css" />
+    <Content Include="Scripts\api\jquery.autogrowtextarea.js" />
+    <Content Include="Scripts\core\JqueryExt.js" />
+    <Content Include="Scripts\core\ResourceAllocation.js" />
+    <Content Include="Scripts\coverage-1.3.4-a.jar" />
+    <Content Include="Global.asax" />
+    <Content Include="Scripts\JsTestDriver-1.3.4-a.jar" />
+    <Content Include="Scripts\core\StatusReport.js" />
+    <Content Include="Scripts\api\date.js" />
+    <Content Include="Scripts\tests\ResourceAllocation-Test.js" />
+    <Content Include="Scripts\tests\StatusReport-Test.js" />
+    <Content Include="zScripts\api\globalize.js" />
+    <Content Include="zScripts\api\globalize.min.js" />
+    <Content Include="zScripts\api\jquery-1.7.1-vsdoc.js" />
+    <Content Include="zScripts\api\jquery-1.7.1.js" />
+    <Content Include="Scripts\api\jquery-1.7.1.min.js" />
+    <Content Include="zScripts\api\jquery-ui-1.8.16.js" />
+    <Content Include="Scripts\api\jquery-ui-1.8.16.min.js" />
+    <Content Include="Scripts\api\jquery.autoresize.js" />
+    <Content Include="Scripts\api\jquery.hotkeys.js" />
+    <Content Include="Scripts\api\jquery.tagit.css" />
+    <Content Include="zScripts\api\jquery.tagsinput.css" />
+    <Content Include="zScripts\api\jquery.tagsinput.js" />
+    <Content Include="zScripts\api\jquery.tagsinput.min.js" />
+    <Content Include="zScripts\api\jquery.tmpl.js" />
+    <Content Include="zScripts\api\jquery.treeview.all-1.6.0.js" />
+    <Content Include="zScripts\api\jquery.treeview.all-1.6.0.min.js" />
+    <Content Include="zScripts\api\knockout-1.2.1.debug.js" />
+    <Content Include="zScripts\api\knockout-2.0.0.debug.js" />
+    <Content Include="Scripts\api\knockout-2.0.0.js" />
+    <Content Include="zScripts\api\knockout.all-1.6.0.min.js" />
+    <Content Include="zScripts\api\knockout.mapping-1.0.debug.js" />
+    <Content Include="zScripts\api\knockout.mapping-latest.debug.js" />
+    <Content Include="Scripts\api\knockout.mapping-latest.js" />
+    <Content Include="Scripts\api\master.css" />
+    <Content Include="zScripts\api\MvcControlToolkit.Bindings-1.6.0.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls-1.6.0.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls-1.6.0.min.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls.Core-1.6.0.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls.Core-1.6.0.min.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls.Datetime-1.6.0.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls.Datetime-1.6.0.min.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls.Grid-1.6.0.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls.Grid-1.6.0.min.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls.Items-1.6.0.js" />
+    <Content Include="zScripts\api\MVCControlToolkit.Controls.Items-1.6.0.min.js" />
+    <Content Include="Scripts\api\reset.css" />
+    <Content Include="Scripts\api\tag-it.js" />
+    <Content Include="Scripts\api\tagit.ui-zendesk.css" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Content\Site.css" />
+    <Content Include="Content\themes\base\jquery-ui.css" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="zScripts\api\jquery-1.4.4.js" />
+    <Content Include="zScripts\api\jquery-1.4.4.min.js" />
+    <Content Include="zScripts\api\jquery-1.4.4-vsdoc.js" />
+    <Content Include="zScripts\api\jquery.unobtrusive-ajax.js" />
+    <Content Include="zScripts\api\jquery.unobtrusive-ajax.min.js" />
+    <Content Include="zScripts\api\jquery.validate.js" />
+    <Content Include="Scripts\api\jquery.validate.min.js" />
+    <Content Include="zScripts\api\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\api\jquery.validate.unobtrusive.min.js" />
+    <Content Include="zScripts\api\jquery.validate-vsdoc.js" />
+    <Content Include="zScripts\api\jquery-ui.js" />
+    <Content Include="zScripts\api\jquery-ui.min.js" />
+    <Content Include="zScripts\api\MicrosoftAjax.js" />
+    <Content Include="zScripts\api\MicrosoftAjax.debug.js" />
+    <Content Include="zScripts\api\MicrosoftMvcAjax.js" />
+    <Content Include="zScripts\api\MicrosoftMvcAjax.debug.js" />
+    <Content Include="zScripts\api\MicrosoftMvcValidation.js" />
+    <Content Include="zScripts\api\MicrosoftMvcValidation.debug.js" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Account\ChangePassword.cshtml" />
+    <Content Include="Views\Account\ChangePasswordSuccess.cshtml" />
+    <Content Include="Views\Account\LogOn.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_LogOnPartial.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NLog4NHibernate\NLog4NHibernate.csproj">
+      <Project>{291F63C2-259B-4BDD-A0D4-D5E76A0E70A8}</Project>
+      <Name>NLog4NHibernate</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Status.BLL\Status.Bll.csproj">
+      <Project>{97C2732B-463D-41A7-895C-219B7EDA05CB}</Project>
+      <Name>Status.Bll</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Status.ETL\Status.Etl.csproj">
+      <Project>{50BE225F-5293-4D70-AB9A-DF46FA4F7445}</Project>
+      <Name>Status.Etl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Status.Model\Status.Model.csproj">
+      <Project>{25EF6D75-7E30-4FC8-B50C-7F9F967DFCC0}</Project>
+      <Name>Status.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Status.Persistence\Status.Persistence.csproj">
+      <Project>{D7744E4E-4A50-4D9A-B500-EDBA64095698}</Project>
+      <Name>Status.Persistence</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Status.Repository\Status.Repository.csproj">
+      <Project>{C556F5FA-F524-4B6D-AE87-0C7C62F4FB0C}</Project>
+      <Name>Status.Repository</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\StatusReport\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ResourceAllocation\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Scripts\.project" />
+    <None Include="Scripts\jsTestDriver.conf" />
+    <None Include="Scripts\RunJsTests.bat" />
+    <None Include="Scripts\RunJsTestServer.bat" />
+    <None Include="web.nlog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>57254</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:57254/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup>
+    <PreBuildEvent>@rem $(ProjectDir)Scripts\RunJsTestServer.bat
+</PreBuildEvent>
+  </PropertyGroup>
+</Project>

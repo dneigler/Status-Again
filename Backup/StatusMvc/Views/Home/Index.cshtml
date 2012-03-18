@@ -1,0 +1,58 @@
+﻿@using StatusMvc.Models
+@model IList<StatusReportViewModel>
+           @section HeadSection {
+           <script src="@Url.Content("~/Scripts/knockout-2.0.0.js")" type="text/javascript"></script>
+           }
+@{
+    ViewBag.Title = "Home Page";
+}
+<h2>@ViewBag.Message</h2>
+<table>
+    <tr>
+        <th>
+            Caption
+        </th>
+        <th>
+            Project Name
+        </th>
+        <th>
+            Milestone Type
+        </th>
+        <th>
+            Date
+        </th>
+        <th>
+            Lead Name
+        </th>
+        <th>
+            Confidence
+        </th>
+    </tr>
+    @foreach (var srvm in this.Model)
+    {
+        <tr>
+            <td colspan="6" style="text-align: center;background-color: #e7e7e7;font-weight:bold;">@srvm.Caption (@srvm.NumberOfStatusItems - @srvm.PeriodStart.ToShortDateString())
+            </td>
+        </tr>
+        foreach (var si in srvm.Items)
+        {
+        <tr>
+            <td>@si.Caption
+            </td>
+            <td>@si.ProjectName
+            </td>
+            <td>@si.MilestoneType
+            </td>
+            <td style="text-align: right;">@if (si.MilestoneDate != null)
+                {
+                    @si.MilestoneDate.Value.ToShortDateString()}
+
+            </td>
+            <td>@si.ProjectLeadFullName
+            </td>
+            <td>@si.MilestoneConfidenceLevel
+            </td>
+        </tr>
+        }
+    }
+</table>

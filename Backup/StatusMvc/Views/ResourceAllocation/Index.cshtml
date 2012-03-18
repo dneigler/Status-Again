@@ -1,0 +1,61 @@
+﻿@using System.Collections.Concurrent
+@using Status.Model
+@using StatusMvc.Extensions
+@{
+    ViewBag.Title = "ResourceAllocation";
+}
+@section HeadSection {
+    <script src="@Url.Content("~/Scripts/core/ResourceAllocation.js")" type="text/javascript"></script>
+    <style type="text/css">
+			.statusCaptionText { width: 400px; font-size: 8pt; }
+			.projectNameHeader { font-weight: bold; font-size: 12pt; padding-top: 5px; }
+			.statusItemSecondLine { margin-left: 10px; }
+			textarea { display: inline-block; }
+			.datefield { text-align: right;width: 85px; }
+	</style>
+}
+<h2>@ViewBag.Message</h2>
+@*<form data-bind="submit: addReport">*@
+<fieldset>
+    <legend>Teams</legend>
+    <div id="tabs">
+        <ul data-bind='foreach: Teams'>
+            <li><a data-bind="attr: {href:'#tabs-' + Id(), title: Name}, text: Name"></a>
+                <!-- ko if: HasChanges -->
+                *
+                <!-- /ko -->
+            </li>
+        </ul>
+        <div data-bind='foreach: Teams'>
+            <div data-bind='attr: {id: "tabs-" + Id() }, foreach: Members'>
+                <div class="projectNameHeader">
+                    @*<span data-bind="text: ProjectName"></span><span class="hasChangesStyle" data-bind="visible: PendingChangesCount() > 0, text: PendingChangesCount">
+                        *</span>*@
+                </div>
+                <div data-bind='foreach: Members'>
+                    <div data-bind="css: { hasChangesStyle: HasChanges(), hasDeletionsStyle: HasDeletion(), hasInsertionsStyle: HasInsertion() }"
+                        class="statusItemDiv">
+                        <textarea cols="60" rows="1" class="statusCaptionText ui-widget ui-widget-content ui-corner-all"
+                            data-bind="value: FullName, uniqueName: true, enable: Editable"></textarea>
+                        @*<input class="datefield ui-widget ui-widget-content ui-corner-all" placeholder="Milestone date"
+                            data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
+                        @Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
+                         new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
+                        <input type="text" class="statusTags ui-widget ui-widget-content ui-corner-all" data-bind="value:TagsString" />
+                        <a href="#" data-bind="click: $parent.removeStatusItem, visible: HasDeletion() == false">
+                            Delete</a> <a href="#" data-bind="click: $parent.resurrectStatusItem, visible: HasDeletion">
+                                Resurrect</a> <a href="#" data-bind="click: reset, visible: HasChanges() && !HasInsertion()">
+                                    Reset</a>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</fieldset>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //activates KO
+        ko.applyBindings(resourceAllocationVM.AllocationTree);
+        resourceAllocationVM.loadAllocationTree('@Request.QueryString["startDate"]', '@Request.QueryString["endDate"]');
+    });
+</script>
