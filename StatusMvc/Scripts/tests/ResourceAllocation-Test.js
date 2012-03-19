@@ -33,9 +33,9 @@ ResourceAllocationTest.prototype.testResourceAllocationVM = function () {
             "LeadId": "2"
         }],
         "Months":["\/Date(1293858000000)\/","\/Date(1296536400000)\/","\/Date(1298955600000)\/","\/Date(1301630400000)\/","\/Date(1304222400000)\/","\/Date(1306900800000)\/","\/Date(1309492800000)\/","\/Date(1312171200000)\/","\/Date(1314849600000)\/","\/Date(1317441600000)\/","\/Date(1320120000000)\/","\/Date(1322715600000)\/","\/Date(1325394000000)\/","\/Date(1328072400000)\/"]};
-    var at = new allocationTree()
-        .LoadFromObject(obj);
+    var at = new allocationTree(obj);
     assertEquals("Teams.Count", 1, at.Teams().length);
+    
 };
 ResourceAllocationTest.prototype.testTeamLoadFromObject = function () {
     var team1 = new team();
@@ -160,4 +160,11 @@ ResourceAllocationTest.prototype.testMonthlyAllocationLoadFromObject = function 
     assertEquals("Alloc.Id", 998, alloc2.Id());
     assertEquals("Alloc.Allocation", 1, alloc2.Allocation());
     assertEquals("Alloc.Month", /Date(1296536400000)/, alloc2.Month());
+};
+
+ResourceAllocationTest.prototype.testVMInit = function () {
+    assertNotUndefined("alloc vm should not be null", resourceAllocationVM);
+    assertNotUndefined("alloc tree should not be null", resourceAllocationVM.AllocationTree);
+    assertEquals("teams length == 1", 1, resourceAllocationVM.AllocationTree().Teams().length);
+
 };

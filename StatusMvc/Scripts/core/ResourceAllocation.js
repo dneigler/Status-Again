@@ -104,10 +104,11 @@ entityObject.prototype._updateChangeTracking = function (propertyName, newValue)
 //    return (self.HasDeletion() == false);
 //});// .bind(this));
 
-function allocationTree() {
+function allocationTree(response) {
     allocationTree.superclass.constructor.call(this);
     this.Months = ko.observableArray([]);
     this.Teams = ko.observableArray([]);
+    this.LoadFromObject(response);
 };
 extend(allocationTree, entityObject);
 
@@ -116,6 +117,7 @@ allocationTree.prototype.Teams = ko.observableArray([]);
 
 allocationTree.prototype.LoadFromObject = function (response) {
     var self = this;
+    // need to iterate through teams
     this.Months(response.Months);
     $.each(response.Teams, function (x, item) {
         var t = new team()
@@ -265,20 +267,21 @@ var _initAllocationTree = { "Teams":
             [{ "Id": 1,
                 "Name": "Management",
                 "Members": [
-            { "Id": 2, "FullName": "David Neigler",
-                "Projects": [
-                    { "Id": 39, "Name": "Management",
-                        "MonthlyAllocations": [
-                            { "Month": "\/Date(1293858000000)\/", "Id": 997, "Allocation": 1.00000 }
-                        ]
-                    },
-                    { "Id": 40, "Name": "Project 2",
-                        "MonthlyAllocations": [
-                            { "Month": "\/Date(1293858000000)\/", "Id": 999, "Allocation": 1.00000 }
+                    { "Id": 2, "FullName": "David Neigler",
+                        "Projects": [
+                            { "Id": 39, "Name": "Management",
+                                "MonthlyAllocations": [
+                                    { "Month": "\/Date(1293858000000)\/", "Id": 997, "Allocation": 1.00000 }
+                                ]
+                            },
+                            { "Id": 40, "Name": "Project 2",
+                                "MonthlyAllocations": [
+                                    { "Month": "\/Date(1293858000000)\/", "Id": 999, "Allocation": 1.00000 }
+                                ]
+                            }
                         ]
                     }
-                ]
-            }],
+                ],
                 "LeadFullName": "David Neigler",
                 "LeadId": "2"
             }],
@@ -286,19 +289,21 @@ var _initAllocationTree = { "Teams":
 };
     
 var resourceAllocationVM = {
-    AllocationTree: ko.observable(new allocationTree()
-    .LoadFromObject(_initAllocationTree)),
+    AllocationTree: ko.observable(new allocationTree(_initAllocationTree)
+    //.LoadFromObject(_initAllocationTree)
+    ),
     initJQuery: function () {
 
     },
     loadAllocationTree: function (startDate, endDate) {
-
+        
         var sd = ($.isEmptyObject(startDate) ? '1/1/2011' : startDate);
         var todayString = Date.today();
         todayString = todayString.toString('MM/dd/yyyy');
         var ed = ($.isEmptyObject(endDate) ? todayString : endDate);
         var url = "/ResourceAllocation/GetResourceAllocations?startDate=" + sd + "&endDate=" + ed;
-        
+        // alert(url);
+        console.log(url);
         $.ajax({
             url: url,
             dataType: "json",
@@ -307,8 +312,8 @@ var resourceAllocationVM = {
             },
             success: function (response) {
                 if (response != null) {
-                    var at = new allocationTree();
-                    at.LoadFromObject(response);
+                    var at = new allocationTree(response);
+                    // at.LoadFromObject(response);
                     resourceAllocationVM.AllocationTree(at);
                     resourceAllocationVM.initJQuery();
                 } else {

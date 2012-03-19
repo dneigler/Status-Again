@@ -32,7 +32,7 @@
                     @*<span data-bind="text: ProjectName"></span><span class="hasChangesStyle" data-bind="visible: PendingChangesCount() > 0, text: PendingChangesCount">
                         *</span>*@
                 </div>
-                <div data-bind='foreach: Members'>
+                @*<div data-bind='foreach: Members'>*@
                     <div data-bind="css: { hasChangesStyle: HasChanges(), hasDeletionsStyle: HasDeletion(), hasInsertionsStyle: HasInsertion() }"
                         class="statusItemDiv">
                         <textarea cols="60" rows="1" class="statusCaptionText ui-widget ui-widget-content ui-corner-all"
@@ -47,7 +47,7 @@
                                 Resurrect</a> <a href="#" data-bind="click: reset, visible: HasChanges() && !HasInsertion()">
                                     Reset</a>*@
                     </div>
-                </div>
+                @*</div>*@
             </div>
         </div>
     </div>
