@@ -21,9 +21,7 @@
     <div id="tabs">
         <ul data-bind='foreach: Teams'>
             <li><a data-bind="attr: {href:'#tabs-' + Id(), title: Name}, text: Name"></a>
-                <!-- ko if: HasChanges -->
-                *
-                <!-- /ko -->
+                
             </li>
         </ul>
         <div data-bind='foreach: Teams'>
@@ -35,8 +33,7 @@
                 @*<div data-bind='foreach: Members'>*@
                     <div data-bind="css: { hasChangesStyle: HasChanges(), hasDeletionsStyle: HasDeletion(), hasInsertionsStyle: HasInsertion() }"
                         class="statusItemDiv">
-                        <textarea cols="60" rows="1" class="statusCaptionText ui-widget ui-widget-content ui-corner-all"
-                            data-bind="value: FullName, uniqueName: true, enable: Editable"></textarea>
+                        <span data-bind="text: FullName"></span>
                         @*<input class="datefield ui-widget ui-widget-content ui-corner-all" placeholder="Milestone date"
                             data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
                         @Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",

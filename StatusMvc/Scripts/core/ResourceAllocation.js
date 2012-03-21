@@ -293,7 +293,13 @@ var resourceAllocationVM = {
     //.LoadFromObject(_initAllocationTree)
     ),
     initJQuery: function () {
-
+        $("#tabs").tabs({
+            spinner: 'Retrieving data...',
+            select: function (event, ui) {
+                // $('.statusCaptionText').attr('cols',60);
+                //$('.statusCaptionText').autoGrow();
+            }
+        });
     },
     loadAllocationTree: function (startDate, endDate) {
         
