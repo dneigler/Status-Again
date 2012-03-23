@@ -372,6 +372,16 @@ var getShortDate = function (dateValue) {
     return val;
 };
 
+var getShortMonthName = function (dateValue) {
+    var val = ko.utils.unwrapObservable(dateValue);
+    if (val) {
+        var d = parseJsonDateString(val);
+        var dt = new Date(d);
+        return dt.toString("MMMyy");
+    }
+    return val;
+};
+
 ko.bindingHandlers.datepicker = {
     init: function (element, valueAccessor, allBindingsAccessor) {
         //initialize datepicker with some optional options

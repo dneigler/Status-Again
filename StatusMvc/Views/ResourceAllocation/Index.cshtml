@@ -7,34 +7,115 @@
 @section HeadSection {
     <script src="@Url.Content("~/Scripts/core/ResourceAllocation.js")" type="text/javascript"></script>
     <style type="text/css">
-			.statusCaptionText { width: 400px; font-size: 8pt; }
-			.projectNameHeader { font-weight: bold; font-size: 12pt; padding-top: 5px; }
-			.statusItemSecondLine { margin-left: 10px; }
-			textarea { display: inline-block; }
-			.datefield { text-align: right;width: 85px; }
-	</style>
+    .statusCaptionText
+    {
+        width: 400px;
+        font-size: 8pt;
+    }
+
+    .allocationText
+    {
+        width: 15px;
+    }
+
+
+    .statusItemSecondLine
+    {
+        margin-left: 10px;
+    }
+
+    textarea
+    {
+        display: inline-block;
+    }
+
+    .datefield
+    {
+        text-align: right;
+        width: 85px;
+    }
+
+    .projectNameHeader, .projectLineHeader, .userHeader
+    {
+        width: 200px;
+        display: inline-block;
+    }
+    
+    .projectNameHeader
+    {
+        font-weight: bold;
+        font-size: 12pt;
+        padding-top: 5px;
+        padding-left:  15px;
+
+    }
+
+    .monthHeader, .allocationTextBox
+    {
+        width:  35px;
+        text-align: center;
+        display: inline-block;
+        font-size:  8pt;
+        padding-left: 3px;
+        padding-right:  3px;
+    }
+
+    .userHeader
+    {
+        
+        color:  #0094ff;
+        background-color: #ffd800;
+    }
+    .monthHeader
+    {
+        margin-left: 1px;
+        margin-right:  1px;
+        color:  #0094ff;
+        background-color: #ffd800;
+        padding-top: 1px;
+        padding-bottom: 1px;
+
+    }
+    .allocationTextBox
+    {
+        
+        
+    }
+    
+</style>
 }
 <h2>@ViewBag.Message</h2>
 @*<form data-bind="submit: addReport">*@
 <fieldset>
     <legend>Teams</legend>
+    <div>
+        @*<span class="projectNameHeader">Resource\Project</span>
+        <!-- ko foreach: Months -->
+        <span class="monthHeader" data-bind="text:$data"></span>
+        <!-- /ko -->*@
+    </div>
     <div id="tabs">
         <ul data-bind='foreach: Teams'>
-            <li><a data-bind="attr: {href:'#tabs-' + Id(), title: Name}, text: Name"></a>
-                
-            </li>
+            <li><a data-bind="attr: {href:'#tabs-' + Id(), title: Name}, text: Name"></a></li>
         </ul>
         <div data-bind='foreach: Teams'>
+            
             <div data-bind='attr: {id: "tabs-" + Id() }, foreach: Members'>
-                <div class="projectNameHeader">
-                    @*<span data-bind="text: ProjectName"></span><span class="hasChangesStyle" data-bind="visible: PendingChangesCount() > 0, text: PendingChangesCount">
-                        *</span>*@
-                </div>
-                @*<div data-bind='foreach: Members'>*@
-                    <div data-bind="css: { hasChangesStyle: HasChanges(), hasDeletionsStyle: HasDeletion(), hasInsertionsStyle: HasInsertion() }"
-                        class="statusItemDiv">
-                        <span data-bind="text: FullName"></span>
-                        @*<input class="datefield ui-widget ui-widget-content ui-corner-all" placeholder="Milestone date"
+                <div data-bind="css: { hasChangesStyle: HasChanges(), hasDeletionsStyle: HasDeletion(), hasInsertionsStyle: HasInsertion() }"
+                    class="statusItemDiv">
+                    <span class="userHeader" data-bind="text: FullName"></span>
+                    <!-- ko foreach: $root.Months -->
+                    <span class="monthHeader" data-bind="text:$data"></span>
+                    <!-- /ko -->
+                    <div data-bind='foreach: Projects'>
+                        <div>
+                            <span class="projectLineHeader" data-bind="text: Name"></span>
+                            <!-- ko foreach: Allocations -->
+                            <input type="text" class="allocationTextBox" data-bind="value: Allocation" />
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    @*<input class="datefield ui-widget ui-widget-content ui-corner-all" placeholder="Milestone date"
                             data-bind="datepicker: MilestoneDate, datepickerOptions: { changeMonth:true,changeYear:true  }" />
                         @Html.DropDownList("MilestoneTypes", MilestoneTypes.Milestone.ToSelectList(), "(none)",
                          new Dictionary<string, object> { { "data-bind", "value:MilestoneType" } })
@@ -43,7 +124,7 @@
                             Delete</a> <a href="#" data-bind="click: $parent.resurrectStatusItem, visible: HasDeletion">
                                 Resurrect</a> <a href="#" data-bind="click: reset, visible: HasChanges() && !HasInsertion()">
                                     Reset</a>*@
-                    </div>
+                </div>
                 @*</div>*@
             </div>
         </div>

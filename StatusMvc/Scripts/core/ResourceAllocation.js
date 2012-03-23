@@ -118,7 +118,15 @@ allocationTree.prototype.Teams = ko.observableArray([]);
 allocationTree.prototype.LoadFromObject = function (response) {
     var self = this;
     // need to iterate through teams
-    this.Months(response.Months);
+    // clean up months first
+
+    this.Months = ko.observableArray([]);
+
+    $.each(response.Months, function (x, item) {
+        self.Months().push(getShortMonthName(item));
+    });
+
+    //this.Months(response.Months);
     $.each(response.Teams, function (x, item) {
         var t = new team()
 			.LoadFromObject(item);
@@ -273,11 +281,6 @@ var _initAllocationTree = { "Teams":
                                 "MonthlyAllocations": [
                                     { "Month": "\/Date(1293858000000)\/", "Id": 997, "Allocation": 1.00000 }
                                 ]
-                            },
-                            { "Id": 40, "Name": "Project 2",
-                                "MonthlyAllocations": [
-                                    { "Month": "\/Date(1293858000000)\/", "Id": 999, "Allocation": 1.00000 }
-                                ]
                             }
                         ]
                     }
@@ -285,7 +288,7 @@ var _initAllocationTree = { "Teams":
                 "LeadFullName": "David Neigler",
                 "LeadId": "2"
             }],
-    "Months": ["\/Date(1293858000000)\/", "\/Date(1296536400000)\/", "\/Date(1298955600000)\/", "\/Date(1301630400000)\/", "\/Date(1304222400000)\/", "\/Date(1306900800000)\/", "\/Date(1309492800000)\/", "\/Date(1312171200000)\/", "\/Date(1314849600000)\/", "\/Date(1317441600000)\/", "\/Date(1320120000000)\/", "\/Date(1322715600000)\/", "\/Date(1325394000000)\/", "\/Date(1328072400000)\/"]
+    "Months": ["\/Date(1293858000000)\/"]
 };
     
 var resourceAllocationVM = {
