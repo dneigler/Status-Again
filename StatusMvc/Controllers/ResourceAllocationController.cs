@@ -153,8 +153,15 @@ namespace StatusMvc.Controllers
                 startDate = new DateTime(2011, 1, 1);
             if (!DateTime.TryParse(Request.QueryString["endDate"], out endDate))
                 endDate = DateTime.Today;
-            var months = GetMonthsFromRange(startDate, endDate);
-                        
+
+            var allocVM = GetResourceAllocationsVM(startDate, endDate);
+            return Json(allocVM, JsonRequestBehavior.AllowGet);
+        }
+
+        public ResourceAllocationViewModel.AllocationRAVM GetResourceAllocationsVM(DateTime from, DateTime to)
+        {
+            var months = GetMonthsFromRange(from, to);
+
             // in order to load ahead, pull all allocs in date range and pass them to the VM resolver
             // var allocs = this.ResourceAllocationRepository.GetResourceAllocationsByDateRange(startDate, endDate);
 
@@ -181,10 +188,10 @@ namespace StatusMvc.Controllers
                 // we skipped members, so use allocs to get there
                 //.Where(alloc => alloc.Project.Team.Id == team.Id)
                 // next step is to filter the allocs by current team and user to avoid duplicates
-                var allocs = this.ResourceAllocationRepository.GetResourceAllocationsByTeamDateRange(team.Id, startDate, endDate);
+                var allocs = this.ResourceAllocationRepository.GetResourceAllocationsByTeamDateRange(team.Id, from, to);
 
                 var memberAllocs = allocs.GroupBy(a => a.Employee);
-                
+
                 memberAllocs.ToList().ForEach(member =>
                 {
                     // pull all projects 
@@ -202,10 +209,10 @@ namespace StatusMvc.Controllers
                         var subWithMonths = from month in months
                                             join subA in subAllocs on month equals subA.Month into ga
                                             from subM in ga.DefaultIfEmpty()
-                                            select new { Id=(subM == null ? 0 : subM.Id), Allocation = (subM == null ? 0 : subM.Allocation), Employee = (subM == null ? employee : subM.Employee), Month = month };
+                                            select new { Id = (subM == null ? 0 : subM.Id), Allocation = (subM == null ? 0 : subM.Allocation), Employee = (subM == null ? employee : subM.Employee), Month = month };
                         subWithMonths.OrderBy(swm => swm.Month).ToList().ForEach(mg =>
                         {
-                            project.MonthlyAllocations.Add(new ResourceAllocationViewModel.TeamAllocationRAVM.MonthRAVM() { Allocation=mg.Allocation, Month=mg.Month, Id=mg.Id});
+                            project.MonthlyAllocations.Add(new ResourceAllocationViewModel.TeamAllocationRAVM.MonthRAVM() { Allocation = mg.Allocation, Month = mg.Month, Id = mg.Id });
 
                         });
                         // no need to group as allocs should only have single
@@ -220,11 +227,11 @@ namespace StatusMvc.Controllers
                     });
 
                     team.Members.Add(uVM);
-                    
+
                 });
 
             });
-            return Json(allocVM, JsonRequestBehavior.AllowGet);
+            return allocVM;
         }
 
         //

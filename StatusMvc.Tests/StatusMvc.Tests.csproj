@@ -80,7 +80,7 @@
     <Compile Include="Controllers\HomeControllerTest.cs" />
     <Compile Include="Controllers\AccountControllerTest.cs" />
     <Compile Include="Controllers\StatusReportControllerTest.cs" />
-    <Compile Include="ResourceAllocationControllerTest.cs" />
+    <Compile Include="Controllers\ResourceAllocationControllerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
