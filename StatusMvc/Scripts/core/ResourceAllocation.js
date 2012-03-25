@@ -22,7 +22,10 @@ function entityObject() {
     // this is required, otherwise the prototype for Id method will always refer
     // to the same instance.
     this.Id = ko.observable(0);
-    this.HasInsertion = ko.observable(false);
+    this.HasInsertion = ko.computed(function () {
+        return this.Id() == 0;
+    }.bind(this));
+        //= ko.observable(false);
     this.ChangeLog = ko.observableArray([]);
     this.HasDeletion = ko.observable(false);
     this.HasChanges =  ko.computed(function () {
@@ -45,7 +48,7 @@ entityObject.prototype.isInternal = function (x, item) {
     return !(x != "ChangeLog" && x != "HasChanges" && x != "HasDeletion" && x != "HasInsertion" && x != "Editable" && ko.isObservable(item));
 };
 
-entityObject.prototype.HasInsertion = ko.observable(false);
+// entityObject.prototype.HasInsertion = ko.observable(false);
 entityObject.prototype.ChangeLog = ko.observableArray([]);
 entityObject.prototype.HasDeletion = ko.observable(false);
 
@@ -64,7 +67,7 @@ entityObject.prototype.reset = function () {
     });
     self.ChangeLog.removeAll();
     self.HasDeletion(false);
-    self.HasInsertion(false);
+    // self.HasInsertion(false);
 };
 
 entityObject.prototype.ListenForChanges = function () {
@@ -244,7 +247,8 @@ project.prototype.LoadFromObject = function (obj) {
 };
 
 project.prototype.LoadAllocation = function (obj) {
-    var matchingItem = this.AllocationExists(obj.Id());
+    // following is an issue if we're looking at new entries
+    var matchingItem = (!obj.HasInsertion() && this.AllocationExists(obj.Id()));
 
     if (!matchingItem)
         this.Allocations.push(obj);
@@ -264,6 +268,15 @@ extend(monthlyAllocation, entityObject);
 
 monthlyAllocation.prototype.Month = ko.observable('');
 monthlyAllocation.prototype.Allocation = ko.observable(0);
+
+//monthlyAllocation.prototype.Has0Allocation = ko.computed(function () {
+
+//}.bind(this));
+
+//monthlyAllocation.prototype.Has0Allocation = ko.computed(function () {
+
+//}.bind(this));
+
 monthlyAllocation.prototype.LoadFromObject = function (obj) {
     this.Id(obj.Id)
         .Month(obj.Month)

@@ -106,7 +106,7 @@ ResourceAllocationTest.prototype.testProjectLoadFromObject = function () {
         });
 
     $.each(proj.Allocations(), function (x, item) {
-        console.log(item.Id());
+        console.log("ProjectLoadFromObject", item.Id());
     });
 
     assertEquals("MA", 997, proj.Allocations()[0].Id());
@@ -166,5 +166,73 @@ ResourceAllocationTest.prototype.testVMInit = function () {
     assertNotUndefined("alloc vm should not be null", resourceAllocationVM);
     assertNotUndefined("alloc tree should not be null", resourceAllocationVM.AllocationTree);
     assertEquals("teams length == 1", 1, resourceAllocationVM.AllocationTree().Teams().length);
+
+};
+
+
+ResourceAllocationTest.prototype.testTeamLoadWithZeroAllocations = function () {
+    var team1 = new team();
+
+    assertEquals("Team.Members count before", 0, team1.Members().length);
+    team1.LoadFromObject(
+        {
+            "Id": 1,
+            "Name": "Management",
+            "Members": [
+            {
+                "Id": 2, "FullName": "David Neigler",
+                "Projects": [
+                {
+                    "Id": 39, "Name": "Management",
+                    "MonthlyAllocations": [
+                    { "Month": "\/Date(1293858000000)\/", "Id": 997, "Allocation": 1.00000 },
+                    { "Month": "\/Date(1296536400000)\/", "Id": 998, "Allocation": 1.00000 },
+                    { "Month": "\/Date(1298955600000)\/", "Id": 0, "Allocation": 0.00000 },
+                    { "Month": "\/Date(1301630400000)\/", "Id": 0, "Allocation": 0.00000 },
+                    { "Month": "\/Date(1304222400000)\/", "Id": 0, "Allocation": 0.00000 }]
+                }]
+            }],
+            "LeadFullName": "David Neigler",
+            "LeadId": "2"
+        });
+
+    assertEquals("Team.Id", 1, team1.Id());
+    assertEquals("Team.Name", "Management", team1.Name());
+    assertEquals("Team.LeadFullName", "David Neigler", team1.LeadFullName());
+    assertEquals("Team.LeadId", 2, team1.LeadId());
+    assertEquals("Team.Members Count", 1, team1.Members().length);
+    assertEquals("Team.Members[0]", 2, team1.Members()[0].Id());
+    assertEquals("Team.Members[0].Projects[0]", 39, team1.Members()[0].Projects()[0].Id());
+    console.log("TeamLoadWithZeroAllocations", team1.Members()[0].Projects()[0].Allocations()[2].Month());
+    assertEquals("Team.Members[0].Projects[0].MonthlyAllocations length s/b 5", 5, team1.Members()[0].Projects()[0].Allocations().length);
+    assertEquals("Team.Members[0].Projects[0].MonthlyAllocations[0]", 997, team1.Members()[0].Projects()[0].Allocations()[0].Id());
+    assertEquals("Team.Members[0].Projects[0].MonthlyAllocations[1]", 998, team1.Members()[0].Projects()[0].Allocations()[1].Id());
+    assertEquals("Team.Members[0].Projects[0].MonthlyAllocations[2]", 0, team1.Members()[0].Projects()[0].Allocations()[2].Id());
+    assertEquals("Team.Members[0].Projects[0].MonthlyAllocations[3]", 0, team1.Members()[0].Projects()[0].Allocations()[3].Id());
+    assertEquals("Team.Members[0].Projects[0].MonthlyAllocations[4]", 0, team1.Members()[0].Projects()[0].Allocations()[4].Id());
+    // can also check that this shows as default HasInsertion
+};
+
+
+ResourceAllocationTest.prototype.testHasInsertion = function () {
+    var alloc = new monthlyAllocation();
+
+    alloc.LoadFromObject(
+        { "Month": "\/Date(1293858000000)\/", "Id": 0, "Allocation": 0.00000 });
+
+    assertEquals("Alloc.Id", 0, alloc.Id());
+    assertEquals("Alloc.Allocation", 0, alloc.Allocation());
+    assertEquals("Alloc.Month", /Date(1293858000000)/, alloc.Month());
+    assertTrue("Alloc.HasInsertion", alloc.HasInsertion());
+
+    var alloc2 = new monthlyAllocation();
+
+    alloc2.LoadFromObject(
+        { "Month": "\/Date(1296536400000)\/", "Id": 0, "Allocation": 0.00000 });
+
+    assertEquals("Alloc.Id", 0, alloc2.Id());
+    assertEquals("Alloc.Allocation", 0, alloc2.Allocation());
+    assertEquals("Alloc.Month", /Date(1296536400000)/, alloc2.Month());
+    assertTrue("Alloc.HasInsertion", alloc2.HasInsertion());
 
 };
