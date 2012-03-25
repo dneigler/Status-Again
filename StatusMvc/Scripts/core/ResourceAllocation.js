@@ -22,6 +22,7 @@ function entityObject() {
     // this is required, otherwise the prototype for Id method will always refer
     // to the same instance.
     this.Id = ko.observable(0);
+    this.OriginalVersion = {};
     this.HasInsertion = ko.computed(function () {
         return this.Id() == 0;
     }.bind(this));
@@ -72,17 +73,41 @@ entityObject.prototype.reset = function () {
 
 entityObject.prototype.ListenForChanges = function () {
     var self = this;
+    this.OriginalVersion = getMembers(this);
     self.ClearSubscribers();
+    
     $.each(self, function (x, item) {
         if (!self.isInternal(x, item)) {
             var sub = item.subscribe(function (newValue) {
                 self._updateChangeTracking(x, newValue);
 
             });
-            self.Subscribers.push(sub);
+            self._subscribers.push(sub);
         }
     });
 };
+entityObject.prototype._subscribers = new Array();
+
+entityObject.prototype.ClearSubscribers = function () {
+    var self = this;
+    $.each(self._subscribers, function (x, item) {
+        item.dispose();
+    });
+    // clear change logs
+    self.ChangeLog.removeAll();
+};
+
+entityObject.prototype.getMembers = function (original) {
+    var sri = new Array();
+    $.each(original, function (index, item) {
+        sri[index] = ko.utils.unwrapObservable(item);
+    });
+    return sri;
+    //    // Shallow copy
+    //	var clone = jQuery.extend({}, original);
+    //	// var b = obj.slice(0);//  jQuery.extend({}, obj);
+    //	return clone;
+}
 
 entityObject.prototype._updateChangeTracking = function (propertyName, newValue) {
     var self = this;
@@ -281,6 +306,9 @@ monthlyAllocation.prototype.LoadFromObject = function (obj) {
     this.Id(obj.Id)
         .Month(obj.Month)
         .Allocation(obj.Allocation);
+    //  need to encapsulate OriginalVersion and ListenForChanges logic
+    // this.OriginalVersion = getMembers(item);
+    this.ListenForChanges();
     return this;
 };
 

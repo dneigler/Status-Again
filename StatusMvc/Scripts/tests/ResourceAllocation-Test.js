@@ -236,3 +236,24 @@ ResourceAllocationTest.prototype.testHasInsertion = function () {
     assertTrue("Alloc.HasInsertion", alloc2.HasInsertion());
 
 };
+
+ResourceAllocationTest.prototype.testHasChanges = function () {
+    var alloc = new monthlyAllocation();
+
+    alloc.LoadFromObject(
+        { "Month": "\/Date(1293858000000)\/", "Id": 1, "Allocation": 0.2500 });
+
+    assertEquals("Alloc.Id", 1, alloc.Id());
+    assertEquals("Alloc.Allocation", 0.25, alloc.Allocation());
+    assertEquals("Alloc.Month", /Date(1293858000000)/, alloc.Month());
+    // should not be insertion if Id starts > 0
+    assertFalse("Alloc.HasInsertion", alloc.HasInsertion());
+    assertFalse("Alloc.HasChanges", alloc.HasChanges());
+    alloc.Allocation(.5);
+    assertTrue("Alloc.HasChanges s/b true now", alloc.HasChanges());
+
+    // test reversion
+    alloc.Allocation(0.25);
+    assertFalse("Alloc.HasChanges", alloc.HasChanges());
+
+};
