@@ -26,11 +26,27 @@ function entityObject() {
     this.HasInsertion = ko.computed(function () {
         return this.Id() == 0;
     }.bind(this));
-        //= ko.observable(false);
+
     this.ChangeLog = ko.observableArray([]);
     this.HasDeletion = ko.observable(false);
-    this.HasChanges =  ko.computed(function () {
-        return this.ChangeLog().length > 0;
+    this._subscribers = new Array();
+
+    this._dependentCollections = new Array();
+
+    // dependent collections to be included
+    this.HasChanges = ko.computed(function () {
+        var hasC = this.ChangeLog().length > 0;
+        // check dependent collections
+        if (!hasC && this._dependentCollections.length > 0) {
+            $.each(this._dependentCollections, function (x, item) {
+                $.each(item(), function (y, dc) {
+                    if (dc.HasChanges()) {
+                        hasC = true;
+                    }
+                });
+            });
+        }
+        return hasC;
     } .bind(this));
     this.Editable = ko.computed(function () {
         return (this.HasDeletion() == false);
@@ -73,7 +89,7 @@ entityObject.prototype.reset = function () {
 
 entityObject.prototype.ListenForChanges = function () {
     var self = this;
-    this.OriginalVersion = getMembers(this);
+    this.OriginalVersion = this.getMembers(this);
     self.ClearSubscribers();
     
     $.each(self, function (x, item) {
@@ -82,11 +98,13 @@ entityObject.prototype.ListenForChanges = function () {
                 self._updateChangeTracking(x, newValue);
 
             });
+            // console.log("ListenForChanges subscriber added for " + x + " with value " + item());
             self._subscribers.push(sub);
         }
     });
 };
 entityObject.prototype._subscribers = new Array();
+entityObject.prototype._dependentCollections = new Array();
 
 entityObject.prototype.ClearSubscribers = function () {
     var self = this;
@@ -103,10 +121,6 @@ entityObject.prototype.getMembers = function (original) {
         sri[index] = ko.utils.unwrapObservable(item);
     });
     return sri;
-    //    // Shallow copy
-    //	var clone = jQuery.extend({}, original);
-    //	// var b = obj.slice(0);//  jQuery.extend({}, obj);
-    //	return clone;
 }
 
 entityObject.prototype._updateChangeTracking = function (propertyName, newValue) {
@@ -120,17 +134,6 @@ entityObject.prototype._updateChangeTracking = function (propertyName, newValue)
         self.ChangeLog.pop(propertyName);
     }
 };
-
-//entityObject.prototype.HasChanges = ko.computed(function () {
-//    var self = this;
-//    return self.ChangeLog().length > 0;
-//});// .bind(this));
-
-
-//entityObject.prototype.Editable = ko.computed(function () {
-//    var self = this;
-//    return (self.HasDeletion() == false);
-//});// .bind(this));
 
 function allocationTree(response) {
     allocationTree.superclass.constructor.call(this);
@@ -160,7 +163,7 @@ allocationTree.prototype.LoadFromObject = function (response) {
 			.LoadFromObject(item);
         self.LoadTeam(t);
     });
-
+    this._dependentCollections.push(this.Teams);
     return this;
 };
 
@@ -195,7 +198,7 @@ team.prototype.LoadFromObject = function (obj) {
 			.LoadFromObject(item);
         self.LoadMember(m);
     });
-
+    this._dependentCollections.push(this.Members);
     return this;
 };
 
@@ -230,7 +233,7 @@ teamMember.prototype.LoadFromObject = function (obj) {
             .LoadFromObject(item);
         self.LoadProject(p);
     });
-
+    this._dependentCollections.push(this.Projects);
     return this;
 };
 
@@ -267,7 +270,7 @@ project.prototype.LoadFromObject = function (obj) {
         self.LoadAllocation(m);
 
     });
-
+    this._dependentCollections.push(this.Allocations);
     return this;
 };
 
@@ -336,6 +339,11 @@ var resourceAllocationVM = {
     AllocationTree: ko.observable(new allocationTree(_initAllocationTree)
     //.LoadFromObject(_initAllocationTree)
     ),
+    //ChangedAllocations: ko.computed(function () {
+    //    return ko.utils.arrayFilter(this.allocationTree().Items(), function (item) {
+    //        return item.HasChanges() || item.HasInsertion(); // ko.utils.stringStartsWith(item.name().toLowerCase(), filter);
+    //    });
+    //}.bind(this)),
     initJQuery: function () {
         $("#tabs").tabs({
             spinner: 'Retrieving data...',
@@ -347,7 +355,7 @@ var resourceAllocationVM = {
     },
     loadAllocationTree: function (startDate, endDate) {
         
-        var sd = ($.isEmptyObject(startDate) ? '1/1/2011' : startDate);
+        var sd = ($.isEmptyObject(startDate) ? '1/1/2012' : startDate);
         var todayString = Date.today();
         todayString = todayString.toString('MM/dd/yyyy');
         var ed = ($.isEmptyObject(endDate) ? todayString : endDate);

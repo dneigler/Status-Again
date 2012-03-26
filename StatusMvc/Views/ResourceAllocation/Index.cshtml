@@ -51,7 +51,7 @@
 
     }
 
-    .monthHeader, .allocationTextBox
+    .monthHeader, .allocationTextBox, .hasChangesStyle, .hasInsertionsStyle
     {
         width:  35px;
         text-align: center;
@@ -73,6 +73,18 @@
         padding-bottom: 1px;
 
     }
+    .hasChangesStyle, .hasInsertionsStyle
+    {
+        
+        background-color: #b6ff00;
+        border-color: #ff6a00;
+    }
+
+    .hasInsertionsStyle
+    {
+        background-color: #0094ff;
+        border-color: #ff6a00;
+    }
     .allocationTextBox
     {
         
@@ -85,12 +97,6 @@
 @*<form data-bind="submit: addReport">*@
 <fieldset>
     <legend>Teams</legend>
-    <div>
-        @*<span class="projectNameHeader">Resource\Project</span>
-        <!-- ko foreach: Months -->
-        <span class="monthHeader" data-bind="text:$data"></span>
-        <!-- /ko -->*@
-    </div>
     <div id="tabs">
         <ul data-bind='foreach: Teams'>
             <li><a data-bind="attr: {href:'#tabs-' + Id(), title: Name}, text: Name"></a></li>
@@ -108,8 +114,12 @@
                         <div>
                             <span class="projectLineHeader" data-bind="text: Name"></span>
                             <!-- ko foreach: Allocations -->
-                            <input type="text" class="allocationTextBox" data-bind="value: Allocation" />
+                            <input type="text" class="allocationTextBox ui-widget ui-widget-content ui-corner-all" data-bind="css: {hasChangesStyle: HasChanges(), hasInsertionsStyle: HasInsertion()}, value: Allocation" />
                             <!-- /ko -->
+                            <span data-bind="foreach: Allocations">
+                                <span class="allocationTextBox" data-bind="css: {hasChangesStyle: HasChanges(), hasInsertionsStyle: HasInsertion()}, text: Allocation" />
+                            </span>
+                            
                         </div>
                     </div>
                     @*<input class="datefield ui-widget ui-widget-content ui-corner-all" placeholder="Milestone date"

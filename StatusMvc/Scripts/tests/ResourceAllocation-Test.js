@@ -10,6 +10,43 @@
 
 ResourceAllocationTest = TestCase("ResourceAllocationTest");
 
+ResourceAllocationTest.prototype.testDependentCollectionsVM = function () {
+    var obj = {
+        "Teams":
+            [{
+                "Id": 1,
+                "Name": "Management",
+                "Members": [
+            {
+                "Id": 2, "FullName": "David Neigler",
+                "Projects": [
+                    {
+                        "Id": 39, "Name": "Management",
+                        "MonthlyAllocations": [
+                            { "Month": "\/Date(1293858000000)\/", "Id": 997, "Allocation": 1.00000 }
+                        ]
+                    },
+                    {
+                        "Id": 40, "Name": "Project 2",
+                        "MonthlyAllocations": [
+                            { "Month": "\/Date(1293858000000)\/", "Id": 999, "Allocation": 1.00000 }
+                        ]
+                    }
+                ]
+            }],
+                "LeadFullName": "David Neigler",
+                "LeadId": "2"
+            }],
+        "Months": ["\/Date(1293858000000)\/", "\/Date(1296536400000)\/", "\/Date(1298955600000)\/", "\/Date(1301630400000)\/", "\/Date(1304222400000)\/", "\/Date(1306900800000)\/", "\/Date(1309492800000)\/", "\/Date(1312171200000)\/", "\/Date(1314849600000)\/", "\/Date(1317441600000)\/", "\/Date(1320120000000)\/", "\/Date(1322715600000)\/", "\/Date(1325394000000)\/", "\/Date(1328072400000)\/"]
+    };
+    var at = new allocationTree(obj);
+    assertTrue(at._dependentCollections.length > 0);
+    assertEquals("First collection s/b Teams", at.Teams, at._dependentCollections[0]);
+    // cascading HasChanges
+    at.Teams()[0].Name("Updated name");
+    assertTrue(at.HasChanges());
+};
+
 ResourceAllocationTest.prototype.testResourceAllocationVM = function () {
     var obj = {"Teams":
             [{ "Id": 1,
