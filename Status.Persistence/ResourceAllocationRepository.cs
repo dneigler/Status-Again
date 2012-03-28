@@ -52,6 +52,29 @@ namespace Status.Persistence
             return query.ToList();
         }
 
+        public IList<ProjectAllocation> GetProjectAllocationsByDateRange(DateTime @from, DateTime? to)
+        {
+            var query = (from ra in this.Session.Query<ResourceAllocation>()
+                         where ra.Month >= @from && ra.Month <= (to ?? DateTime.Today)
+                         select ra).GroupBy(ra => ra.Project);
+            IList<ProjectAllocation> projects = new List<ProjectAllocation>();
+
+            query.ForEach(projGroup =>
+            {
+                // group by month
+                var months = projGroup.GroupBy(pg => pg.Month);
+                months.ForEach(monthGroup =>
+                {
+                    ProjectAllocation pa = new ProjectAllocation();
+                    pa.Project = projGroup.Key;
+                    pa.Month = monthGroup.Key;
+                    pa.Allocation = monthGroup.Sum(ra => ra.Allocation);
+                    projects.Add(pa);
+                });
+            });
+            return projects;
+        }
+
         public void DeleteByResourceMonth(Resource resource, DateTime month)
         {
             var query = (from ra in this.Session.Query<ResourceAllocation>()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FileHelpers;
+using Status.Model;
 
 namespace Status.ETL.Csv
 {
@@ -46,9 +47,10 @@ namespace Status.ETL.Csv
         [FieldQuoted()]
         public string ProjectType; 
         
-        public string ParentProjectType; 
-        
-        public string BudgetType;
+        public string ParentProjectType;
+
+        [FieldConverter(typeof(ProjectTypeConverter))]
+        public ProjectType BudgetType;
 
         [FieldQuoted()]
         public string ProjectCaptionRollup;

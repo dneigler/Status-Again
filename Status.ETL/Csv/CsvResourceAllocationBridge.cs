@@ -128,6 +128,7 @@ namespace Status.ETL.Csv
                                                                  Caption = item.ProjectType,
                                                                  Lead = pLead as Employee,
                                                                  Department = department,
+                                                                 Type = item.BudgetType,
                                                                  Team = team
                                                              };
 

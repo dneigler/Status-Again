@@ -41,7 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AllocationSummary.cs" />
     <Compile Include="AuditInfo.cs" />
+    <Compile Include="BudgetTypes.cs" />
     <Compile Include="Company.cs" />
     <Compile Include="Employee.cs" />
     <Compile Include="IIdentityColumn.cs" />

@@ -20,6 +20,7 @@ namespace Status.Model
         public virtual DateTime? StartDate { get; set; }
         public virtual DateTime? EndDate { get; set; }
         public virtual decimal Budget { get; set; }
+        
         public virtual Uri WikiLocation { get; set; }
         public virtual Uri JiraLocation { get; set; }
         public virtual string JiraProject { get; set; }

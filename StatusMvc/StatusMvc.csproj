@@ -99,6 +99,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Models\ProjectAllocationViewModel.cs" />
     <Compile Include="Models\ResourceAllocationViewModel.cs" />
     <Compile Include="Models\StatusReportViewModel.cs" />
     <Compile Include="Models\TagViewModel.cs" />

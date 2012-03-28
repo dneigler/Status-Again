@@ -234,6 +234,37 @@ namespace StatusMvc.Controllers
             return allocVM;
         }
 
+        public ProjectAllocationViewModel GetProjectAllocations(DateTime from, DateTime to)
+        {
+            var months = GetMonthsFromRange(from, to);
+            var pavm = new ProjectAllocationViewModel();
+            pavm.Months = months;
+
+            // we know only Run and Grow in this view for now
+            var projAllocs = this.ResourceAllocationRepository.GetProjectAllocationsByDateRange(from, to);
+            //projAllocs.ToList().ForEach(pa => {
+            //}
+
+
+            //var teams = this.TeamRepository.GetAllTeamsDetail();
+
+            //pavm.Teams = Mapper.Map<IList<Team>, IList<StatusMvc.Models.ResourceAllocationViewModel.TeamAllocationRAVM>>(teams);
+
+            //var data = pavm.Teams;
+
+            //// data needs the projecs filled in
+            //data.ToList().ForEach(team =>
+            //{
+            //    // we skipped members, so use allocs to get there
+            //    //.Where(alloc => alloc.Project.Team.Id == team.Id)
+            //    // next step is to filter the allocs by current team and user to avoid duplicates
+            //    var allocs = this.ResourceAllocationRepository.GetResourceAllocationsByTeamDateRange(team.Id, from, to);
+
+            ProjectAllocationViewModel.BudgetTypePAVM bt = new ProjectAllocationViewModel.BudgetTypePAVM();
+            // group by budget types in allocations for this
+            return pavm;
+        }
+
         //
         // GET: /ResourceAllocation/Details/5
 

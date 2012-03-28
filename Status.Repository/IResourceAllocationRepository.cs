@@ -12,6 +12,8 @@ namespace Status.Repository
 
         IList<ResourceAllocation> GetResourceAllocationsByDateRange(DateTime from, DateTime? to);
 
+        IList<ProjectAllocation> GetProjectAllocationsByDateRange(DateTime @from, DateTime? to);
+
         void DeleteByResourceMonth(Resource resource, DateTime month);
     }
 }

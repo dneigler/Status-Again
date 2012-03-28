@@ -71,6 +71,7 @@
     <Compile Include="Csv\ICsvStatusEtlBridge.cs" />
     <Compile Include="Csv\MilestoneConfidenceConverter.cs" />
     <Compile Include="Csv\MilestoneTypeConverter.cs" />
+    <Compile Include="Csv\ProjectTypeConverter.cs" />
     <Compile Include="Csv\ResourceAllocationCsvItem.cs" />
     <Compile Include="Csv\CsvResourceAllocationEtl.cs" />
     <Compile Include="Csv\StatusCsvItem.cs" />
