@@ -90,11 +90,15 @@
         
         
     }
-    
+    #hasChangesDiv
+    {
+        background-color: #808080;
+    }
 </style>
 }
 <h2>@ViewBag.Message</h2>
 @*<form data-bind="submit: addReport">*@
+<div id="hasChangesDiv" data-bind="hasChangesStyle: HasChanges()">Has Changes</div>
 <fieldset>
     <legend>Teams</legend>
     <div id="tabs">
@@ -114,7 +118,7 @@
                         <div>
                             <span class="projectLineHeader" data-bind="text: Name"></span>
                             <!-- ko foreach: Allocations -->
-                            <input type="text" class="allocationTextBox ui-widget ui-widget-content ui-corner-all" data-bind="css: {hasChangesStyle: HasChanges(), hasInsertionsStyle: HasInsertion()}, value: Allocation" />
+                            <input type="text" class="allocationTextBox" data-bind="css: {hasChangesStyle: HasChanges(), hasInsertionsStyle: HasInsertion()}, value: Allocation" />
                             <!-- /ko -->
                             <span data-bind="foreach: Allocations">
                                 <span class="allocationTextBox" data-bind="css: {hasChangesStyle: HasChanges(), hasInsertionsStyle: HasInsertion()}, text: Allocation" />

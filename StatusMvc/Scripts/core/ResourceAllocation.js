@@ -21,6 +21,9 @@ function extend(subClass, superClass) {
 function entityObject() {
     // this is required, otherwise the prototype for Id method will always refer
     // to the same instance.
+    var self = this;
+    this.Parent = ko.observable(null);
+
     this.Id = ko.observable(0);
     this.OriginalVersion = {};
     this.HasInsertion = ko.computed(function () {
@@ -31,23 +34,31 @@ function entityObject() {
     this.HasDeletion = ko.observable(false);
     this._subscribers = new Array();
 
-    this._dependentCollections = new Array();
+    this._dependentCollections = ko.observableArray([]); // new Array();
 
     // dependent collections to be included
     this.HasChanges = ko.computed(function () {
-        var hasC = this.ChangeLog().length > 0;
+        var hasC = this.ChangeLog().length > 0 || this._dependentChangesFlag() === true;
         // check dependent collections
-        if (!hasC && this._dependentCollections.length > 0) {
-            $.each(this._dependentCollections, function (x, item) {
-                $.each(item(), function (y, dc) {
-                    if (dc.HasChanges()) {
-                        hasC = true;
-                    }
-                });
-            });
-        }
+        //if (hasC === false && this._dependentCollections.length > 0) {
+        //    console.log("Checking _dependentCollections");
+        //    $.each(this._dependentCollections(), function (x, item) {
+        //        console.log("HasChanges.each " + item);
+
+        //        $.each(item(), function (y, dc) {
+        //            if (dc.HasChanges()) {
+        //                hasC = true;
+        //                console.log("i.HasChanges() == true on index " + y);
+
+        //            }
+        //        });
+        //    });
+        //}
         return hasC;
-    } .bind(this));
+    }.bind(this));
+
+    this._dependentChangesFlag = ko.observable(false);
+
     this.Editable = ko.computed(function () {
         return (this.HasDeletion() == false);
     }.bind(this));
@@ -62,7 +73,7 @@ entityObject.prototype.Exists = function (collection, objId) {
 };
 
 entityObject.prototype.isInternal = function (x, item) {
-    return !(x != "ChangeLog" && x != "HasChanges" && x != "HasDeletion" && x != "HasInsertion" && x != "Editable" && ko.isObservable(item));
+    return !(x != "ChangeLog" && x != "HasChanges" && x != "HasDeletion" && x != "_dependentChangesFlag" && x != "HasInsertion" && x != "Editable" && x != "Parent" && ko.isObservable(item));
 };
 
 // entityObject.prototype.HasInsertion = ko.observable(false);
@@ -104,7 +115,8 @@ entityObject.prototype.ListenForChanges = function () {
     });
 };
 entityObject.prototype._subscribers = new Array();
-entityObject.prototype._dependentCollections = new Array();
+entityObject.prototype._dependentCollections = ko.observableArray([]);// new Array();
+entityObject.prototype._dependentChangesFlag = ko.observable(false);
 
 entityObject.prototype.ClearSubscribers = function () {
     var self = this;
@@ -130,8 +142,21 @@ entityObject.prototype._updateChangeTracking = function (propertyName, newValue)
     if (newValue != origValue && !currentlyChangeExists) {
         console.log("The new value for " + propertyName + " is " + newValue + " from " + origValue);
         self.ChangeLog.push(propertyName);
-    } else if (newValue == origValue && currentlyChangeExists) {
+        // dependencies?
+        if (self.Parent() !== null) {
+            // self.Parent()._dependentCollections.valueHasMutated();
+            self.Parent()._dependentChangesFlag(true);
+        } else {
+            console.log("newValue != origValue && !currentlyChangeExists/self.Parent() == null");
+        }
+    } else if (newValue === origValue && currentlyChangeExists) {
         self.ChangeLog.pop(propertyName);
+        if (self.Parent() != null) {
+            // self.Parent()._dependentCollections.valueHasMutated();
+            self.Parent()._dependentChangesFlag(true);
+        } else {
+            console.log("newValue === origValue && currentlyChangeExists/self.Parent() == null");
+        }
     }
 };
 
@@ -163,8 +188,8 @@ allocationTree.prototype.LoadFromObject = function (response) {
 			.LoadFromObject(item);
         self.LoadTeam(t);
     });
-    this._dependentCollections.push(this.Teams);
-    return this;
+    self._dependentCollections.push(this.Teams);
+    return self;
 };
 
 allocationTree.prototype.LoadTeam = function (obj) {
@@ -196,6 +221,7 @@ team.prototype.LoadFromObject = function (obj) {
     $.each(obj.Members, function (x, item) {
         var m = new teamMember()
 			.LoadFromObject(item);
+        m.Parent(self);
         self.LoadMember(m);
     });
     this._dependentCollections.push(this.Members);
@@ -231,6 +257,7 @@ teamMember.prototype.LoadFromObject = function (obj) {
     $.each(obj.Projects, function (x, item) {
         var p = new project()
             .LoadFromObject(item);
+        p.Parent(self);
         self.LoadProject(p);
     });
     this._dependentCollections.push(this.Projects);
@@ -266,7 +293,7 @@ project.prototype.LoadFromObject = function (obj) {
     $.each(obj.MonthlyAllocations, function (x, item) {
         var m = new monthlyAllocation()
 				.LoadFromObject(item);
-
+        m.Parent(self);
         self.LoadAllocation(m);
 
     });
