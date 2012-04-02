@@ -116,7 +116,7 @@
                     <!-- /ko -->
                     <div data-bind='foreach: Projects'>
                         <div>
-                            <span class="projectLineHeader" data-bind="text: Name"></span>
+                            <span class="projectLineHeader" data-bind="text: Name, css: {hasChangesStyle: HasChanges()}"></span>
                             <!-- ko foreach: Allocations -->
                             <input type="text" class="allocationTextBox" data-bind="css: {hasChangesStyle: HasChanges(), hasInsertionsStyle: HasInsertion()}, value: Allocation" />
                             <!-- /ko -->

@@ -85,6 +85,8 @@ ResourceAllocationTest.prototype.testDependentCollectionsVM = function () {
     //hasC = proj.HasChanges();
     //console.log("proj.HasChanges = " + proj.HasChanges());
     //console.log(hasC);
+    assertTrue(at.Teams()[0].Members()[0].Projects()[0].HasChildChanges());
+    assertTrue(at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].ChangeLog().length > 0);
     assertTrue(at.Teams()[0].Members()[0].Projects()[0].HasChanges());
     // the child allocation change should bubble all the way up.
     assertTrue(at.HasChanges());
