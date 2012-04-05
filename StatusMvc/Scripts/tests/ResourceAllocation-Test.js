@@ -41,53 +41,32 @@ ResourceAllocationTest.prototype.testDependentCollectionsVM = function () {
     };
     var at = new allocationTree(obj);
     assertTrue(at._dependentCollections().length > 0);
-    assertEquals(at._dependentCollections()[0](), at.Teams());
+
     assertFalse(at.ChangeLog().length > 0);
     
-    assertEquals("First collection s/b Teams", at.Teams(), at._dependentCollections()[0]());
-    // cascading HasChanges
 
     at.Teams()[0].Name("Updated name");
+    assertTrue(at.Teams()[0].HasChanges());
+
+    assertEquals("Updated name", at.Teams()[0].Name());
 
     assertNotNull(at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].Parent());
-    console.log(JSON.stringify(at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].Parent()));
+
+    // update allocation
     at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].Allocation(.5);
-    assertEquals("Updated name", at.Teams()[0].Name());
-    // console.log("Teams[0] changelog length " + at.Teams()[0].ChangeLog.length);
+
     // we aren't tracking team changes, so the Updaeted name shouldn't register
-    assertFalse(at.Teams()[0].HasChanges());
+    // assertFalse(at.Teams()[0].HasChanges());
     // we are tracking allocation changes, so this should register
+
     assertTrue(at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].HasChanges());
-
-    assertEquals("First collection s/b Allocations", at.Teams()[0].Members()[0].Projects()[0].Allocations(), at.Teams()[0].Members()[0].Projects()[0]._dependentCollections()[0]());
-    //var proj = at.Teams()[0].Members()[0].Projects()[0];
-    //var hasC = false;
-    // var hasC = this.ChangeLog().length > 0;
-    // check dependent collections
-    //if (hasC === false && proj._dependentCollections.length > 0) {
-    //    console.log("Checking _dependentCollections");
-    //    $.each(proj._dependentCollections, function (x, item) {
-    //        console.log("HasChanges.each " + item());
-
-    //        $.each(item(), function (y, dc) {
-    //            console.log(dc);
-    //            if (dc.HasChanges()) {
-    //                hasC = true;
-    //                console.log("i.HasChanges() == true on index " + y);
-
-    //            }
-    //        });
-    //    });
-    //}
-    // return hasC;
-
-    //console.log("hasC = " + hasC);
-    //hasC = proj.HasChanges();
-    //console.log("proj.HasChanges = " + proj.HasChanges());
-    //console.log(hasC);
-    assertTrue(at.Teams()[0].Members()[0].Projects()[0].HasChildChanges());
     assertTrue(at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].ChangeLog().length > 0);
+
+    //assertTrue(at.Teams()[0].Members()[0].Projects()[0].HCC());
     assertTrue(at.Teams()[0].Members()[0].Projects()[0].HasChanges());
+
+    // haschanges should make its way all up the stack
+    assertTrue(at.Teams()[0].Members()[0].HasChanges());
     // the child allocation change should bubble all the way up.
     assertTrue(at.HasChanges());
 };

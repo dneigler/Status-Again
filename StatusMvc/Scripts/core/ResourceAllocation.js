@@ -35,14 +35,15 @@ function entityObject() {
     this._subscribers = new Array();
 
     this._dependentCollections = ko.observableArray([]); // new Array();
+    this._dependentCollectionsLoaded = false;
 
     // dependent collections to be included
     this.HasChanges = ko.computed(function () {
-        var hasC = this.ChangeLog().length > 0 || this._dependentChangesFlag() === true; // || this.HasChildChanges();
-        if (hasC === false) {
-            console.log("entityObject.HasChanges calling HasChildChanges");
+        var hasC1 = this.ChangeLog().length > 0 || this._dependentChangesFlag() === true; // || this.HasChildChanges();
+        if (hasC1 === false) {
+            //console.log("entityObject.HasChanges calling HasChildChanges");
             var hasC1 = this.HasChildChanges();
-            console.log(typeof this + ": entityObject.HasChanges hasC1 returned " + hasC1);
+            //console.log(typeof this + ": entityObject.HasChanges hasC1 returned " + hasC1);
         }
         // check dependent collections
         //if (hasC === false && this._dependentCollections.length > 0) {
@@ -59,39 +60,40 @@ function entityObject() {
         //        });    
         //    });
         //}
-        return hasC;
-    }.bind(this));
-
-    this.HasChildChanges1 = ko.computed(function () {
-        console.log("base.HasChildChanges called");
-        return false;
-    }.bind(this));
+        return hasC1;
+    }, this);//.bind(this));
 
     this.HasChildChanges = ko.computed(function () {
         var self = this;
         var retVal = false;
-        // find all arrays
-        $.each(self, function (x, prop) {
-            if (!self.isInternal(x, prop)) {
-
-                if (ko.isObservable(prop) && $.isArray(prop())) {
-                    console.log("HasChildChanges examining " + x + " : " );//+ JSON.stringify(prop()));
-                    var val = null;
-                    if (prop()["HasChanges"] != null) {
-                        val = ko.utils.arrayFirst(prop(), function (item1) {
-                            if (item1["HasChanges"] != null)
-                                return (item1.HasChanges());
-                        });
-                    }
-
-                    retVal = (val != null);
-                    console.log("project.prototype.HasChildChanges called with val " + val);
+        var val = null;
+        if (self._dependentCollectionsLoaded === false) {
+            // find all arrays
+            $.each(self, function (x, prop) {
+                if (!self.isInternal(x, prop) && ko.isObservable(prop) && $.isArray(prop())) {
+                    //console.log("HasChildChanges examining " + x);// + " for ID " + self["Id"]() + JSON.stringify(self));
+                    // prop() is an array to iterate through for any changes
+                    self._dependentCollections().push(prop());
+                    
                 }
-            }
+            });
+            self._dependentCollectionsLoaded = true;
+        }
+        ko.utils.arrayForEach(self._dependentCollections(), function(prop) {
+            //$.each(self._dependentCollections(), function (x, prop) {
+            val = ko.utils.arrayFirst(prop, function (item1) {
+                if (item1["HasChanges"] != null)
+                    return (item1.HasChanges());
+            });
+            if (val === true) return;
         });
 
+        retVal = (val != null);
+        if (retVal === true)
+            console.log("project.prototype.HasChildChanges called with val " + val);
+
         return retVal;
-    }.bind(this));
+    }, this);//.bind(this));
 
     this._dependentChangesFlag = ko.observable(false);
 
@@ -100,7 +102,10 @@ function entityObject() {
     }.bind(this));
 };
 entityObject.prototype.Id = ko.observable(0);
-entityObject.prototype.HasChildChanges = function () { console.log("bogus HasChildChanges"); return false; }
+entityObject.prototype.HasChildChanges = function () {
+    //console.log("bogus HasChildChanges");
+    return true;
+}
 
 entityObject.prototype.Exists = function (collection, objId) {
     var item1 = ko.utils.arrayFilter(ko.utils.unwrapObservable(collection), function (item) {
@@ -235,7 +240,8 @@ allocationTree.prototype.LoadFromObject = function (response) {
 			.LoadFromObject(item);
         self.LoadTeam(t);
     });
-    self._dependentCollections.push(this.Teams);
+    this.ListenForChanges();
+    //self._dependentCollections.push(this.Teams);
     return self;
 };
 
@@ -282,7 +288,8 @@ team.prototype.LoadFromObject = function (obj) {
         m.Parent(self);
         self.LoadMember(m);
     });
-    this._dependentCollections.push(this.Members);
+    this.ListenForChanges();
+    //this._dependentCollections.push(this.Members);
     return this;
 };
 
@@ -305,14 +312,14 @@ function teamMember() {
     this.FullName = ko.observable('');
     this.Projects = ko.observableArray([]);
     
-    this.HasChildChanges = ko.computed(function () {
-        var retVal = false;
-        $.each(this.Projects(), function (x, item) {
-            if (item.HasChanges())
-                retVal = true;
-        });
-        return retVal;
-    }.bind(this));
+    //this.HasChildChanges = ko.computed(function () {
+    //    var retVal = false;
+    //    $.each(this.Projects(), function (x, item) {
+    //        if (item.HasChanges())
+    //            retVal = true;
+    //    });
+    //    return retVal;
+    //}.bind(this));
 };
 extend(teamMember, entityObject);
 
@@ -331,7 +338,8 @@ teamMember.prototype.LoadFromObject = function (obj) {
         p.Parent(self);
         self.LoadProject(p);
     });
-    this._dependentCollections.push(this.Projects);
+    //this._dependentCollections.push(this.Projects);
+    this.ListenForChanges();
     return this;
 };
 
@@ -381,7 +389,9 @@ project.prototype.LoadFromObject = function (obj) {
         self.LoadAllocation(m);
 
     });
-    this._dependentCollections.push(this.Allocations);
+
+    this.ListenForChanges();
+    //this._dependentCollections.push(this.Allocations);
     return this;
 };
 
