@@ -37,34 +37,26 @@ function entityObject() {
     this._dependentCollections = ko.observableArray([]); // new Array();
     this._dependentCollectionsLoaded = false;
 
+    this.HasLocalChanges = ko.computed(function () {
+        return this.ChangeLog().length > 0;
+    }, self);
+
     this.HasChanges = ko.computed(function () {
-        var hasC1 = this.ChangeLog().length > 0; //  || this._dependentChangesFlag() === true; // || this.HasChildChanges();
+        var hasC1 = this.HasLocalChanges(); //  || this._dependentChangesFlag() === true; // || this.HasChildChanges();
         if (hasC1 === false) {
             //console.log("entityObject.HasChanges calling HasChildChanges");
             var hasC1 = this.HasChildChanges();
             //console.log(typeof this + ": entityObject.HasChanges hasC1 returned " + hasC1);
         }
         return hasC1;
-    }, this);
+    }, self);
 
-    this.HasLocalChanges = function () {
-        return this.ChangeLog().length > 0;
-    };
-
-    // dependent collections to be included
-    this.HasChanges2 = function () {
-        var hasC1 = this.HasLocalChanges();
-
-        if (hasC1 === false) {
-            var hasC1 = this.HasChildChanges2();
-        }
-        return hasC1;
-    };
-
+    
     this.LastChild = null;
     this.LastArray = null;
 
-    this.HasChildChanges2 = function () {
+
+    this.HasChildChanges = ko.computed(function () {
         var self = this;
         var retVal = false;
         var val = null;
@@ -87,16 +79,16 @@ function entityObject() {
             var prop = self[propName]();
             var valObj = ko.utils.arrayFirst(prop, function (item1) {
                 self.LastArray = propName;
-                if (item1["HasChanges2"] != null) {
+                if (item1["HasChanges"] != null) {
                     // so this just means that this array contains items with haschanges property
-                    return (item1.HasChanges2());
+                    return (item1.HasChanges());
                 } else {
                     return false;
                 }
             });
             // if valObj isn't null, then this is the first item with a change - let's set that for logging
             if (valObj !== null) {
-                val = valObj.HasChanges2();
+                val = valObj.HasChanges();
                 if (val === true)
                     self.LastChild = valObj;
             }
@@ -107,51 +99,7 @@ function entityObject() {
         retVal = (self.LastChild != null);// val != null);
 
         return retVal;
-    };
-
-    this.HasChildChanges = ko.computed(function () {
-        var self = this;
-        // console.log("HaschildChanges called on " + JSON.stringify(self));
-        var retVal = false;
-        var val = null;
-        if (self._dependentCollectionsLoaded === false) {
-            // find all arrays
-            $.each(self, function (x, prop) {
-                if (!self.isInternal(x, prop) && ko.isObservable(prop) && $.isArray(prop())) {
-                    //console.log("HasChildChanges examining " + x);// + " for ID " + self["Id"]() + JSON.stringify(self));
-                    // prop() is an array to iterate through for any changes
-                    // let's try storing the NAME of the property rather than it's resolved
-                    // contents as we seem to be losing them
-                    self._dependentCollections().push(x);//prop());
-                    
-                }
-            });
-            self._dependentCollectionsLoaded = true;
-        }
-        ko.utils.arrayForEach(self._dependentCollections(), function (propName) {
-            var prop = self[propName]();
-            var valObj = ko.utils.arrayFirst(prop, function (item1) {
-                if (item1["HasChanges"] != null) {
-                    // so this just means that this array contains items with haschanges property
-                    //console.log("Inspecting child " + JSON.stringify(item1));
-                    return (item1.HasChanges());
-                } else {
-                    return false;
-                }
-            });
-            // console.log("HCC DependentColl: " + JSON.stringify(valObj));
-            if (valObj !== null)
-                val = valObj.HasChanges();
-            else val = false;
-            return val; // if (val === true) return true;
-        });
-
-        retVal = (val != null);
-        //if (retVal === true)
-        //    console.log("project.prototype.HasChildChanges called with val " + val);
-
-        return retVal;
-    }, this); //.bind(this));
+    }, self); //.bind(this));
 
     this._dependentChangesFlag = ko.observable(false);
 
@@ -173,7 +121,7 @@ entityObject.prototype.Exists = function (collection, objId) {
 };
 
 entityObject.prototype.isInternal = function (x, item) {
-    return !(x != "ChangeLog" && x != "HasChanges" && x != "HasDeletion" && x != "_dependentCollections" && x != "_dependentChangesFlag" && x != "HasInsertion" && x != "Editable" && x != "Parent" && ko.isObservable(item));
+    return !(x != "ChangeLog" && x != "HasLocalChanges" && x != "HasChanges" && x != "HasDeletion" && x != "_dependentCollections" && x != "_dependentChangesFlag" && x != "HasInsertion" && x != "Editable" && x != "Parent" && ko.isObservable(item));
 };
 
 // entityObject.prototype.HasInsertion = ko.observable(false);

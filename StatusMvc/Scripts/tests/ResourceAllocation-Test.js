@@ -68,9 +68,9 @@ ResourceAllocationTest.prototype.testDependentCollectionsVM = function () {
             console.log(tm);
         });
     }
-    assertFalse(tm1.HasChildChanges2());
+    assertFalse(tm1.HasChildChanges());
 
-    assertFalse(tm1.HasChanges2());
+    assertFalse(tm1.HasChanges());
 
     assertNotNull(tm1.Members()[0].Projects()[0].Allocations()[0].Parent());
 
@@ -83,30 +83,30 @@ ResourceAllocationTest.prototype.testDependentCollectionsVM = function () {
     // assertFalse(at.Teams()[0].HasChanges());
     // we are tracking allocation changes, so this should register
 
-    assertTrue(at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].HasChanges2());
-    assertTrue(at.Teams()[0].Members()[0].Projects()[0].HasChanges2());
-    assertTrue(at.Teams()[0].Members()[0].HasChanges2());
+    assertTrue(at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].HasChanges());
+    assertTrue(at.Teams()[0].Members()[0].Projects()[0].HasChanges());
+    assertTrue(at.Teams()[0].Members()[0].HasChanges());
 
     // revert change
     at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].Allocation(origValue);
     assertEquals(1, tm1.Members()[0].Projects()[0].Allocations()[0].Allocation());
 
-    assertFalse(at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].HasChanges2());
+    assertFalse(at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].HasChanges());
 
     assertFalse(at.Teams()[0].Members()[0].HasLocalChanges());
 
-    assertFalse(at.Teams()[0].Members()[0].HasChanges2());
+    assertFalse(at.Teams()[0].Members()[0].HasChanges());
     
     at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].Allocation(.5);
     
-    assertTrue(at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].HasChanges2());
+    assertTrue(at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].HasChanges());
 
-    assertTrue(at.Teams()[0].Members()[0].Projects()[0].HasChanges2());
+    assertTrue(at.Teams()[0].Members()[0].Projects()[0].HasChanges());
 
     // haschanges should make its way all up the stack
-    assertTrue(at.Teams()[0].Members()[0].HasChanges2());
+    assertTrue(at.Teams()[0].Members()[0].HasChanges());
     // the child allocation change should bubble all the way up.
-    assertTrue(at.HasChanges2());
+    assertTrue(at.HasChanges());
 };
 
 ResourceAllocationTest.prototype.testResourceAllocationVM = function () {
@@ -335,6 +335,7 @@ ResourceAllocationTest.prototype.testHasChanges = function () {
 
     // test reversion
     alloc.Allocation(0.25);
+    assertFalse("Alloc.HasChanges", alloc.HasLocalChanges());
     assertFalse("Alloc.HasChanges", alloc.HasChanges());
 
 };
