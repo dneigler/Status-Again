@@ -37,34 +37,81 @@ function entityObject() {
     this._dependentCollections = ko.observableArray([]); // new Array();
     this._dependentCollectionsLoaded = false;
 
-    // dependent collections to be included
     this.HasChanges = ko.computed(function () {
-        var hasC1 = this.ChangeLog().length > 0 || this._dependentChangesFlag() === true; // || this.HasChildChanges();
+        var hasC1 = this.ChangeLog().length > 0; //  || this._dependentChangesFlag() === true; // || this.HasChildChanges();
         if (hasC1 === false) {
             //console.log("entityObject.HasChanges calling HasChildChanges");
             var hasC1 = this.HasChildChanges();
             //console.log(typeof this + ": entityObject.HasChanges hasC1 returned " + hasC1);
         }
-        // check dependent collections
-        //if (hasC === false && this._dependentCollections.length > 0) {
-        //    console.log("Checking _dependentCollections");
-        //    $.each(this._dependentCollections(), function (x, item) {
-        //        console.log("HasChanges.each " + item);
-
-        //        $.each(item(), function (y, dc) {
-        //            if (dc.HasChanges()) {
-        //                hasC = true;
-        //                console.log("i.HasChanges() == true on index " + y);
-
-        //            }
-        //        });    
-        //    });
-        //}
         return hasC1;
-    }, this);//.bind(this));
+    }, this);
+
+    this.HasLocalChanges = function () {
+        return this.ChangeLog().length > 0;
+    };
+
+    // dependent collections to be included
+    this.HasChanges2 = function () {
+        var hasC1 = this.HasLocalChanges();
+
+        if (hasC1 === false) {
+            var hasC1 = this.HasChildChanges2();
+        }
+        return hasC1;
+    };
+
+    this.LastChild = null;
+    this.LastArray = null;
+
+    this.HasChildChanges2 = function () {
+        var self = this;
+        var retVal = false;
+        var val = null;
+        self.LastChild = null;
+        self.LastArray = null;
+        if (self._dependentCollectionsLoaded === false) {
+            // find all arrays
+            $.each(self, function (x, prop) {
+                if (!self.isInternal(x, prop) && ko.isObservable(prop) && $.isArray(prop())) {
+                    // prop() is an array to iterate through for any changes
+                    // let's try storing the NAME of the property rather than it's resolved
+                    // contents as we seem to be losing them
+                    self._dependentCollections().push(x);//prop());
+
+                }
+            });
+            self._dependentCollectionsLoaded = true;
+        }
+        ko.utils.arrayForEach(self._dependentCollections(), function (propName) {
+            var prop = self[propName]();
+            var valObj = ko.utils.arrayFirst(prop, function (item1) {
+                self.LastArray = propName;
+                if (item1["HasChanges2"] != null) {
+                    // so this just means that this array contains items with haschanges property
+                    return (item1.HasChanges2());
+                } else {
+                    return false;
+                }
+            });
+            // if valObj isn't null, then this is the first item with a change - let's set that for logging
+            if (valObj !== null) {
+                val = valObj.HasChanges2();
+                if (val === true)
+                    self.LastChild = valObj;
+            }
+            else val = false;
+            // return val;
+        });
+
+        retVal = (self.LastChild != null);// val != null);
+
+        return retVal;
+    };
 
     this.HasChildChanges = ko.computed(function () {
         var self = this;
+        // console.log("HaschildChanges called on " + JSON.stringify(self));
         var retVal = false;
         var val = null;
         if (self._dependentCollectionsLoaded === false) {
@@ -73,27 +120,38 @@ function entityObject() {
                 if (!self.isInternal(x, prop) && ko.isObservable(prop) && $.isArray(prop())) {
                     //console.log("HasChildChanges examining " + x);// + " for ID " + self["Id"]() + JSON.stringify(self));
                     // prop() is an array to iterate through for any changes
-                    self._dependentCollections().push(prop());
+                    // let's try storing the NAME of the property rather than it's resolved
+                    // contents as we seem to be losing them
+                    self._dependentCollections().push(x);//prop());
                     
                 }
             });
             self._dependentCollectionsLoaded = true;
         }
-        ko.utils.arrayForEach(self._dependentCollections(), function(prop) {
-            //$.each(self._dependentCollections(), function (x, prop) {
-            val = ko.utils.arrayFirst(prop, function (item1) {
-                if (item1["HasChanges"] != null)
+        ko.utils.arrayForEach(self._dependentCollections(), function (propName) {
+            var prop = self[propName]();
+            var valObj = ko.utils.arrayFirst(prop, function (item1) {
+                if (item1["HasChanges"] != null) {
+                    // so this just means that this array contains items with haschanges property
+                    //console.log("Inspecting child " + JSON.stringify(item1));
                     return (item1.HasChanges());
+                } else {
+                    return false;
+                }
             });
-            if (val === true) return;
+            // console.log("HCC DependentColl: " + JSON.stringify(valObj));
+            if (valObj !== null)
+                val = valObj.HasChanges();
+            else val = false;
+            return val; // if (val === true) return true;
         });
 
         retVal = (val != null);
-        if (retVal === true)
-            console.log("project.prototype.HasChildChanges called with val " + val);
+        //if (retVal === true)
+        //    console.log("project.prototype.HasChildChanges called with val " + val);
 
         return retVal;
-    }, this);//.bind(this));
+    }, this); //.bind(this));
 
     this._dependentChangesFlag = ko.observable(false);
 
@@ -121,6 +179,7 @@ entityObject.prototype.isInternal = function (x, item) {
 // entityObject.prototype.HasInsertion = ko.observable(false);
 entityObject.prototype.ChangeLog = ko.observableArray([]);
 entityObject.prototype.HasDeletion = ko.observable(false);
+entityObject.prototype.OriginalVersion = {};
 
 entityObject.prototype.reset = function () {
     // statusReportItem version
@@ -182,24 +241,23 @@ entityObject.prototype._updateChangeTracking = function (propertyName, newValue)
     var currentlyChangeExists = ($.inArray(propertyName, self.ChangeLog()) >= 0);
     var origValue = self.OriginalVersion[propertyName];
     if (newValue !== origValue && !currentlyChangeExists) {
-        console.log("The new value for " + propertyName + " is " + newValue + " from " + origValue);
+        //console.log("The new value for " + propertyName + " is " + newValue + " from " + origValue);
         self.ChangeLog.push(propertyName);
 
         // dependencies?
-        if (self.Parent() !== null) {
-            // self.Parent()._dependentCollections.valueHasMutated();
-            self.Parent()._dependentChangesFlag(true);
-        } else {
-            console.log("newValue !== origValue && !currentlyChangeExists/self.Parent() == null");
-        }
+        //if (self.Parent() !== null) {
+        //    self.Parent()._dependentChangesFlag(true);
+        //} else {
+            console.log(propertyName + ": newValue (" + newValue + ") !== origValue (" + origValue + ") && !currentlyChangeExists");
+        //}
     } else if (newValue === origValue && currentlyChangeExists) {
         self.ChangeLog.pop(propertyName);
-        if (self.Parent() != null) {
-            // self.Parent()._dependentCollections.valueHasMutated();
-            self.Parent()._dependentChangesFlag(true);
-        } else {
-            console.log("newValue === origValue && currentlyChangeExists/self.Parent() == null");
-        }
+        // self.OriginalVersion.pop(propertyName);
+        //if (self.Parent() != null) {
+        //    self.Parent()._dependentChangesFlag(true);
+        //} else {
+        console.log(propertyName + ": newValue  === origValue(" + origValue + ") && currentlyChangeExists");
+        //}
     }
 };
 
@@ -209,14 +267,7 @@ function allocationTree(response) {
     this.Teams = ko.observableArray([]);
     this.LoadFromObject(response);
 
-    this.HasChildChanges = ko.computed(function () {
-        var retVal = false;
-        $.each(this.Teams(), function (x, item) {
-            if (item.HasChanges())
-                retVal = true;
-        });
-        return retVal;
-    }.bind(this));
+    
 };
 extend(allocationTree, entityObject);
 
@@ -234,14 +285,12 @@ allocationTree.prototype.LoadFromObject = function (response) {
         self.Months().push(getShortMonthName(item));
     });
 
-    //this.Months(response.Months);
     $.each(response.Teams, function (x, item) {
-        var t = new team()
-			.LoadFromObject(item);
+        var t = new team(item);
+			
         self.LoadTeam(t);
     });
     this.ListenForChanges();
-    //self._dependentCollections.push(this.Teams);
     return self;
 };
 
@@ -253,21 +302,14 @@ allocationTree.prototype.LoadTeam = function (obj) {
         this.Teams.push(obj);
 };
 
-function team() {
+function team(response) {
     team.superclass.constructor.call(this);
     this.Name = ko.observable('');
     this.LeadFullName = ko.observable('');
     this.LeadId = ko.observable(0);
     this.Members = ko.observableArray([]);
-
-    this.HasChildChanges = ko.computed(function () {
-        var retVal = false;
-        $.each(this.Members(), function (x, item) {
-            if (item.HasChanges())
-                retVal = true;
-        });
-        return retVal;
-    }.bind(this));
+    this.LoadFromObject(response);
+    
 };
 extend(team, entityObject);
 
@@ -283,13 +325,11 @@ team.prototype.LoadFromObject = function (obj) {
         .LeadFullName(obj.LeadFullName)
         .LeadId(obj.LeadId);
     $.each(obj.Members, function (x, item) {
-        var m = new teamMember()
-			.LoadFromObject(item);
+        var m = new teamMember(item);
         m.Parent(self);
         self.LoadMember(m);
     });
     this.ListenForChanges();
-    //this._dependentCollections.push(this.Members);
     return this;
 };
 
@@ -307,19 +347,12 @@ team.prototype.teamMemberExists = function (objId) {
     return this.Exists(this.Members(), objId);
 }
 
-function teamMember() {
+function teamMember(response) {
     teamMember.superclass.constructor.call(this);
     this.FullName = ko.observable('');
     this.Projects = ko.observableArray([]);
+    this.LoadFromObject(response);
     
-    //this.HasChildChanges = ko.computed(function () {
-    //    var retVal = false;
-    //    $.each(this.Projects(), function (x, item) {
-    //        if (item.HasChanges())
-    //            retVal = true;
-    //    });
-    //    return retVal;
-    //}.bind(this));
 };
 extend(teamMember, entityObject);
 
@@ -333,12 +366,12 @@ teamMember.prototype.LoadFromObject = function (obj) {
         .FullName(obj.FullName);
 
     $.each(obj.Projects, function (x, item) {
-        var p = new project()
-            .LoadFromObject(item);
+        var p = new project(item);
+            //.LoadFromObject(item);
         p.Parent(self);
         self.LoadProject(p);
     });
-    //this._dependentCollections.push(this.Projects);
+
     this.ListenForChanges();
     return this;
 };
@@ -354,23 +387,12 @@ teamMember.prototype.ProjectExists = function (objId) {
 };
 
 
-function project() {
+function project(response) {
     project.superclass.constructor.call(this);
     this.Name = ko.observable('');
     this.Allocations = ko.observableArray([]);
-
-    //this.HasChildChanges1 = ko.computed(function () {
-
-    //    var retVal = false;
-    //    var val = ko.utils.arrayFirst(this.Allocations(), function (item) {
-    //        return (item.HasChanges());
-    //        //if (item.HasChanges())
-    //        //    retVal = true;
-    //    });
-    //    retVal = (val != null);
-    //    console.log("project.prototype.HasChildChanges called with val " + val);
-    //    return retVal;
-    //}.bind(this));
+    this.LoadFromObject(response);
+    
 };
 extend(project, entityObject);
 
@@ -383,8 +405,8 @@ project.prototype.LoadFromObject = function (obj) {
         .Name(obj.Name);
 
     $.each(obj.MonthlyAllocations, function (x, item) {
-        var m = new monthlyAllocation()
-				.LoadFromObject(item);
+        var m = new monthlyAllocation(item);
+				//.LoadFromObject(item);
         m.Parent(self);
         self.LoadAllocation(m);
 
@@ -407,10 +429,11 @@ project.prototype.AllocationExists = function (objId) {
     return this.Exists(this.Allocations(), objId);
 };
 
-function monthlyAllocation() {
+function monthlyAllocation(response) {
     monthlyAllocation.superclass.constructor.call(this);
     this.Month = ko.observable('');
     this.Allocation = ko.observable(0);
+    this.LoadFromObject(response);
     
 }
 extend(monthlyAllocation, entityObject);
@@ -458,13 +481,8 @@ var _initAllocationTree = { "Teams":
     
 var resourceAllocationVM = {
     AllocationTree: ko.observable(new allocationTree(_initAllocationTree)
-    //.LoadFromObject(_initAllocationTree)
     ),
-    //ChangedAllocations: ko.computed(function () {
-    //    return ko.utils.arrayFilter(this.allocationTree().Items(), function (item) {
-    //        return item.HasChanges() || item.HasInsertion(); // ko.utils.stringStartsWith(item.name().toLowerCase(), filter);
-    //    });
-    //}.bind(this)),
+    
     initJQuery: function () {
         $("#tabs").tabs({
             spinner: 'Retrieving data...',

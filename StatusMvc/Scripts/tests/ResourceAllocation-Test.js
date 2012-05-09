@@ -11,6 +11,7 @@
 ResourceAllocationTest = TestCase("ResourceAllocationTest");
 
 ResourceAllocationTest.prototype.testDependentCollectionsVM = function () {
+    console.log("starting testDependentColl");
     var obj = {
         "Teams":
             [{
@@ -44,31 +45,68 @@ ResourceAllocationTest.prototype.testDependentCollectionsVM = function () {
 
     assertFalse(at.ChangeLog().length > 0);
     
+    var origTeam = at.Teams()[0].Name();
+    var tm1 = at.Teams()[0];
 
-    at.Teams()[0].Name("Updated name");
-    assertTrue(at.Teams()[0].HasChanges());
+    tm1.Name("Updated team name");
+    assertTrue(tm1.HasChanges());
+    assertTrue($.inArray("Name", tm1.ChangeLog()) >= 0);
+    assertEquals(origTeam, tm1.OriginalVersion["Name"]);
+    assertEquals(1, tm1.Members()[0].Projects()[0].Allocations()[0].Allocation());
+    assertEquals("Updated team name", tm1.Name());
 
-    assertEquals("Updated name", at.Teams()[0].Name());
+    // revert to original value
+    tm1.Name(origTeam);
 
-    assertNotNull(at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].Parent());
+    assertEquals(origTeam, tm1.OriginalVersion["Name"]);
+    assertFalse($.inArray("Name", tm1.ChangeLog()) >= 0);
+    assertEquals(0, tm1.ChangeLog().length);
+
+    assertTrue(tm1._dependentCollectionsLoaded);
+    if (tm1.HasChildChanges()) {
+        ko.utils.arrayForEach(tm1, function (tm) {
+            console.log(tm);
+        });
+    }
+    assertFalse(tm1.HasChildChanges2());
+
+    assertFalse(tm1.HasChanges2());
+
+    assertNotNull(tm1.Members()[0].Projects()[0].Allocations()[0].Parent());
+
+    var origValue = tm1.Members()[0].Projects()[0].Allocations()[0].Allocation();
 
     // update allocation
-    at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].Allocation(.5);
+    tm1.Members()[0].Projects()[0].Allocations()[0].Allocation(.5);
 
     // we aren't tracking team changes, so the Updaeted name shouldn't register
     // assertFalse(at.Teams()[0].HasChanges());
     // we are tracking allocation changes, so this should register
 
-    assertTrue(at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].HasChanges());
-    assertTrue(at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].ChangeLog().length > 0);
+    assertTrue(at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].HasChanges2());
+    assertTrue(at.Teams()[0].Members()[0].Projects()[0].HasChanges2());
+    assertTrue(at.Teams()[0].Members()[0].HasChanges2());
 
-    //assertTrue(at.Teams()[0].Members()[0].Projects()[0].HCC());
-    assertTrue(at.Teams()[0].Members()[0].Projects()[0].HasChanges());
+    // revert change
+    at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].Allocation(origValue);
+    assertEquals(1, tm1.Members()[0].Projects()[0].Allocations()[0].Allocation());
+
+    assertFalse(at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].HasChanges2());
+
+    assertFalse(at.Teams()[0].Members()[0].HasLocalChanges());
+
+    assertFalse(at.Teams()[0].Members()[0].HasChanges2());
+    
+    at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].Allocation(.5);
+    
+    assertTrue(at.Teams()[0].Members()[0].Projects()[0].Allocations()[0].HasChanges2());
+
+    assertTrue(at.Teams()[0].Members()[0].Projects()[0].HasChanges2());
 
     // haschanges should make its way all up the stack
-    assertTrue(at.Teams()[0].Members()[0].HasChanges());
+    assertTrue(at.Teams()[0].Members()[0].HasChanges2());
     // the child allocation change should bubble all the way up.
-    assertTrue(at.HasChanges());
+    assertTrue(at.HasChanges2());
 };
 
 ResourceAllocationTest.prototype.testResourceAllocationVM = function () {
@@ -99,16 +137,15 @@ ResourceAllocationTest.prototype.testResourceAllocationVM = function () {
     
 };
 ResourceAllocationTest.prototype.testTeamLoadFromObject = function () {
-    var team1 = new team();
-
-    assertEquals("Team.Members count before", 0, team1.Members().length);
-    team1.LoadFromObject(
-        { "Id": 1,
-            "Name": "Management",
-            "Members": [
-            { "Id": 2, "FullName": "David Neigler",
+    var teamObj = {
+        "Id": 1,
+        "Name": "Management",
+        "Members": [
+            {
+                "Id": 2, "FullName": "David Neigler",
                 "Projects": [
-                { "Id": 39, "Name": "Management",
+                {
+                    "Id": 39, "Name": "Management",
                     "MonthlyAllocations": [
                     { "Month": "\/Date(1293858000000)\/", "Id": 997, "Allocation": 1.00000 },
                     { "Month": "\/Date(1296536400000)\/", "Id": 998, "Allocation": 1.00000 },
@@ -124,12 +161,17 @@ ResourceAllocationTest.prototype.testTeamLoadFromObject = function () {
                     { "Month": "\/Date(1322715600000)\/", "Id": 1008, "Allocation": 1.00000 },
                     { "Month": "\/Date(1325394000000)\/", "Id": 1009, "Allocation": 1.00000 },
                     { "Month": "\/Date(1328072400000)\/", "Id": 1010, "Allocation": 1.00000 },
-                    { "Month": "\/Date(1330578000000)\/", "Id": 1011, "Allocation": 1.00000}]
+                    { "Month": "\/Date(1330578000000)\/", "Id": 1011, "Allocation": 1.00000 }]
                 }]
             }],
-            "LeadFullName": "David Neigler",
-            "LeadId": "2"
-        });
+        "LeadFullName": "David Neigler",
+        "LeadId": "2"
+    };
+    var team1 = new team(teamObj);
+
+    //assertEquals("Team.Members count before", 0, team1.Members().length);
+    //team1.LoadFromObject(
+    //    );
 
     assertEquals("Team.Id", 1, team1.Id());
     assertEquals("Team.Name", "Management", team1.Name());
@@ -156,19 +198,21 @@ ResourceAllocationTest.prototype.testTeamLoadFromObject = function () {
 };
 
 ResourceAllocationTest.prototype.testProjectLoadFromObject = function () {
-    var proj = new project();
-
-    proj.LoadFromObject(
-        { "Id": 39, "Name": "Management",
-            "MonthlyAllocations": [
+    var projObj = {
+        "Id": 39, "Name": "Management",
+        "MonthlyAllocations": [
                     { "Month": "\/Date(1293858000000)\/", "Id": 997, "Allocation": 1.00000 },
                     { "Month": "\/Date(1296536400000)\/", "Id": 998, "Allocation": 1.00000 }
-                    ]
-        });
+        ]
+    };
+    var proj = new project(projObj);
 
-    $.each(proj.Allocations(), function (x, item) {
-        console.log("ProjectLoadFromObject", item.Id());
-    });
+    //proj.LoadFromObject(
+    //    );
+
+    //$.each(proj.Allocations(), function (x, item) {
+    //    console.log("ProjectLoadFromObject", item.Id());
+    //});
 
     assertEquals("MA", 997, proj.Allocations()[0].Id());
     assertEquals("Project.Id", 39, proj.Id());
@@ -184,19 +228,9 @@ ResourceAllocationTest.prototype.testProjectLoadFromObject = function () {
 ResourceAllocationTest.prototype.testEntityObjectExists = function () {
     var obj = new entityObject();
     var arr = ko.observableArray([]);
-    arr.push(new monthlyAllocation()
-        .Id(1)
-        .Allocation(1)
-        .Month(Date.today()));
-    arr.push(new monthlyAllocation()
-        .Id(2)
-        .Allocation(1)
-        .Month(Date.today()));
-    arr.push(new monthlyAllocation()
-        .Id(3)
-        .Allocation(1)
-        .Month(Date.today()));
-
+    arr.push(new monthlyAllocation({ "Month": Date.today(), "Id": 1, "Allocation": 1.00000 }));
+    arr.push(new monthlyAllocation({ "Month": Date.today(), "Id": 2, "Allocation": 1.00000 }));
+    arr.push(new monthlyAllocation({ "Month": Date.today(), "Id": 3, "Allocation": 1.00000 }));
     assertTrue("1 should exist, accessed with wrapped array", obj.Exists(arr, 1));
     assertTrue("2 should exist, accessed with unwrapped array", obj.Exists(arr(), 2));
     assertTrue("3 should exist", obj.Exists(arr, 3));
@@ -204,20 +238,14 @@ ResourceAllocationTest.prototype.testEntityObjectExists = function () {
 };
 
 ResourceAllocationTest.prototype.testMonthlyAllocationLoadFromObject = function () {
-    var alloc = new monthlyAllocation();
-
-    alloc.LoadFromObject(
-        { "Month": "\/Date(1293858000000)\/", "Id": 997, "Allocation": 1.00000 });
+    var alloc = new monthlyAllocation({ "Month": "\/Date(1293858000000)\/", "Id": 997, "Allocation": 1.00000 });
 
     assertEquals("Alloc.Id", 997, alloc.Id());
     assertEquals("Alloc.Allocation", 1, alloc.Allocation());
     assertEquals("Alloc.Month", /Date(1293858000000)/, alloc.Month());
 
-    var alloc2 = new monthlyAllocation();
-
-    alloc2.LoadFromObject(
-        { "Month": "\/Date(1296536400000)\/", "Id": 998, "Allocation": 1.00000 });
-
+    var alloc2 = new monthlyAllocation({ "Month": "\/Date(1296536400000)\/", "Id": 998, "Allocation": 1.00000 });
+    
     assertEquals("Alloc.Id", 998, alloc2.Id());
     assertEquals("Alloc.Allocation", 1, alloc2.Allocation());
     assertEquals("Alloc.Month", /Date(1296536400000)/, alloc2.Month());
@@ -232,14 +260,10 @@ ResourceAllocationTest.prototype.testVMInit = function () {
 
 
 ResourceAllocationTest.prototype.testTeamLoadWithZeroAllocations = function () {
-    var team1 = new team();
-
-    assertEquals("Team.Members count before", 0, team1.Members().length);
-    team1.LoadFromObject(
-        {
-            "Id": 1,
-            "Name": "Management",
-            "Members": [
+    var teamObj = {
+        "Id": 1,
+        "Name": "Management",
+        "Members": [
             {
                 "Id": 2, "FullName": "David Neigler",
                 "Projects": [
@@ -253,9 +277,14 @@ ResourceAllocationTest.prototype.testTeamLoadWithZeroAllocations = function () {
                     { "Month": "\/Date(1304222400000)\/", "Id": 0, "Allocation": 0.00000 }]
                 }]
             }],
-            "LeadFullName": "David Neigler",
-            "LeadId": "2"
-        });
+        "LeadFullName": "David Neigler",
+        "LeadId": "2"
+    };
+    var team1 = new team(teamObj);
+
+    //assertEquals("Team.Members count before", 0, team1.Members().length);
+    //team1.LoadFromObject(
+        //);
 
     assertEquals("Team.Id", 1, team1.Id());
     assertEquals("Team.Name", "Management", team1.Name());
@@ -276,20 +305,14 @@ ResourceAllocationTest.prototype.testTeamLoadWithZeroAllocations = function () {
 
 
 ResourceAllocationTest.prototype.testHasInsertion = function () {
-    var alloc = new monthlyAllocation();
-
-    alloc.LoadFromObject(
-        { "Month": "\/Date(1293858000000)\/", "Id": 0, "Allocation": 0.00000 });
+    var alloc = new monthlyAllocation({ "Month": "\/Date(1293858000000)\/", "Id": 0, "Allocation": 0.00000 });
 
     assertEquals("Alloc.Id", 0, alloc.Id());
     assertEquals("Alloc.Allocation", 0, alloc.Allocation());
     assertEquals("Alloc.Month", /Date(1293858000000)/, alloc.Month());
     assertTrue("Alloc.HasInsertion", alloc.HasInsertion());
 
-    var alloc2 = new monthlyAllocation();
-
-    alloc2.LoadFromObject(
-        { "Month": "\/Date(1296536400000)\/", "Id": 0, "Allocation": 0.00000 });
+    var alloc2 = new monthlyAllocation({ "Month": "\/Date(1296536400000)\/", "Id": 0, "Allocation": 0.00000 });
 
     assertEquals("Alloc.Id", 0, alloc2.Id());
     assertEquals("Alloc.Allocation", 0, alloc2.Allocation());
@@ -299,10 +322,7 @@ ResourceAllocationTest.prototype.testHasInsertion = function () {
 };
 
 ResourceAllocationTest.prototype.testHasChanges = function () {
-    var alloc = new monthlyAllocation();
-
-    alloc.LoadFromObject(
-        { "Month": "\/Date(1293858000000)\/", "Id": 1, "Allocation": 0.2500 });
+    var alloc = new monthlyAllocation({ "Month": "\/Date(1293858000000)\/", "Id": 1, "Allocation": 0.2500 });
 
     assertEquals("Alloc.Id", 1, alloc.Id());
     assertEquals("Alloc.Allocation", 0.25, alloc.Allocation());
